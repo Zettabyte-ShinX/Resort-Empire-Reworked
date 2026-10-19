@@ -1,0 +1,168 @@
+/**
+ * Typed access to the game's content and balance tables.
+ *
+ * `data.json` is produced by `tools/extract_as3_data.py` from the decompiled
+ * ActionScript sources of the original game. It holds the *facts* of the game
+ * (what facilities exist, what they cost, how popular they are, when the
+ * resort opens and closes) rather than any of the original's code.
+ */
+
+import raw from "./data.generated.ts";
+
+export interface TileDef {
+  nama: string;
+  mainJenis: number;
+  lbl: string;
+  jenis: number;
+  fr: number;
+  walkable: boolean;
+  plenty: boolean;
+  price: number;
+  pop: number;
+}
+
+export interface SceneryDef {
+  nama: string;
+  lbl: string;
+  jenis: number;
+  fr: number;
+  price: number;
+  pop: number;
+  unlocked_level?: number;
+  unlocked_persen?: number;
+}
+
+export interface BoothDef {
+  nama: string;
+  nic: string;
+  ROWS: number;
+  COLS: number;
+  fr: number;
+  wall: number;
+  wall_alpha: number;
+  blok: number;
+  standbooth: boolean;
+  mainJenis: string;
+  jenis: string;
+  price: number[];
+  booked_price: number | number[];
+  opened: number;
+  closed: number;
+  xpt: number;
+  drainpop: number;
+  sumStaff: number;
+  salary: number[];
+  RP_upgrade: number[];
+  pop: number[];
+  Exp_add: number[][];
+  Exp: number[];
+  UT: number[];
+  boostMood: { served?: unknown; canceled?: unknown };
+  desc: string[];
+  extraUpgrade?: string;
+}
+
+export interface SmileyDef {
+  nama: string;
+  range_a: number;
+  range_b: number;
+  nilai: number;
+}
+
+/** A map size tier from the original's EXPAND table. */
+export interface MapTier {
+  cols: number;
+  rows: number;
+  /** Half-extent of the starting buildable plot, in tiles. */
+  lahan: { x: number; y: number };
+}
+
+export interface GameData {
+  tiles: Record<string, TileDef>;
+  scenery: Record<string, SceneryDef>;
+  booths: Record<string, BoothDef>;
+  visitor: Record<string, unknown>;
+  smiley: Record<string, SmileyDef>;
+  listing: string[];
+  sceneryListing: string[];
+  jamBangun: [number, number][];
+  jamTidur: [number, number][];
+  istirahatTimer: [number, number][];
+  maximumPembanding: Record<string, number[]>;
+  expandPrice: number[];
+}
+
+const d = raw as unknown as {
+  dataOb: {
+    Tile: Record<string, TileDef>;
+    Scenery: Record<string, SceneryDef>;
+    Booth: Record<string, BoothDef>;
+    Visitor: Record<string, unknown>;
+    Smiley: Record<string, SmileyDef>;
+    listing: string[];
+    jamBangun: [number, number][];
+    jamTidur: [number, number][];
+    istirahatTimer: [number, number][];
+    MaximumPembanding: Record<string, number[]>;
+  };
+  _statics: {
+    EXPAND: { price: number[] };
+  };
+};
+
+export const DATA: GameData = {
+  tiles: d.dataOb.Tile,
+  scenery: d.dataOb.Scenery,
+  booths: d.dataOb.Booth,
+  visitor: d.dataOb.Visitor,
+  smiley: d.dataOb.Smiley,
+  listing: d.dataOb.listing,
+  sceneryListing: d.dataOb.Scenery.listing as unknown as string[],
+  jamBangun: d.dataOb.jamBangun,
+  jamTidur: d.dataOb.jamTidur,
+  istirahatTimer: d.dataOb.istirahatTimer,
+  maximumPembanding: d.dataOb.MaximumPembanding,
+  expandPrice: d._statics.EXPAND.price,
+};
+
+/** The three map sizes the original offers. */
+export const MAP_TIERS: MapTier[] = [
+  { cols: 37, rows: 37, lahan: { x: 16, y: 16 } },
+  { cols: 43, rows: 43, lahan: { x: 22, y: 22 } },
+  { cols: 50, rows: 50, lahan: { x: 29, y: 29 } },
+];
+
+/** Facility ids, in the order the original offered them. */
+export const BOOTH_IDS = Object.keys(DATA.booths).filter(
+  (k) => k !== "boostMood",
+) as (keyof typeof DATA.booths)[];
+
+export function tileDef(id: string): TileDef {
+  const t = DATA.tiles[id];
+  if (!t) throw new Error(`unknown tile ${id}`);
+  return t;
+}
+
+export function sceneryDef(id: string): SceneryDef {
+  const s = DATA.scenery[id];
+  if (!s) throw new Error(`unknown scenery ${id}`);
+  return s;
+}
+
+export function boothDef(id: string): BoothDef {
+  const b = DATA.booths[id];
+  if (!b) throw new Error(`unknown booth ${id}`);
+  return b;
+}
+
+/** Price of a booth at a given upgrade level (0..2). */
+export function boothPrice(id: string, level: number): number {
+  const p = boothDef(id).price;
+  return p[Math.min(level, p.length - 1)] ?? 0;
+}
+
+/** Popularity multiplier of a booth at a given upgrade level. */
+export function boothPopularity(id: string, level: number): number {
+  const p = boothDef(id).pop;
+  return p[Math.min(level, p.length - 1)] ?? 0;
+}
