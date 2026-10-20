@@ -6,7 +6,7 @@ import { World } from "./core/world.ts";
 import { Renderer } from "./render/renderer.ts";
 import { UI } from "./ui/ui.ts";
 import type { BuildChoice, ToolId } from "./ui/ui.ts";
-import { boothPrice, tileDef } from "./core/data.ts";
+import { boothDef, boothPrice, tileDef } from "./core/data.ts";
 import { loadGame, saveGame } from "./core/save.ts";
 import { art } from "./render/sprites.ts";
 import { audio } from "./render/audio.ts";
@@ -105,6 +105,15 @@ function localPoint(e: MouseEvent, canvas: HTMLCanvasElement): { x: number; y: n
 function bindCanvas(canvas: HTMLCanvasElement): void {
   canvas.addEventListener("mousemove", (e) => {
     const p = localPoint(e, canvas);
+    if (layingPath) {
+      // Dragging with the path tool lays a run of path.
+      const g = renderer.pickTile(p.x, p.y);
+      if (g.col !== hover.col || g.row !== hover.row) {
+        hover = g;
+        handleClick(p.x, p.y, true);
+      }
+      return;
+    }
     if (dragging) {
       const dx = (p.x - dragStart.x) / renderer.camera.zoom;
       const dy = (p.y - dragStart.y) / renderer.camera.zoom;
@@ -120,6 +129,13 @@ function bindCanvas(canvas: HTMLCanvasElement): void {
 
   canvas.addEventListener("mousedown", (e) => {
     if (e.button !== 0) return;
+    // Laying a path drags along instead of moving the camera.
+    if (selection?.kind === "tile") {
+      layingPath = true;
+      const p = localPoint(e, canvas);
+      handleClick(p.x, p.y);
+      return;
+    }
     dragging = true;
     moved = false;
     const p = localPoint(e, canvas);
@@ -160,6 +176,10 @@ window.addEventListener("pointerdown", startMusicOnce, { once: true });
 window.addEventListener("keydown", startMusicOnce, { once: true });
 
 window.addEventListener("mouseup", (e) => {
+  if (layingPath) {
+    layingPath = false;
+    return;
+  }
   if (!dragging) return;
   dragging = false;
   if (moved || e.button !== 0) return;
@@ -167,6 +187,9 @@ window.addEventListener("mouseup", (e) => {
   const p = localPoint(e, canvas);
   handleClick(p.x, p.y);
 });
+
+// Dragging with the path tool lays a run of path.
+let layingPath = false;
 
 window.addEventListener("keydown", (e) => {
   const tag = (e.target as HTMLElement)?.tagName;
@@ -188,7 +211,7 @@ window.addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
 
 // ---------------------------------------------------------------- input ---
 
-function handleClick(px: number, py: number): void {
+function handleClick(px: number, py: number, dragging = false): void {
   const g = renderer.pickTile(px, py);
   const tile = world.tileAt(g.col, g.row);
 
@@ -246,7 +269,7 @@ function handleClick(px: number, py: number): void {
     }
   } else if (selection.kind === "tile") {
     if (world.placeTile(selection.id, g.col, g.row)) {
-      audio.play("glick");
+      if (!dragging) audio.play("glick");
       renderer.markDirty();
     }
   }
@@ -288,6 +311,14 @@ function frame(now: number): void {
       ? {
           col: hover.col,
           row: hover.row,
+          cols:
+            selection.kind === "booth"
+              ? boothDef(selection.id).COLS
+              : 1,
+          rows:
+            selection.kind === "booth"
+              ? boothDef(selection.id).ROWS
+              : 1,
           valid:
             selection.kind === "booth"
               ? world.canPlaceBooth(selection.id, hover.col, hover.row)

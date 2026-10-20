@@ -421,7 +421,10 @@ export class Renderer {
 
   // ------------------------------------------------------------- render ---
 
-  render(world: World, highlight?: { col: number; row: number; valid: boolean }): void {
+  render(
+    world: World,
+    highlight?: { col: number; row: number; valid: boolean; cols?: number; rows?: number },
+  ): void {
     const ctx = this.ctx;
     const cam = this.camera;
 
@@ -594,16 +597,23 @@ export class Renderer {
     items.sort((a, b) => a.depth - b.depth);
     for (const it of items) it.draw();
 
-    // Tile highlight for the build cursor.
+    // Tile highlight for the build cursor. A facility covers a whole
+    // footprint, so all of it is marked.
     if (highlight) {
-      const p = gridToScreen(highlight.col, highlight.row);
+      const w = highlight.cols ?? 1;
+      const h = highlight.rows ?? 1;
       ctx.save();
       ctx.beginPath();
-      ctx.moveTo(p.x, p.y - TILE_H / 2);
-      ctx.lineTo(p.x + TILE_W / 2, p.y);
-      ctx.lineTo(p.x, p.y + TILE_H / 2);
-      ctx.lineTo(p.x - TILE_W / 2, p.y);
-      ctx.closePath();
+      for (let r = 0; r < h; r++) {
+        for (let c = 0; c < w; c++) {
+          const p = gridToScreen(highlight.col + c, highlight.row + r);
+          ctx.moveTo(p.x, p.y - TILE_H / 2);
+          ctx.lineTo(p.x + TILE_W / 2, p.y);
+          ctx.lineTo(p.x, p.y + TILE_H / 2);
+          ctx.lineTo(p.x - TILE_W / 2, p.y);
+          ctx.closePath();
+        }
+      }
       ctx.fillStyle = highlight.valid
         ? "rgba(120, 230, 140, 0.30)"
         : "rgba(230, 110, 110, 0.32)";
