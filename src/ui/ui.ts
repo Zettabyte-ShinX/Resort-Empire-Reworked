@@ -62,6 +62,7 @@ export interface UICallbacks {
   onDemolish: (boothId: number) => void;
   onSpeed: (speed: number) => void;
   onSound: (muted: boolean) => void;
+  onMusic: (on: boolean) => void;
   onLoad: (id: string) => void;
 }
 
@@ -121,6 +122,7 @@ export class UI {
   private tab: SideTab = "guests";
   private choice: BuildChoice | null = null;
   private muted = false;
+  private musicOn = true;
   private search = "";
 
   // Cached nodes
@@ -665,7 +667,13 @@ export class UI {
     body.appendChild(grid);
 
     if (def.desc?.length) {
-      body.appendChild(el("p", "empty", def.desc.filter(Boolean).join(" ")));
+      // The original's descriptions use "n" for a line break and leave the
+      // first line empty for some facilities.
+      const text = def.desc
+        .map((line) => line.replace(/^n/, "").trim())
+        .filter(Boolean)
+        .join(" ");
+      if (text) body.appendChild(el("p", "empty", text));
     }
 
     const actions = el("div", "f-actions");
@@ -836,6 +844,22 @@ export class UI {
     }
     soundRow.appendChild(soundSel);
     rows.appendChild(soundRow);
+
+    const musicRow = el("div", "opt-row");
+    musicRow.innerHTML = `<span>Music</span>`;
+    const musicSel = el("div", "seg");
+    for (const [label, on] of [["On", true], ["Muted", false]] as [string, boolean][]) {
+      const b = el("button", "seg-btn", label);
+      if (this.musicOn === on) b.classList.add("is-active");
+      b.addEventListener("click", () => {
+        this.musicOn = on;
+        this.cb.onMusic(on);
+        this.openDialog("options");
+      });
+      musicSel.appendChild(b);
+    }
+    musicRow.appendChild(musicSel);
+    rows.appendChild(musicRow);
 
     body.appendChild(rows);
 

@@ -180,6 +180,8 @@ export class World {
   speed = 1;
   /** Set when something the player should see happened. */
   log: string[] = [];
+  /** Sounds the original plays for what just happened. */
+  sounds: string[] = [];
   stats: WorldStats = {
     guestsArrived: 0,
     guestsServed: 0,
@@ -960,6 +962,7 @@ export class World {
     booth.occupancy = Math.max(0, booth.occupancy - 1);
     booth.served++;
     this.stats.guestsServed++;
+    this.sounds.push(charge > 0 ? "coin1" : "deskbell");
     booth.satisfaction =
       (booth.satisfaction * (booth.served - 1) + v.mood) / booth.served;
 
@@ -1049,6 +1052,7 @@ export class World {
         b.buildProgress = 1;
         b.building = false;
         this.log.push(`${boothDef(b.type).nama} is open.`);
+        this.sounds.push("cengkling");
         this.invalidatePaths();
         this.recomputePopularity();
         this.recomputeReachable();

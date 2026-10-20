@@ -9,6 +9,7 @@ import type { BuildChoice, ToolId } from "./ui/ui.ts";
 import { boothPrice, tileDef } from "./core/data.ts";
 import { loadGame, saveGame } from "./core/save.ts";
 import { art } from "./render/sprites.ts";
+import { audio } from "./render/audio.ts";
 import "./ui/ui.css";
 
 const app = document.getElementById("app")!;
@@ -27,11 +28,13 @@ const ui = new UI(app, {
   onTool: (tool) => {
     tool = tool;
     renderer.setCursor(tool === "inspect" ? "default" : "crosshair");
+    audio.play("click1");
   },
   onUpgrade: (boothId) => {
     const b = world.booths.find((x) => x.id === boothId);
     if (!b) return;
     if (world.upgradeBooth(b)) {
+      audio.play("upgrade");
       ui.pushLog(world.log.splice(0, world.log.length));
     }
   },
@@ -39,13 +42,19 @@ const ui = new UI(app, {
     const b = world.booths.find((x) => x.id === boothId);
     if (!b) return;
     world.removeBooth(b);
+    audio.play("destroy1");
     renderer.markDirty();
   },
   onSpeed: (speed) => {
     world.speed = speed;
+    audio.play(speed === 0 ? "pause" : "click1");
   },
-  onSound: () => {
-    // Audio is not wired up yet.
+  onSound: (muted) => {
+    audio.setEnabled(!muted);
+    if (!muted) audio.startMusic();
+  },
+  onMusic: (on) => {
+    audio.setMusicEnabled(on);
   },
   onLoad: (id) => {
     const loaded = loadGame(id);
@@ -125,6 +134,17 @@ function bindCanvas(canvas: HTMLCanvasElement): void {
   );
 }
 
+// The browser only lets a game make noise after the player has interacted
+// with it, so the music starts on the first click.
+let musicStarted = false;
+function startMusicOnce(): void {
+  if (musicStarted) return;
+  musicStarted = true;
+  audio.startMusic();
+}
+window.addEventListener("pointerdown", startMusicOnce, { once: true });
+window.addEventListener("keydown", startMusicOnce, { once: true });
+
 window.addEventListener("mouseup", (e) => {
   if (!dragging) return;
   dragging = false;
@@ -201,15 +221,18 @@ function handleClick(px: number, py: number): void {
   if (selection.kind === "booth") {
     const placed = world.placeBooth(selection.id, g.col, g.row);
     if (placed) {
+      audio.play("build");
       renderer.markDirty();
       ui.pushLog(world.log.splice(0, world.log.length));
     }
   } else if (selection.kind === "scenery") {
     if (world.placeScenery(selection.id, g.col, g.row)) {
+      audio.play("adding");
       renderer.markDirty();
     }
   } else if (selection.kind === "tile") {
     if (world.placeTile(selection.id, g.col, g.row)) {
+      audio.play("glick");
       renderer.markDirty();
     }
   }
@@ -235,6 +258,9 @@ function frame(now: number): void {
   world.update(dt);
   ui.update(world);
   if (world.log.length) ui.pushLog(world.log.splice(0, world.log.length));
+  if (world.sounds.length) {
+    for (const sound of world.sounds.splice(0, world.sounds.length)) audio.play(sound);
+  }
 
   // Autosave every twenty seconds of real time.
   sinceAutosave += rawDt;
