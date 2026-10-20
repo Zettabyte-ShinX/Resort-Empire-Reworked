@@ -68,6 +68,7 @@ export interface UICallbacks {
   onSound: (muted: boolean) => void;
   onMusic: (on: boolean) => void;
   onBuyExtra: (id: string) => void;
+  onExpand: () => void;
   onLoad: (id: string) => void;
 }
 
@@ -578,6 +579,41 @@ export class UI {
   private renderExtras(body: HTMLElement): void {
     const world = this.world!;
     const level = world.researchLevel;
+
+    // The resort can be expanded, which makes the plot bigger.
+    const expandRow = el("div", "fac-row");
+    const nextTier = world.tier + 1;
+    const price = DATA.expandPrice[nextTier] ?? 0;
+    if (nextTier >= 3) {
+      expandRow.innerHTML = `
+        <div class="f-head">
+          <span class="f-name">Expand the resort</span>
+          <span class="f-level">Fully expanded</span>
+        </div>
+        <div class="f-meta"><span>There is no more land to buy.</span><span></span></div>`;
+    } else {
+      const canExpand =
+        world.money >= price && level >= (nextTier >= 2 ? 8 : 5);
+      expandRow.innerHTML = `
+        <div class="f-head">
+          <span class="f-name">Expand the resort</span>
+          <span class="f-level">${canExpand ? "Ready" : `Research level ${nextTier >= 2 ? 8 : 5}`}</span>
+        </div>
+        <div class="f-meta">
+          <span>A bigger plot to build on</span>
+          <span>${money(price)}</span>
+        </div>`;
+      if (canExpand) {
+        const buy = el("button", "primary small", "Expand");
+        buy.addEventListener("click", () => {
+          this.cb.onExpand();
+          this.renderSide();
+        });
+        expandRow.appendChild(buy);
+      }
+    }
+    body.appendChild(expandRow);
+
     let bought = 0;
     for (const id of EXTRA_LIST) {
       const def = EXTRAS[id];

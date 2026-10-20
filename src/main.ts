@@ -56,6 +56,14 @@ const ui = new UI(app, {
   onMusic: (on) => {
     audio.setMusicEnabled(on);
   },
+  onExpand: () => {
+    if (!world.expand()) return;
+    audio.play("upgrade");
+    renderer.markDirty();
+    renderer.fitMap(world);
+    ui.pushLog(world.log.splice(0, world.log.length));
+    ui.update(world);
+  },
   onBuyExtra: (id) => {
     if (!world.buyExtra(id)) return;
     audio.play("coin1");

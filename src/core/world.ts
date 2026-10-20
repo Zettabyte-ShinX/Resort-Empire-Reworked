@@ -175,9 +175,9 @@ function moodBand(mood: number): number {
 }
 
 export class World {
-  readonly cols: number;
-  readonly rows: number;
-  readonly tier: number;
+  cols: number;
+  rows: number;
+  tier: number;
 
   tiles: Tile[][] = [];
   booths: BoothInstance[] = [];
@@ -241,8 +241,9 @@ export class World {
 
   // ---------------------------------------------------------------- map ----
 
-  private generate(): void {
+  private generate(seed = true): void {
     const t = MAP_TIERS[this.tier];
+    this.tiles = [];
 
     // The original's starting map, reproduced from `pack/MapContainer.as`
     // (`BuildMap`) and `pack/serbi.as`. The plot is not centred on the grid:
@@ -343,7 +344,68 @@ export class World {
 
     this.recomputePopularity();
     this.recomputeReachable();
-    this.seedStarterResort();
+    if (seed) this.seedStarterResort();
+  }
+
+  /**
+   * Grow the resort.
+   *
+   * The original's resort expands in three steps, each one larger than the
+   * last, with the plot growing away from the gate so that what the player
+   * has built stays where it is.
+   */
+  expand(): boolean {
+    if (this.tier >= MAP_TIERS.length - 1) return false;
+    const price = DATA.expandPrice[this.tier + 1] ?? 0;
+    if (this.money < price) return false;
+
+    // Keep everything the player has built.
+    const oldTiles = this.tiles;
+    const booths = this.booths;
+    const money = this.money;
+    const research = this.researchPoints;
+    const extras = new Set(this.extras);
+    const stats = { ...this.stats };
+    const achievements = { ...this.achievements };
+
+    this.tier += 1;
+    const t = MAP_TIERS[this.tier];
+    this.cols = t.cols;
+    this.rows = t.rows;
+    this.generate(false);
+
+    // Put the facilities, the plants and the paths back where they were.
+    for (let r = 0; r < oldTiles.length; r++) {
+      for (let c = 0; c < oldTiles[r]!.length; c++) {
+        const old = oldTiles[r]![c]!;
+        const tile = this.tiles[r]?.[c];
+        if (!tile) continue;
+        if (old.booth) {
+          tile.booth = old.booth;
+          tile.walkable = true;
+        } else if (old.scenery && old.scenery !== "HEDGE") {
+          // The hedge belongs to the map, not to the player, so it is not
+          // carried over: the new map draws its own.
+          tile.scenery = old.scenery;
+        } else if (old.id === "TILE_1" && old.walkable) {
+          // A path the player laid.
+          tile.id = "TILE_1";
+          tile.walkable = true;
+        }
+      }
+    }
+    this.booths = booths;
+    this.money = money - price;
+    this.researchPoints = research;
+    this.extras = extras;
+    this.stats = stats;
+    this.achievements = achievements;
+
+    this.invalidatePaths();
+    this.recomputePopularity();
+    this.recomputeReachable();
+    this.log.push(`The resort has been expanded.`);
+    return true;
   }
 
   /**
