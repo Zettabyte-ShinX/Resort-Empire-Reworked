@@ -35,3 +35,4 @@ pnpm-debug.log*
 
 # Local reference material (decompiled original sources are not committed)
 reference/
+dist/
