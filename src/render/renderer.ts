@@ -65,7 +65,7 @@ const FACILITY_GUEST: Record<string, string> = {
 import type { World } from "../core/world.ts";
 import { drawBooth, drawGuest, drawPlant, drawTile } from "./art.ts";
 import { art } from "./sprites.ts";
-import type { SpriteFrame } from "./sprites.ts";
+import type { SpriteEntry, SpriteFrame } from "./sprites.ts";
 
 export interface Camera {
   /** World-space centre of the view. */
@@ -303,20 +303,44 @@ export class Renderer {
   }
 
   /**
+   * A frame from one of the original's animations.
+   *
+   * The clips name their animations - `stand`, `anim`, `v1_duduk` - and the
+   * frames of an animation run from its name to the next one.
+   */
+  private animatedFrame(
+    entry: SpriteEntry | undefined,
+    phase: number,
+    label: string,
+  ): SpriteFrame | undefined {
+    if (!entry || entry.frames.length === 0) return undefined;
+    const start = entry.frames.findIndex((f) => f.label === label);
+    if (start < 0) return entry.frames[0];
+    let end = entry.frames.length;
+    for (let i = start + 1; i < entry.frames.length; i++) {
+      if (entry.frames[i]!.label) {
+        end = i;
+        break;
+      }
+    }
+    const count = Math.max(1, end - start);
+    return entry.frames[start + (Math.floor(phase) % count)];
+  }
+
+  /**
    * The artwork the original uses for a guest inside a facility.
    *
    * Each facility has a clip showing what a guest does there: sitting in a
-   * cottage, swimming in the pool. The first labelled animation of the clip
-   * is the one that shows it.
+   * cottage, swimming in the pool.
    */
-  private facilityGuestFrame(type: string): SpriteFrame | undefined {
+  private facilityGuestFrame(type: string, phase: number): SpriteFrame | undefined {
     const name = FACILITY_GUEST[type];
     if (!name) return undefined;
     const entry = art.named(name);
     if (!entry) return undefined;
-    for (const label of ["v1_place", "v1_duduk", "v1_anim", "v1_swim", "stand"]) {
-      const frame = art.frameByLabel(entry, label);
-      if (frame) return frame;
+    for (const label of ["v1_place", "v1_duduk", "v1_anim", "v1_swim"]) {
+      const frame = this.animatedFrame(entry, phase, label);
+      if (frame && frame.label === label) return frame;
     }
     return entry.frames[0];
   }
@@ -374,6 +398,9 @@ export class Renderer {
 
     const artScale = 0.5;
     const items: Renderable[] = [];
+    // The staff and the guests work to the resort's clock, so their
+    // animations stop when the game is paused.
+    const phase = (world.day * 24 + world.hour) * 26;
 
     for (const b of world.booths) {
       const def = boothDef(b.type);
@@ -392,7 +419,7 @@ export class Renderer {
       const depth = b.col + b.row + (b.cols + b.rows) / 2;
       // The employee works inside the facility.
       const staffEntry = FACILITY_STAFF[b.type] ? art.named(FACILITY_STAFF[b.type]) : undefined;
-      const staffFrame = art.frameByLabel(staffEntry, "stand") ?? staffEntry?.frames[0];
+      const staffFrame = this.animatedFrame(staffEntry, phase, "anim");
       items.push({
         depth,
         draw: () => {
@@ -428,7 +455,7 @@ export class Renderer {
       // A guest using a facility is drawn with the original's clip for that
       // facility, so they sit in the cottage or swim in the pool.
       const using =
-        v.state === "using" && v.target ? this.facilityGuestFrame(v.target.type) : undefined;
+        v.state === "using" && v.target ? this.facilityGuestFrame(v.target.type, phase) : undefined;
       items.push({
         depth: v.col + v.row,
         draw: () => {
