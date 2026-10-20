@@ -30,6 +30,13 @@ Each item states what "done" means so it can be checked, not just felt.
       upgrade a facility, and the research levels that unlock new ones.
 - [x] **The original's sounds** — every sound the original plays, and the five
       background tracks.
+- [x] **Walkable and unwalkable ground** — the plot of sand cannot be walked
+      on. The guests reach a facility only when a path joins it to the gate,
+      and a guest will not come into the resort at all until there is a room
+      for it and that room is connected. A guest checks in at the lobby, goes
+      to the room it was given, and then looks for something it likes.
+      *Verify: build a facility with no path to it and no guest comes; lay a
+      path and they do.*
 
 ## Next
 
