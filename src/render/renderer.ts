@@ -303,6 +303,22 @@ export class Renderer {
   }
 
   /**
+   * The frame of the original's building site for a facility.
+   *
+   * The original plays a clip of the site being built, and puts one scaffold
+   * on every tile of the plot.
+   */
+  private buildSiteFrame(progress: number): SpriteFrame | undefined {
+    const entry = art.named("buildprogressindoor_178");
+    if (!entry || entry.frames.length === 0) return undefined;
+    const idx = Math.max(
+      0,
+      Math.min(entry.frames.length - 1, Math.floor(progress * entry.frames.length)),
+    );
+    return entry.frames[idx];
+  }
+
+  /**
    * A frame from one of the original's animations.
    *
    * The clips name their animations - `stand`, `anim`, `v1_duduk` - and the
@@ -420,20 +436,32 @@ export class Renderer {
       // The employee works inside the facility.
       const staffEntry = FACILITY_STAFF[b.type] ? art.named(FACILITY_STAFF[b.type]) : undefined;
       const staffFrame = this.animatedFrame(staffEntry, phase, "anim");
+      // A facility under construction shows the original's building site.
+      const siteFrame = b.building ? this.buildSiteFrame(b.buildProgress) : undefined;
       items.push({
         depth,
         draw: () => {
           if (floorFrame) {
             drawSprite(ctx, floorFrame, anchor.x, anchor.y, artScale);
           }
-          if (wallFrame) {
+          if (siteFrame) {
+            // The original puts one scaffold on every tile of the site.
+            for (let r = 0; r < b.rows; r++) {
+              for (let c = 0; c < b.cols; c++) {
+                const p = gridToScreen(b.col + c, b.row + r);
+                drawSprite(ctx, siteFrame, p.x, p.y + 12, artScale);
+              }
+            }
+          }
+          if (wallFrame && !b.building) {
             drawSprite(ctx, wallFrame, anchor.x, anchor.y, artScale);
           }
-          if (staffFrame) {
+          if (staffFrame && !b.building) {
             drawSprite(ctx, staffFrame, anchor.x, anchor.y, artScale);
           }
-          const ok = frame ? drawSprite(ctx, frame, anchor.x, anchor.y, artScale) : false;
-          if (!ok) {
+          const ok =
+            !b.building && frame ? drawSprite(ctx, frame, anchor.x, anchor.y, artScale) : false;
+          if (!ok && !b.building) {
             drawBooth(ctx, b.col, b.row, b.cols, b.rows, b.type, b.level);
           }
         },

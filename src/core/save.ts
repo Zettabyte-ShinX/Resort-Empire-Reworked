@@ -50,6 +50,8 @@ interface SaveData {
     level: number;
     served: number;
     satisfaction: number;
+    building?: boolean;
+    buildProgress?: number;
   }[];
 }
 
@@ -74,6 +76,8 @@ export function serialize(world: World): string {
       level: b.level,
       served: b.served,
       satisfaction: b.satisfaction,
+      building: b.building,
+      buildProgress: b.buildProgress,
     })),
   };
   return JSON.stringify(data);
@@ -119,6 +123,10 @@ export function deserialize(json: string): World | null {
     booth.level = b.level ?? 0;
     booth.served = b.served ?? 0;
     booth.satisfaction = b.satisfaction ?? 0;
+    // A facility that was still being built when the game was saved stays
+    // under construction.
+    booth.building = b.building ?? false;
+    booth.buildProgress = b.buildProgress ?? (booth.building ? 0 : 1);
   }
   world.money = data.money;
   world.refresh();

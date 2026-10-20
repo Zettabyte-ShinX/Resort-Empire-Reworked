@@ -53,6 +53,10 @@ export interface BoothInstance {
   served: number;
   /** Average satisfaction of the guests it served, 0..100. */
   satisfaction: number;
+  /** Whether the facility is still being built. */
+  building: boolean;
+  /** How far the building has got, 0..1. */
+  buildProgress: number;
 }
 
 export type VisitorState =
@@ -95,6 +99,14 @@ export interface WorldOptions {
 }
 
 const HOUR_SECONDS = 2.2;
+
+/**
+ * How long a facility takes to build, in seconds of game time.
+ *
+ * The original plays a construction animation of a few seconds before the
+ * facility opens.
+ */
+const BUILD_SECONDS = 6;
 
 /**
  * Where the original anchors the buildable plot.
@@ -331,7 +343,12 @@ export class World {
       this.money = Number.MAX_SAFE_INTEGER;
       const placed = this.placeBooth(type, col, row, true);
       this.money = saved;
-      if (placed) continue;
+      if (placed) {
+        // The resort the player starts with is already built.
+        placed.building = false;
+        placed.buildProgress = 1;
+        continue;
+      }
       // The spot was taken: try a couple of nearby alternatives.
       for (const [dc, dr] of [
         [0, -3], [3, 0], [-3, 0], [0, 3], [4, -4], [-4, -4], [0, -6], [6, 0],
@@ -342,7 +359,11 @@ export class World {
         this.money = Number.MAX_SAFE_INTEGER;
         const ok = this.placeBooth(type, nc, nr, true);
         this.money = saved;
-        if (ok) break;
+        if (ok) {
+          ok.building = false;
+          ok.buildProgress = 1;
+          break;
+        }
       }
     }
   }
@@ -475,6 +496,8 @@ export class World {
       occupancy: 0,
       served: 0,
       satisfaction: 0,
+      building: true,
+      buildProgress: 0,
     };
     for (let r = row; r < row + def.ROWS; r++) {
       for (let c = col; c < col + def.COLS; c++) {
@@ -675,16 +698,18 @@ export class World {
   }
 
   private pickTarget(visitor: Visitor): boolean {
-    if (this.booths.length === 0) return false;
+    // A facility that is still being built cannot be used.
+    const open = this.booths.filter((b) => !b.building);
+    if (open.length === 0) return false;
     // Weight the choice by popularity so popular facilities get busier.
-    const weights = this.booths.map((b) => Math.max(0.05, boothPopularity(b.type, b.level)));
+    const weights = open.map((b) => Math.max(0.05, boothPopularity(b.type, b.level)));
     const total = weights.reduce((a, b) => a + b, 0);
     let roll = Math.random() * total;
-    let chosen = this.booths[0];
-    for (let i = 0; i < this.booths.length; i++) {
-      roll -= weights[i];
+    let chosen = open[0]!;
+    for (let i = 0; i < open.length; i++) {
+      roll -= weights[i]!;
       if (roll <= 0) {
-        chosen = this.booths[i];
+        chosen = open[i]!;
         break;
       }
     }
@@ -890,6 +915,20 @@ export class World {
     // Reset the per-frame pathfinding budget.
     this.pathBudget = 3;
     this.pathsQueued = 0;
+
+    // Facilities under construction.
+    for (const b of this.booths) {
+      if (!b.building) continue;
+      b.buildProgress += scaled / BUILD_SECONDS;
+      if (b.buildProgress >= 1) {
+        b.buildProgress = 1;
+        b.building = false;
+        this.log.push(`${boothDef(b.type).nama} is open.`);
+        this.invalidatePaths();
+        this.recomputePopularity();
+        this.recomputeReachable();
+      }
+    }
 
     // Spawn new guests based on popularity, respecting capacity.
     if (this.isOpen && this.visitors.length < this.guestCapacity) {
