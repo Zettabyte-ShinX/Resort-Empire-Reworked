@@ -41,7 +41,7 @@
     "longDescription": "A cross-platform remake of the classic Flash game Resort Empire: build your resort, keep guests happy and grow your empire.",
     "linux": {
       "deb": {
-        "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0"]
+        "depends": []
       }
     },
     "windows": {

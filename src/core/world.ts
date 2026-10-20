@@ -266,8 +266,21 @@ export class World {
       if (col < 0 || row < 0 || col >= this.cols || row >= this.rows) continue;
       const saved = this.money;
       this.money = Number.MAX_SAFE_INTEGER;
-      this.placeBooth(type, col, row, true);
+      const placed = this.placeBooth(type, col, row, true);
       this.money = saved;
+      if (placed) continue;
+      // The spot was taken: try a couple of nearby alternatives.
+      for (const [dc, dr] of [
+        [0, -3], [3, 0], [-3, 0], [0, 3], [4, -4], [-4, -4],
+      ]) {
+        const nc = col + dc;
+        const nr = row + dr;
+        if (nc < 0 || nr < 0 || nc >= this.cols || nr >= this.rows) continue;
+        this.money = Number.MAX_SAFE_INTEGER;
+        const ok = this.placeBooth(type, nc, nr, true);
+        this.money = saved;
+        if (ok) break;
+      }
     }
   }
 

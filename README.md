@@ -8,8 +8,27 @@ This project rebuilds the game as a web application and wraps it in a native
 shell, so the same build ships as a Linux package, a Windows installer and an
 Android app.
 
-> **Status: early.** The simulation, the renderer and the artwork pipeline are
-> working. Gameplay depth is still a long way from the original.
+> **Status: early but real.** The simulation, the renderer, the artwork
+> pipeline and the native packaging all work. The starting map, the art and the
+> basic guest loop match the original. Gameplay depth (guest needs, staff,
+> research, achievements, saving) is still to come.
+>
+> A live preview runs at <http://localhost:5173>.
+
+## What works today
+
+* The starting map, rebuilt from the original's own data: an asphalt road
+  ring, a sidewalk border, a sand buildable plot, a hedge ring and the
+  original's scenery layout.
+* The original's artwork: ground tiles, the sand floor, hedges, all 22
+  facilities and all 29 guest sprites, placed using anchors recovered from
+  the SWF.
+* A simulation with a 24 hour clock, guests that arrive, walk to a facility,
+  get served, pay and affect their mood, popularity driven research points,
+  and building and demolition.
+* Native packages for Linux: a `.deb` and an `.AppImage`.
+* 12 unit tests covering the isometric maths, pathfinding, the building rules
+  and a frame budget check.
 
 ---
 
@@ -72,6 +91,25 @@ npm run dev          # browser preview on http://localhost:5173
 npm test             # simulation tests
 npm run tauri:build  # native installers for the current platform
 ```
+
+`npm run tauri:build` produces:
+
+| Platform | Output |
+| --- | --- |
+| Linux | `src-tauri/target/release/bundle/deb/*.deb` and `.../appimage/*.AppImage` |
+| Windows | `.../nsis/*.exe` and `.../msi/*.msi` (build on Windows, or add the `x86_64-pc-windows-msvc` target) |
+| Android | `.../apk/*.apk` and `.../aab/*.aab` (needs the Android SDK and JDK) |
+
+## Controls
+
+| Input | Action |
+| --- | --- |
+| Left click | build the selected facility or plant, or inspect a facility |
+| Right click | cancel the current selection |
+| Drag | pan the camera |
+| Wheel | zoom |
+| `W` `A` `S` `D` / arrow keys | pan the camera |
+| `Esc` | cancel the current selection |
 
 ## The original
 
