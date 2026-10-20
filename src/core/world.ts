@@ -1201,6 +1201,10 @@ export class World {
     for (const b of this.booths) {
       total += boothPopularity(b.type, b.level);
     }
+    // Litter left lying about puts the resort off.
+    for (const amount of this.litter.values()) {
+      total -= amount * 0.2;
+    }
     // Plants add a little charm, and the ornamental gardening extra makes
     // them count for more.
     const garden = this.extras.has("gardening") ? 1 + (EXTRAS.gardening?.val ?? 0) / 100 : 1;
@@ -1588,7 +1592,10 @@ export class World {
     // Checking in books the guest into a room, and going to that room is
     // what the original does next.
     if (booth.type === "Lobby") v.checkedIn = true;
-    if (booth.type === "Cottage" || booth.type === "Lodge") v.usedRoom = true;
+    if (booth.type === "Cottage" || booth.type === "Lodge") {
+      v.usedRoom = true;
+      this.stats.guestsStayed++;
+    }
 
     booth.occupancy = Math.max(0, booth.occupancy - 1);
     booth.served++;

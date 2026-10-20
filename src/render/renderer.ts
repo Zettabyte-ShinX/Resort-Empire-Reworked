@@ -306,6 +306,26 @@ export class Renderer {
   }
 
   /**
+   * The site the original shows while a facility is being built.
+   *
+   * It has one clip for every footprint size, with the workers standing on
+   * the plot.
+   */
+  private buildSiteClip(booth: { rows: number; cols: number }): SpriteFrame | undefined {
+    const sizes: Record<string, string> = {
+      "1_1": "BuildProgress4",
+      "2_2": "BuildProgress1",
+      "2_3": "BuildProgress2",
+      "3_3": "BuildProgress5",
+      "3_4": "BuildProgress3",
+      "4_4": "BuildProgress6",
+    };
+    const name = sizes[`${booth.cols}_${booth.rows}`];
+    if (!name) return undefined;
+    return art.named(name)?.frames[0];
+  }
+
+  /**
    * The frame of the original's building site for a facility.
    *
    * The original plays a clip of the site being built, and puts one scaffold
@@ -445,10 +465,15 @@ export class Renderer {
       const staffFrame = this.animatedFrame(staffEntry, phase, "anim");
       // A facility under construction shows the original's building site.
       const siteFrame = b.building ? this.buildSiteFrame(b.buildProgress) : undefined;
+      // The original has a site clip for every footprint size, with the
+      // workers standing on it.
+      const siteClip = b.building ? this.buildSiteClip(b) : undefined;
       items.push({
         depth,
         draw: () => {
-          if (floorFrame) {
+          if (siteClip) {
+            drawSprite(ctx, siteClip, anchor.x, anchor.y, artScale);
+          } else if (floorFrame) {
             drawSprite(ctx, floorFrame, anchor.x, anchor.y, artScale);
           }
           if (siteFrame) {
