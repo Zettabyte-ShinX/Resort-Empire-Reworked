@@ -1026,3 +1026,54 @@ button.ghost.danger:hover {
     padding: 4px 9px;
   }
 }
+
+/* --------------------------------------------------------------- loader */
+
+.loader {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 40%, #16211d 0%, #0b110f 70%);
+  transition: opacity 0.35s ease;
+}
+
+.loader.done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-card {
+  width: 280px;
+  text-align: center;
+}
+
+.loader-title {
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+.loader-note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.loader-bar {
+  margin-top: 16px;
+  height: 4px;
+  border-radius: 3px;
+  background: #22302a;
+  overflow: hidden;
+}
+
+.loader-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+  transition: width 0.2s linear;
+}

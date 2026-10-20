@@ -287,7 +287,8 @@ if (autosave) {
 
 // The artwork is optional: if it is missing the renderer falls back to
 // procedural shapes, so the game still runs.
-void art.load(() => {
+void art.load((loaded, total) => {
+  ui.setLoading(loaded, total);
   renderer.markDirty();
 });
 

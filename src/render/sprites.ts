@@ -107,6 +107,16 @@ export class Art {
   }
 
   /**
+   * A named clip from the original, such as the staff of a facility.
+   *
+   * Everything the game does not use by name lives in `other`, keyed by the
+   * class the original gave the clip.
+   */
+  named(name: string): SpriteEntry | undefined {
+    return this.manifest?.other?.[name];
+  }
+
+  /**
    * The frame of a frame-set whose index matches a Flash frame number.
    *
    * The original addresses art by frame number (each tile type records the

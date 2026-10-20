@@ -131,6 +131,7 @@ export class UI {
   private sideBodyEl!: HTMLElement;
   private logEl!: HTMLElement;
   private modalEl!: HTMLElement;
+  private loaderEl: HTMLElement | null = null;
   private speedEl!: HTMLElement;
 
   constructor(root: HTMLElement, cb: UICallbacks) {
@@ -198,10 +199,37 @@ export class UI {
     this.modalEl = el("div", "modal-layer");
     this.root.appendChild(this.modalEl);
 
+    // ---- loading overlay ----
+    // The original's artwork is a couple of thousand images, so the game
+    // says how far along it is rather than showing an empty resort.
+    this.loaderEl = el("div", "loader");
+    this.loaderEl.innerHTML = `
+      <div class="loader-card">
+        <div class="loader-title">Resort Empire</div>
+        <div class="loader-note">Unpacking the original's artwork</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>`;
+    this.root.appendChild(this.loaderEl);
+
     this.buildRail();
     this.buildSideTabs();
     this.buildSpeed();
     this.wireTopActions();
+  }
+
+  /** Show how much of the original's artwork has been loaded. */
+  setLoading(loaded: number, total: number): void {
+    if (!this.loaderEl) return;
+    if (loaded >= total) {
+      this.loaderEl.classList.add("done");
+      window.setTimeout(() => {
+        this.loaderEl?.remove();
+        this.loaderEl = null;
+      }, 400);
+      return;
+    }
+    const fill = this.loaderEl.querySelector<HTMLElement>(".loader-fill");
+    if (fill) fill.style.width = `${Math.round((loaded / total) * 100)}%`;
   }
 
   private buildRail(): void {

@@ -25,6 +25,43 @@ export const HEDGE = "HEDGE";
  * the map: a block of greenery.
  */
 const HEDGE_FRAME = 10;
+
+/**
+ * The staff each facility employs, from the original's own clips.
+ *
+ * The lobby's receptionists are part of the lobby's artwork, so it has no
+ * separate staff clip.
+ */
+const FACILITY_STAFF: Record<string, string> = {
+  Bar: "EmpBar_302",
+  BaratResto: "emp_JapanResto_291",
+  Giftshop: "employeeGiftshop_309",
+  IndiaResto: "emp_IndiaResto_284",
+  JapanResto: "emp_JapanResto_291",
+  Medical: "emp_medical_335",
+  Minimarket: "emp_Minimarket_331",
+  Spa: "EmployeeSpa_352",
+};
+
+/**
+ * The clip the original shows for a guest using a facility.
+ *
+ * The original has a clip per facility and per guest, showing the guest
+ * sitting in a cottage, swimming in the pool and so on.
+ */
+const FACILITY_GUEST: Record<string, string> = {
+  Arcade: "vcustomer1_arcade_277",
+  Cottage: "vcustomer1_cottage_139",
+  Golf: "vcustomer1_golf_146",
+  Gym: "vcustomer1_gym_365",
+  Jacuzi: "vcustomer1_jacuzi_324",
+  Lodge: "vcustomer1_lodge_45",
+  Medical: "vcustomer1_medical_342",
+  Minimarket: "vcustomer1_Minimarket_330",
+  Pool: "vcustomer1_poo_204",
+  Sauna: "vcustomer1_sauna_347",
+  Spa: "vcustomer1_spa_357",
+};
 import type { World } from "../core/world.ts";
 import { drawBooth, drawGuest, drawPlant, drawTile } from "./art.ts";
 import { art } from "./sprites.ts";
@@ -265,6 +302,25 @@ export class Renderer {
     return { x: centre.x - artX, y: centre.y - artY };
   }
 
+  /**
+   * The artwork the original uses for a guest inside a facility.
+   *
+   * Each facility has a clip showing what a guest does there: sitting in a
+   * cottage, swimming in the pool. The first labelled animation of the clip
+   * is the one that shows it.
+   */
+  private facilityGuestFrame(type: string): SpriteFrame | undefined {
+    const name = FACILITY_GUEST[type];
+    if (!name) return undefined;
+    const entry = art.named(name);
+    if (!entry) return undefined;
+    for (const label of ["v1_place", "v1_duduk", "v1_anim", "v1_swim", "stand"]) {
+      const frame = art.frameByLabel(entry, label);
+      if (frame) return frame;
+    }
+    return entry.frames[0];
+  }
+
   /** The plant graphic for a species, from the original's frame set. */
   private sceneryFrame(species: string): SpriteFrame | undefined {
     const entry = art.frameSet("plants");
@@ -334,6 +390,9 @@ export class Renderer {
       // the building follow it.
       const anchor = this.boothAnchor(b, floorFrame, artScale);
       const depth = b.col + b.row + (b.cols + b.rows) / 2;
+      // The employee works inside the facility.
+      const staffEntry = FACILITY_STAFF[b.type] ? art.named(FACILITY_STAFF[b.type]) : undefined;
+      const staffFrame = art.frameByLabel(staffEntry, "stand") ?? staffEntry?.frames[0];
       items.push({
         depth,
         draw: () => {
@@ -342,6 +401,9 @@ export class Renderer {
           }
           if (wallFrame) {
             drawSprite(ctx, wallFrame, anchor.x, anchor.y, artScale);
+          }
+          if (staffFrame) {
+            drawSprite(ctx, staffFrame, anchor.x, anchor.y, artScale);
           }
           const ok = frame ? drawSprite(ctx, frame, anchor.x, anchor.y, artScale) : false;
           if (!ok) {
@@ -363,9 +425,17 @@ export class Renderer {
         art.frameByLabel(entry, "stand_front") ??
         entry?.frames[0];
       const flip = v.dirX < 0 || (v.dirX === 0 && v.dirY > 0);
+      // A guest using a facility is drawn with the original's clip for that
+      // facility, so they sit in the cottage or swim in the pool.
+      const using =
+        v.state === "using" && v.target ? this.facilityGuestFrame(v.target.type) : undefined;
       items.push({
         depth: v.col + v.row,
         draw: () => {
+          if (using) {
+            drawSprite(ctx, using, p.x, p.y, artScale);
+            return;
+          }
           const ok = frame ? drawSprite(ctx, frame, p.x, p.y, artScale, flip) : false;
           if (!ok) drawGuest(ctx, p.x, p.y, v.seed, v.mood);
         },
