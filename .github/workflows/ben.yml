@@ -1,0 +1,25 @@
+name: Discord Notify
+
+on:
+  push:
+    branches: [main]
+  # add more triggers as needed:
+  # pull_request:
+  #   types: [opened, closed]
+  # release:
+  #   types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord notification
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          username: "Ben The Builder"
+          avatar-url: "https://media.discordapp.net/attachments/1488336688932585596/1562048869163077662/Resort_Empire_Sunset_Skyline.png?ex=6ad892df&is=6ad7415f&hm=5944627d8332c8647634bc513e432c13dc8db454ea530d4a970fa9e4b65a0eb5&=&format=webp&quality=lossless&width=640&height=640"
+          embed-title: "New push to ${{ github.ref_name }}"
+          embed-description: "Commit by ${{ github.actor }}"
+          embed-color: "9433862"
+          embed-url: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}   
