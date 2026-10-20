@@ -90,6 +90,12 @@ export interface GameData {
   istirahatTimer: [number, number][];
   maximumPembanding: Record<string, number[]>;
   expandPrice: number[];
+  /** `zmap.MAP.sceneries` - plant species per tile. */
+  mapSceneries: Record<string, number>;
+  /** `zmap.MAP.tileDefault` - tile overrides for the starting map. */
+  mapTileDefault: Record<string, { jenis: number; ipath: boolean }>;
+  /** `zmap.MAP.kepiting` - hedge tiles. */
+  mapKepiting: Record<string, boolean>;
 }
 
 const d = raw as unknown as {
@@ -108,6 +114,11 @@ const d = raw as unknown as {
   _statics: {
     EXPAND: { price: number[] };
   };
+  MAP: {
+    sceneries: Record<string, number>;
+    tileDefault: Record<string, { jenis: number; ipath: boolean }>;
+    kepiting: Record<string, boolean>;
+  };
 };
 
 export const DATA: GameData = {
@@ -123,6 +134,9 @@ export const DATA: GameData = {
   istirahatTimer: d.dataOb.istirahatTimer,
   maximumPembanding: d.dataOb.MaximumPembanding,
   expandPrice: d._statics.EXPAND.price,
+  mapSceneries: d.MAP.sceneries,
+  mapTileDefault: d.MAP.tileDefault,
+  mapKepiting: d.MAP.kepiting,
 };
 
 /** The three map sizes the original offers. */

@@ -2605,5 +2605,8 @@
    ]
   }
  },
- "other": {}
+ "other": {},
+ "images": {
+  "sandFloor": "sandFloor.png"
+ }
 }

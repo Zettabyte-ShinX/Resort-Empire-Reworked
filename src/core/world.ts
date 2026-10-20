@@ -158,28 +158,97 @@ export class World {
     const cy = Math.floor(this.rows / 2);
     const half = t.lahan.x;
 
+    // The original's starting map, reproduced from `pack/MapContainer.as`:
+    //
+    //   * an asphalt road ring around the outside
+    //   * a sidewalk border just inside it
+    //   * a sand coloured buildable plot in the middle
+    //   * grass everywhere else
+    //   * hedges and scenery placed at the coordinates in `zmap.MAP`
+    const boundX = cx + half;
+    const boundY = cy + half;
+    const bound2X = boundX + 3;
+    const bound2Y = boundY + 3;
+    const bound3X = bound2X + 2;
+    const bound3Y = bound2Y + 2;
+
     for (let r = 0; r < this.rows; r++) {
       const row: Tile[] = [];
       for (let c = 0; c < this.cols; c++) {
-        // The buildable plot is a centred square; the rest is grass.
-        const inPlot = Math.abs(c - cx) <= half && Math.abs(r - cy) <= half;
-        row.push(makeTile(inPlot ? "TILE_1" : "TILE_5"));
+        let id = "TILE_5"; // grass
+        if (r === 4 || r === 5 || c === 5 || c === 6) {
+          id = "TILE_83"; // asphalt road
+        } else if ((c > bound2Y && c <= bound3Y) || (r > bound2X && r <= bound3X)) {
+          id = "TILE_83"; // asphalt road
+        } else if (c > 6 && c <= bound2Y && r > 5 && r <= bound2X) {
+          if (r > cx && r < boundX && c > cy && c < boundY) {
+            id = "TILE_80"; // sand plot
+          } else {
+            id = "TILE_82"; // sidewalk border
+          }
+        } else if (r > 6 && r <= bound2X && c > 5 && c <= bound2X) {
+          id = "TILE_82";
+        }
+        row.push(makeTile(id));
       }
       this.tiles.push(row);
     }
 
-    // Carve the entrance plaza so guests have somewhere to arrive.
-    const entranceRow = this.rows - 2;
-    for (let c = cx - 3; c <= cx + 3; c++) {
-      if (c >= 0 && c < this.cols) {
-        this.tiles[entranceRow][c] = makeTile("TILE_1");
+    // The entrance corridor, from `zmap.MAP.tileDefault`.
+    for (const [name, def] of Object.entries(DATA.mapTileDefault)) {
+      if (!name.startsWith("tile_")) continue;
+      const m = /^tile_(-?\d+)_(-?\d+)$/.exec(name);
+      if (!m) continue;
+      const r = Number(m[1]);
+      const c = Number(m[2]);
+      if (r < 0 || c < 0 || r >= this.rows || c >= this.cols) continue;
+      const tile = this.tiles[r]![c]!;
+      tile.id = `TILE_${def.jenis}`;
+      tile.walkable = tileDef(tile.id).walkable;
+    }
+
+    // Hedges and scenery from `zmap.MAP`.
+    for (const [name, species] of Object.entries(DATA.mapSceneries)) {
+      const m = /^tile_(-?\d+)_(-?\d+)$/.exec(name);
+      if (!m) continue;
+      const r = Number(m[1]);
+      const c = Number(m[2]);
+      if (r < 0 || c < 0 || r >= this.rows || c >= this.cols) continue;
+      this.tiles[r]![c]!.scenery = `PLANT_${species}`;
+    }
+    for (const name of Object.keys(DATA.mapKepiting)) {
+      const m = /^tile_(-?\d+)_(-?\d+)$/.exec(name);
+      if (!m) continue;
+      const r = Number(m[1]);
+      const c = Number(m[2]);
+      if (r < 0 || c < 0 || r >= this.rows || c >= this.cols) continue;
+      this.tiles[r]![c]!.scenery = "PLANT_11";
+    }
+
+    // The original rings the buildable plot with a hedge. The coordinates in
+    // `zmap.MAP.kepiting` are relative to the plot edge, so the ring is
+    // rebuilt from the sidewalk border directly.
+    for (let r = 0; r < this.rows; r++) {
+      for (let c = 0; c < this.cols; c++) {
+        const tile = this.tiles[r]![c]!;
+        if (tile.id !== "TILE_82" || tile.scenery) continue;
+        const onNorth = this.tiles[r]![c + 1]?.id === "TILE_80";
+        const onWest = this.tiles[r + 1]?.[c]?.id === "TILE_80";
+        if (onNorth || onWest) tile.scenery = "PLANT_11";
       }
     }
-    this.entrance = { col: cx, row: entranceRow };
+
+    // The entrance, where guests arrive.
+    this.entrance = { col: cx, row: this.rows - 2 };
+    for (let c = cx - 3; c <= cx + 3; c++) {
+      if (c >= 0 && c < this.cols) {
+        this.tiles[this.entrance.row]![c] = makeTile("TILE_82");
+      }
+    }
 
     this.recomputePopularity();
     this.recomputeReachable();
-    this.seedStarterResort(cx, entranceRow);
+    this.seedStarterResort(cx, this.entrance.row);
   }
 
   /**

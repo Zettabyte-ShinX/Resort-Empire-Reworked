@@ -35,6 +35,8 @@ export interface ArtManifest {
   visitors: Record<string, SpriteEntry>;
   framesets: Record<string, SpriteEntry>;
   other: Record<string, SpriteEntry>;
+  /** Standalone bitmaps, e.g. the plot's sand floor. */
+  images?: Record<string, string>;
 }
 
 export class Art {
@@ -64,6 +66,7 @@ export class Art {
         for (const f of entry.frames) files.push(f.file);
       }
     }
+    for (const file of Object.values(manifest.images ?? {})) files.push(file);
 
     let loaded = 0;
     await Promise.all(
@@ -110,6 +113,12 @@ export class Art {
     if (!entry || entry.frames.length === 0) return undefined;
     const idx = Math.max(0, Math.min(entry.frames.length - 1, frameNumber - 1));
     return entry.frames[idx];
+  }
+
+  /** A standalone bitmap, e.g. the plot's sand floor. */
+  imageAsset(name: string): HTMLImageElement | undefined {
+    const file = this.manifest?.images?.[name];
+    return file ? this.images.get(file) : undefined;
   }
 }
 

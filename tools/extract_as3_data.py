@@ -267,8 +267,18 @@ def main() -> int:
         print(__doc__, file=sys.stderr)
         return 2
 
-    src = open(sys.argv[1], encoding="utf-8", errors="replace").read()
-    root = parse_statements(src)
+    # Every input file is parsed and merged into one tree, so the balance
+    # tables (serbi.as) and the map layout (zmap.as) can live together.
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    root: dict[str, Any] = {}
+    for path in args:
+        src = open(path, encoding="utf-8", errors="replace").read()
+        parsed = parse_statements(src)
+        for key, value in parsed.items():
+            if isinstance(value, dict) and isinstance(root.get(key), dict):
+                root[key].update(value)
+            else:
+                root[key] = value
 
     # Fold the sibling static holders into one namespace.
     statics = {}

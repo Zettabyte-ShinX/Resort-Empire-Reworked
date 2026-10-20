@@ -162,6 +162,13 @@ def main() -> int:
 
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
 
+    # Standalone bitmaps that are not part of a sprite. The plot floor is a
+    # single sand texture that the original tiles across the buildable area.
+    for extra in Path(sys.argv[5]).glob("*.png") if len(sys.argv) > 5 else []:
+        shutil.copyfile(extra, out_dir / extra.name)
+        manifest.setdefault("images", {})[extra.stem] = extra.name  # type: ignore[union-attr]
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
+
     print(f"booths   : {len(manifest['booths'])}")  # type: ignore[arg-type]
     print(f"visitors : {len(manifest['visitors'])}")  # type: ignore[arg-type]
     print(f"framesets: {', '.join(sorted(manifest['framesets']))}")  # type: ignore[arg-type]

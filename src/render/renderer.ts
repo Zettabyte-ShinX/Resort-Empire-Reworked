@@ -141,6 +141,30 @@ export class Renderer {
     // Ground. The art is the original's, drawn with the sprite's own origin
     // on the grid point, exactly as the original places it.
     const artScale = 0.5; // the exported PNGs are at twice the original size
+
+    // The buildable plot is floored with the original's sand texture. The
+    // texture is a single tile, so it is lined up with the tile artwork's own
+    // diamond rather than with the grid point.
+    const sand = art.imageAsset("sandFloor");
+    const sandTile = art.frameFor("tiles", tileDef("TILE_80").fr);
+    if (sand && sand.complete && sand.naturalWidth > 0 && sandTile) {
+      const offX = (sandTile.w / 2 - sandTile.ox) * artScale;
+      const offY = (sandTile.h / 2 - sandTile.oy) * artScale;
+      for (let r = 0; r < world.rows; r++) {
+        for (let col = 0; col < world.cols; col++) {
+          if (world.tiles[r]![col]!.id !== "TILE_80") continue;
+          const p = gridToScreen(col, r);
+          c.drawImage(
+            sand,
+            p.x + offX - sand.naturalWidth / 2,
+            p.y + offY - sand.naturalHeight / 2,
+            sand.naturalWidth,
+            sand.naturalHeight,
+          );
+        }
+      }
+    }
+
     for (let r = 0; r < world.rows; r++) {
       for (let col = 0; col < world.cols; col++) {
         const tile = world.tiles[r]![col]!;
