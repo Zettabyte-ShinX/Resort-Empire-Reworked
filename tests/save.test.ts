@@ -15,7 +15,16 @@ function freeSpot(w: World, type: string): { c: number; r: number } {
       for (let dr = 0; dr < def.ROWS && free; dr++) {
         for (let dc = 0; dc < def.COLS; dc++) {
           const t = w.tiles[r + dr]?.[c + dc];
-          if (!t || t.booth || t.scenery) {
+          // The paths and the gate are taken up as well.
+          if (
+            !t ||
+            t.booth ||
+            t.scenery ||
+            t.id === "TILE_1" ||
+            t.id === "TILE_2" ||
+            t.id === "TILE_3" ||
+            t.id === "TILE_4"
+          ) {
             free = false;
             break;
           }
