@@ -21,6 +21,7 @@ import {
   boothDef,
   boothPopularity,
   boothPrice,
+  canGrow,
   guestDef,
   researchLevel,
   sceneryDef,
@@ -665,8 +666,53 @@ export class World {
     booth.exp = 0;
     booth.canUpgrade = false;
     this.stats.upgraded++;
+    // Some facilities grow into a bigger plot when they are upgraded.
+    if (canGrow(booth.type)) this.expandBooth(booth, booth.cols + 1);
     this.recomputePopularity();
-    this.log.push(`Upgraded ${booth.type} to level ${booth.level + 1}`);
+    this.log.push(
+      `Upgraded ${booth.type} to level ${booth.level + 1} (${booth.cols}x${booth.rows})`,
+    );
+    return true;
+  }
+
+  /**
+   * Give a facility a bigger plot, if the land is free.
+   *
+   * The original lets some facilities grow into a bigger plot: their floor
+   * plate carries a red outline on the tile they can take over, and the plot
+   * grows by a column on that side. The plot grows away from the door the
+   * guests use, so they carry on coming in the same way.
+   *
+   * `cols` is the width the plot should have. The land has to be free:
+   * another facility, a plant or a path in the way means the facility keeps
+   * the plot it has.
+   */
+  expandBooth(booth: BoothInstance, cols: number): boolean {
+    if (cols <= booth.cols) return false;
+    // The columns the facility takes over are on the far side of the plot.
+    for (let c = booth.col + booth.cols; c < booth.col + cols; c++) {
+      for (let r = booth.row; r < booth.row + booth.rows; r++) {
+        const tile = this.tileAt(c, r);
+        if (!tile) return false;
+        if (tile.booth) return false;
+        if (tile.scenery) return false;
+        // A path is how the guests get to the facility, so it is not taken.
+        if (PATH_TILES.has(tile.id)) return false;
+      }
+    }
+    for (let c = booth.col + booth.cols; c < booth.col + cols; c++) {
+      for (let r = booth.row; r < booth.row + booth.rows; r++) {
+        const tile = this.tileAt(c, r)!;
+        tile.booth = booth.type;
+        // The original makes the tiles a facility stands on walkable, so the
+        // guests can walk into the room.
+        tile.walkable = true;
+      }
+    }
+    booth.cols = cols;
+    // The routes to the facility are different now.
+    this.invalidatePaths();
+    this.recomputeReachable();
     return true;
   }
 

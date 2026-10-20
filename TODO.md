@@ -55,7 +55,7 @@ Each item states what "done" means so it can be checked, not just felt.
       frames of guests using facilities; only the first of each is in.
 - [ ] **The janitor's own staff** — the original has janitors as employees,
       with their own wage and stamina.
-- [ ] **Expanding a facility** — the original lets some facilities grow into
+- [x] **Expanding a facility** — the original lets some facilities grow into
       a bigger plot.
 - [ ] **Android** — APK/AAB, touch controls, smaller screen layout.
 

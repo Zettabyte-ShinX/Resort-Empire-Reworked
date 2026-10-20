@@ -37,10 +37,17 @@ export function gridToScreen(col: number, row: number): Vec2 {
   };
 }
 
-/** Screen -> grid (fractional; round for the containing tile). */
+/**
+ * Screen -> grid.
+ *
+ * The two axes of the grid are the diagonals of the map, so a point belongs
+ * to the tile whose centre is nearest along both of them. Rounding each
+ * diagonal is what picks the tile the player is pointing at; taking the
+ * floor of the fractional cell picks the tile diagonally off.
+ */
 export function screenToGrid(sx: number, sy: number): GridPos {
-  const a = sx / (TILE_W / 2); // row - col
-  const b = -sy / (TILE_H / 2); // row + col
+  const a = Math.round(sx / (TILE_W / 2)); // row - col
+  const b = Math.round(-sy / (TILE_H / 2)); // row + col
   return {
     col: (b - a) / 2,
     row: (b + a) / 2,

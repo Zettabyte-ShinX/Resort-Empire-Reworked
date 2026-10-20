@@ -25,13 +25,15 @@ import {
   boothDef,
   boothPopularity,
   boothPrice,
+  canGrow,
   guestDef,
+  roomBeds,
   sceneryDef,
   tileDef,
   unlockLevel,
 } from "../core/data.ts";
 import type { BoothDef, SceneryDef, TileDef } from "../core/data.ts";
-import type { World } from "../core/world.ts";
+import type { BoothInstance, Visitor, World } from "../core/world.ts";
 import { SPEEDS } from "../core/world.ts";
 import { formatHour } from "../core/world.ts";
 import { deleteSave, listSaves, saveGame } from "../core/save.ts";
@@ -437,7 +439,11 @@ export class UI {
           label: def.nic || def.nama,
           meta: locked
             ? `research ${need}`
-            : `${def.COLS}x${def.ROWS}`,
+            : // A facility that can grow says so, so the player knows what
+              // the upgrade will bring.
+              canGrow(id)
+              ? `${def.COLS}x${def.ROWS} → ${def.COLS + 1}x${def.ROWS}`
+              : `${def.COLS}x${def.ROWS}`,
           price: locked ? "locked" : money(boothPrice(id, 0)),
           choice: { kind: "booth", id },
           locked,
@@ -509,14 +515,14 @@ export class UI {
     }
     for (const v of [...world.visitors].sort((a, b) => a.mood - b.mood)) {
       const row = el("div", "guest-row");
-      const moodClass = v.mood >= 70 ? "good" : v.mood >= 45 ? "ok" : "bad";
+      const mood = moodClass(v.mood);
       const special = v.variant >= 25;
       row.innerHTML = `
         <div class="g-top">
           <span class="g-name">${guestName(v)}${special ? " <i>special</i>" : ""}</span>
-          <span class="g-mood ${moodClass}">${Math.round(v.mood)}%</span>
+          <span class="g-mood ${mood}">${Math.round(v.mood)}%</span>
         </div>
-        <div class="bar"><i class="${moodClass}" style="width:${Math.max(2, v.mood)}%"></i></div>
+        <div class="bar"><i class="${mood}" style="width:${Math.max(2, v.mood)}%"></i></div>
         <div class="g-meta">
           <span>${activityLabel(v.state)}</span>
           <span>${money(v.spent)} spent</span>
@@ -545,26 +551,11 @@ export class UI {
       return;
     }
 
+    // A room has to say how many guests are staying the night in it.
+    const staying = roomsOnly ? this.roomGuests(world) : new Map<number, number>();
+
     for (const b of list) {
-      const def = boothDef(b.type);
-      const row = el("div", "fac-row");
-      const price = boothPrice(b.type, b.level + 1);
-      const canUpgrade = b.level < 2;
-      row.innerHTML = `
-        <div class="f-head">
-          <span class="f-name">${def.nic || def.nama}</span>
-          <span class="f-level">Lv ${b.level + 1}</span>
-        </div>
-        <div class="f-meta">
-          <span>${b.served} served</span>
-          <span>${b.occupancy} inside</span>
-        </div>
-        <div class="bar"><i class="${b.satisfaction >= 70 ? "good" : b.satisfaction >= 45 ? "ok" : "bad"}" style="width:${Math.max(2, b.satisfaction)}%"></i></div>
-        <div class="f-actions">
-          <button data-up="${b.id}" ${canUpgrade ? "" : "disabled"}>${canUpgrade ? `Upgrade ${money(price)}` : "Max level"}</button>
-          <button data-del="${b.id}" class="ghost">Demolish</button>
-        </div>`;
-      body.appendChild(row);
+      body.appendChild(this.facilityRow(b, staying.get(b.id) ?? 0));
     }
 
     body.querySelectorAll<HTMLElement>("[data-up]").forEach((btn) => {
@@ -577,6 +568,129 @@ export class UI {
         this.cb.onDemolish(Number(btn.dataset.del)),
       );
     });
+  }
+
+  /**
+   * One facility or room in the management panel.
+   *
+   * The panel is narrow, so the row carries its figures in short lines of
+   * small text, and only the two things that move - how happy the guests
+   * are and how far the facility is from its next level - get a bar.
+   */
+  private facilityRow(b: BoothInstance, staying: number): HTMLElement {
+    const def = boothDef(b.type);
+    const row = el("div", "fac-row");
+    const isRoom = def.mainJenis === "Room";
+    const expMax = def.Exp?.[b.level + 1] ?? 0;
+    const rate = nightlyRate(b.type, b.level);
+    const wage = staffWage(def, b.level);
+    // A facility that has not served anybody yet has no satisfaction to show.
+    const happy = b.served > 0 ? Math.round(b.satisfaction) : 0;
+
+    // A room says how many guests are staying the night in it and how many
+    // beds it has, a facility how much land it stands on.
+    const beds = roomBeds(b.type);
+    const third = isRoom
+      ? `<span class="${staying > beds ? "is-over" : ""}">${staying} staying, ${beds} bed${beds === 1 ? "" : "s"}</span>`
+      : `<span>${b.cols}x${b.rows} tiles</span>`;
+
+    // The original only upgrades a facility once it has enough experience
+    // from the guests it has served.
+    const canUpgrade =
+      b.level < 2 && !b.building && (expMax <= 0 || b.exp >= expMax);
+    const upgrade =
+      b.level >= 2
+        ? "Max level"
+        : b.building
+          ? "Building"
+          : expMax > 0 && b.exp < expMax
+            ? `Needs ${expMax - b.exp} exp`
+            : `Upgrade ${money(boothPrice(b.type, b.level + 1))}`;
+
+    // What the facility earns a night, and what its staff cost a day.
+    const costs: string[] = [];
+    if (rate !== null) {
+      costs.push(`<span class="is-rate">${money(rate)} a night</span>`);
+    }
+    if (wage > 0) {
+      costs.push(`<span class="is-cost">${money(wage)} a day in wages</span>`);
+    }
+
+    row.innerHTML = `
+      <div class="f-head">
+        <span class="f-name">${def.nic || def.nama}</span>
+        <span class="f-level">${b.building ? "Building" : `Lv ${b.level + 1}`}</span>
+      </div>
+      <div class="f-meta">
+        <span>${b.occupancy} inside</span>
+        <span>${b.served} served</span>
+        ${third}
+      </div>
+      <div class="f-meters">
+        <div class="f-meter">
+          <span class="f-meter-k">Happy</span>
+          <div class="bar"><i class="${b.served > 0 ? moodClass(happy) : ""}" style="width:${Math.max(2, happy)}%"></i></div>
+          <span class="f-meter-v">${b.served > 0 ? `${happy}%` : "-"}</span>
+        </div>
+        ${this.expMeter(b, expMax)}
+      </div>
+      ${
+        costs.length > 0
+          ? `<div class="f-money">${costs.join("")}</div>`
+          : ""
+      }
+      <div class="f-actions">
+        <button data-up="${b.id}" ${canUpgrade ? "" : "disabled"}>${upgrade}</button>
+        <button data-del="${b.id}" class="ghost">Demolish</button>
+      </div>`;
+    return row;
+  }
+
+  /**
+   * The bar that shows how far a facility is from its next level.
+   */
+  private expMeter(b: BoothInstance, expMax: number): string {
+    if (b.level >= 2) {
+      return `<div class="f-meter"><span class="f-meter-k">Exp</span><span class="f-meter-v">Top level</span></div>`;
+    }
+    if (expMax <= 0) {
+      return `<div class="f-meter"><span class="f-meter-k">Exp</span><span class="f-meter-v">Not needed</span></div>`;
+    }
+    const pct = Math.min(100, Math.round((b.exp / expMax) * 100));
+    const colour = b.exp >= expMax ? "good" : pct >= 50 ? "ok" : "bad";
+    return `<div class="f-meter">
+      <span class="f-meter-k">Exp</span>
+      <div class="bar"><i class="${colour}" style="width:${Math.max(2, pct)}%"></i></div>
+      <span class="f-meter-v">${b.exp}/${expMax}</span>
+    </div>`;
+  }
+
+  /**
+   * The guests staying the night in each room.
+   *
+   * The world books a guest into the first room of the kind the guest
+   * prefers, so the panel works the same way round to say who is where.
+   */
+  private roomGuests(world: World): Map<number, number> {
+    const counts = new Map<number, number>();
+    for (const v of world.visitors) {
+      // A guest that has not checked in has no room yet, and one that is
+      // on its way home is not staying the night.
+      if (!v.checkedIn || v.state === "leaving" || v.state === "done") continue;
+      const room = this.roomFor(v, world);
+      if (!room) continue;
+      counts.set(room.id, (counts.get(room.id) ?? 0) + 1);
+    }
+    return counts;
+  }
+
+  /** The room a guest has been given, the way the world picks it. */
+  private roomFor(v: Visitor, world: World): BoothInstance | null {
+    for (const type of guestDef(v.variant).likes.Room) {
+      const room = world.booths.find((b) => b.type === type && !b.building);
+      if (room) return room;
+    }
+    return null;
   }
 
   private renderExtras(body: HTMLElement): void {
@@ -660,7 +774,15 @@ export class UI {
 
   private renderStaff(body: HTMLElement): void {
     const world = this.world!;
-    const list = world.booths.filter((b) => boothDef(b.type).sumStaff > 0);
+    // The world does not pay for a facility that is still being built.
+    // The biggest bill comes first, so the panel reads as a cost breakdown.
+    const list = world.booths
+      .filter((b) => !b.building && staffWage(boothDef(b.type), b.level) > 0)
+      .sort(
+        (a, b) =>
+          staffWage(boothDef(b.type), b.level) -
+          staffWage(boothDef(a.type), a.level),
+      );
     if (list.length === 0) {
       body.appendChild(
         el("p", "empty", "No staff yet. Facilities like the bar, the medical centre and the shops need one."),
@@ -668,12 +790,36 @@ export class UI {
       return;
     }
 
+    // The bill the resort has to run, and the people who work it.
     let total = 0;
+    let people = 0;
     for (const b of list) {
       const def = boothDef(b.type);
-      const rate = def.salary[Math.min(b.level, def.salary.length - 1)] ?? 0;
-      const wage = rate * def.sumStaff;
-      total += wage;
+      total += staffWage(def, b.level);
+      people += def.sumStaff;
+    }
+
+    // The headline figures, so the player can see what the staff cost
+    // against what the resort earns.
+    const s = world.stats;
+    const grid = el("div", "stat-grid");
+    const figures: [string, string][] = [
+      ["Wage bill", `${money(total)} a day`],
+      ["Staff", `${people}`],
+      ["Paid so far", money(s.wages)],
+      ["Of your takings", `${s.revenue > 0 ? Math.round((s.wages / s.revenue) * 100) : 0}%`],
+    ];
+    for (const [k, v] of figures) {
+      grid.appendChild(
+        el("div", "stat-cell", `<span class="k">${k}</span><span class="v">${v}</span>`),
+      );
+    }
+    body.appendChild(grid);
+
+    for (const b of list) {
+      const def = boothDef(b.type);
+      const wage = staffWage(def, b.level);
+      const share = total > 0 ? Math.round((wage / total) * 100) : 0;
       const row = el("div", "fac-row");
       row.innerHTML = `
         <div class="f-head">
@@ -681,8 +827,9 @@ export class UI {
           <span class="f-level">${def.sumStaff} staff</span>
         </div>
         <div class="f-meta">
-          <span>${money(rate)} each a day</span>
+          <span>${money(staffRate(def, b.level))} each a day</span>
           <span>${money(wage)} a day</span>
+          <span>${share}% of the bill</span>
         </div>`;
       body.appendChild(row);
     }
@@ -691,7 +838,7 @@ export class UI {
       el(
         "p",
         "empty",
-        `The staff of the resort costs ${money(total)} a day, which is paid at midnight.`,
+        "The staff are paid at midnight, and every facility that needs staff adds to the bill.",
       ),
     );
   }
@@ -788,13 +935,15 @@ export class UI {
     const body = el("div", "modal-body");
     const grid = el("div", "stat-grid");
     const expMax = def.Exp?.[booth.level + 1] ?? 0;
+    const rate = nightlyRate(booth.type, booth.level);
     const rows: [string, string][] = [
       ["Level", `${booth.level + 1} of 3`],
+      ["Size", `${booth.cols}x${booth.rows} tiles`],
       ["Guests served", `${booth.served}`],
       ["Inside now", `${booth.occupancy}`],
       ["Satisfaction", `${Math.round(booth.satisfaction)}%`],
       ["Popularity", boothPop(booth.type, booth.level).toFixed(2)],
-      ["Nightly rate", money(nightlyRate(booth.type, booth.level))],
+      ["Nightly rate", rate === null ? "-" : money(rate)],
     ];
     if (expMax > 0) {
       rows.push([
@@ -805,9 +954,7 @@ export class UI {
     if (def.sumStaff) {
       rows.push([
         "Staff",
-        `${def.sumStaff} at ${money(
-          (def.salary[Math.min(booth.level, def.salary.length - 1)] ?? 0) * def.sumStaff,
-        )} a day`,
+        `${def.sumStaff} at ${money(staffWage(def, booth.level))} a day`,
       ]);
     }
     const open = def.opened || def.closed;
@@ -1034,7 +1181,7 @@ export class UI {
         <li><b>Give them a room.</b> A guest will not come into the resort until there is a cottage or a lodge for it, and it has to be connected by a path.</li>
         <li><b>Plant scenery.</b> Trees and shrubs raise the resort's popularity, which brings more guests.</li>
         <li><b>Watch the clock.</b> The resort opens at 6am and closes at 11pm. Guests leave when it closes, and each facility has its own opening hours.</li>
-        <li><b>Upgrade and expand.</b> A facility needs experience from the guests it serves before it can be upgraded, and research unlocks new ones.</li>
+        <li><b>Upgrade and expand.</b> A facility needs experience from the guests it serves before it can be upgraded, and research unlocks new ones. Some facilities also grow into a bigger plot when they are upgraded, so leave them some room.</li>
       </ol>
       <p class="empty">Drag to pan, scroll to zoom, and use the arrow keys or WASD to move the camera. Press Esc to cancel the current tool.</p>`;
   }
@@ -1128,10 +1275,31 @@ function boothPop(type: string, level: number): number {
   return boothPopularity(type, level);
 }
 
-function nightlyRate(type: string, level: number): number {
+/**
+ * What a guest pays a night for a facility, or null when the facility has
+ * no price of its own, as the janitor's room has not.
+ */
+function nightlyRate(type: string, level: number): number | null {
   const def = boothDef(type);
-  const p = def.booked_price;
+  const p = def.booked_price as number | number[] | undefined;
+  if (p === undefined) return null;
   return Array.isArray(p) ? (p[Math.min(level, p.length - 1)] ?? 0) : p;
+}
+
+/** What one member of a facility's staff is paid a day. */
+function staffRate(def: BoothDef, level: number): number {
+  if (!def.sumStaff) return 0;
+  return def.salary[Math.min(level, def.salary.length - 1)] ?? 0;
+}
+
+/** What a facility's staff cost the resort a day altogether. */
+function staffWage(def: BoothDef, level: number): number {
+  return staffRate(def, level) * (def.sumStaff ?? 0);
+}
+
+/** The colour a satisfaction figure gets, the same as the guests' moods. */
+function moodClass(value: number): string {
+  return value >= 70 ? "good" : value >= 45 ? "ok" : "bad";
 }
 
 /** A guest's name, from the original's lists of names. */

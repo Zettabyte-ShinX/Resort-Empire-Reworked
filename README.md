@@ -34,6 +34,9 @@ Android app.
 * **A facility inspector.** Click any building to see its level, how many
   guests it has served, its satisfaction, its popularity and its nightly
   rate, and to upgrade or demolish it.
+* **Facilities that grow.** Some facilities take over a bigger plot when
+  they are upgraded, the way the original's floor plates show, and the
+  guests carry on using the same door afterwards.
 * The starting map, rebuilt from the original's own data: an asphalt road
   ring, a sidewalk border, a sand buildable plot, a hedge ring and the
   original's scenery layout.
@@ -44,7 +47,7 @@ Android app.
   get served, pay and affect their mood, popularity driven research points,
   and building and demolition.
 * Native packages for Linux: a `.deb` and an `.AppImage`.
-* 17 unit tests covering the isometric maths, pathfinding, the building
+* 20 unit tests covering the isometric maths, pathfinding, the building
   rules, saving and a frame budget check.
 
 ---

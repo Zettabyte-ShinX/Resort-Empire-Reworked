@@ -44,6 +44,15 @@ const FACILITY_STAFF: Record<string, string> = {
 };
 
 /**
+ * The frame of the original's one tile plot.
+ *
+ * The original draws the land a facility stands on as a plate of brown
+ * tiles, one per grid tile. A facility that has grown into a bigger plot
+ * takes the extra land with it, so the extra tiles are drawn the same way.
+ */
+const PLOT_TILE_FRAME = 57;
+
+/**
  * The clip the original shows for a guest using a facility.
  *
  * The original has a clip per facility and per guest, showing the guest
@@ -151,10 +160,46 @@ export class Renderer {
   resize(): void {
     const rect = this.canvas.getBoundingClientRect();
     this.dpr = Math.min(2, window.devicePixelRatio || 1);
+    // The renderer works in CSS pixels, so the mouse and the map always
+    // agree on where a tile is. The device pixel ratio only comes into the
+    // drawing, never into the arithmetic.
     this.width = Math.max(1, Math.floor(rect.width));
     this.height = Math.max(1, Math.floor(rect.height));
+    // The canvas is pinned to the size it was measured at, or the layout
+    // squeezes it and the map no longer lines up with the mouse.
+    this.canvas.style.width = `${this.width}px`;
+    this.canvas.style.height = `${this.height}px`;
     this.canvas.width = Math.floor(this.width * this.dpr);
     this.canvas.height = Math.floor(this.height * this.dpr);
+  }
+
+  /**
+   * Watch the canvas, so the renderer always knows how big it really is.
+   *
+   * The layout can squeeze the canvas at any time, and if the renderer kept
+   * the old size the mouse and the map would no longer agree on where a tile
+   * is.
+   */
+  watchSize(): void {
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => {
+      const rect = this.canvas.getBoundingClientRect();
+      if (Math.floor(rect.width) === this.width && Math.floor(rect.height) === this.height) return;
+      this.resize();
+      this.markDirty();
+    });
+    observer.observe(this.canvas);
+  }
+
+  /**
+   * Where a mouse event happened, in the canvas' own pixels.
+   *
+   * The mouse is given in CSS pixels, and the canvas may be a different size
+   * on screen than the one it is drawn into, so the position is scaled.
+   */
+  pointerAt(e: MouseEvent): { x: number; y: number } {
+    const rect = this.canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   }
 
   // ------------------------------------------------------- coordinates ---
@@ -178,18 +223,10 @@ export class Renderer {
   }
 
   /** Which tile is under this canvas pixel? */
-  /**
-   * Where a tile's artwork sits relative to its grid point.
-   *
-   * The original blits the ground in with the clip's origin at the bottom of
-   * the tile, so the artwork hangs below and to the right of the grid point.
-   */
-  static readonly TILE_ART = { x: 24, y: 13 };
-
   pickTile(px: number, py: number): GridPos {
     const w = this.screenToWorld(px, py);
-    const g = screenToGrid(w.x - Renderer.TILE_ART.x, w.y - Renderer.TILE_ART.y);
-    return { col: Math.floor(g.col), row: Math.floor(g.row) };
+    const g = screenToGrid(w.x, w.y);
+    return { col: Math.round(g.col), row: Math.round(g.row) };
   }
 
   // --------------------------------------------------------- static layer --
@@ -253,9 +290,7 @@ export class Renderer {
         // better without them.
         if (tile.id === "TILE_80") continue;
         const frame = art.frameFor("tiles", def.fr);
-        // The original blits the ground into its canvas a tile lower than the
-        // grid point, because the clip's origin is at the bottom of the tile.
-        const drawn = frame ? drawSprite(c, frame, p.x, p.y + 25, artScale) : false;
+        const drawn = frame ? drawSprite(c, frame, p.x, p.y, artScale) : false;
         if (!drawn) {
           drawTile(c, p.x, p.y, def.mainJenis === 1 ? "grass" : "path", 0);
         }
@@ -304,14 +339,17 @@ export class Renderer {
     floor: SpriteFrame | undefined,
     scale: number,
   ): { x: number; y: number } {
-    // The corner of the tiles the facility stands on.
+    // The corner of the tiles the facility stands on. The ground is drawn
+    // with its clip's origin at the grid point, and the clip's origin is at
+    // the bottom left of the tile, so the ground lies up and to the right of
+    // the grid point.
     let minX = Infinity;
     let minY = Infinity;
     for (let r = 0; r < b.rows; r++) {
       for (let c = 0; c < b.cols; c++) {
         const p = gridToScreen(b.col + c, b.row + r);
         minX = Math.min(minX, p.x - 2);
-        minY = Math.min(minY, p.y);
+        minY = Math.min(minY, p.y - 25.2);
       }
     }
     if (!floor || !floor.bbox) return { x: minX, y: minY };
@@ -323,6 +361,24 @@ export class Renderer {
       x: minX + (floor.ox - bx0) * scale,
       y: minY + (floor.oy - by0) * scale,
     };
+  }
+
+  /**
+   * Draw one of the original's plot tiles on a grid tile.
+   *
+   * The land a facility stands on is a diamond in the middle of the art, and
+   * the original draws it from the same point as the ground, so the tile
+   * lands on the grid the way the ground does.
+   */
+  private drawPlotTile(
+    ctx: CanvasRenderingContext2D,
+    frame: SpriteFrame,
+    col: number,
+    row: number,
+    scale: number,
+  ): void {
+    const p = gridToScreen(col, row);
+    drawSprite(ctx, frame, p.x, p.y + 25, scale);
   }
 
   /**
@@ -457,7 +513,9 @@ export class Renderer {
     ctx.fillStyle = "#1d2a24";
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // Blit the ground layer, aligned so world coordinates line up.
+    // Blit the ground layer, aligned so world coordinates line up. The layer
+    // is drawn at the zoom in its own pixels, so it is scaled up to the
+    // screen's pixel density.
     const bounds = mapBounds(world.cols, world.rows);
     const pad = 64;
     const originX = bounds.minX - pad;
@@ -502,8 +560,14 @@ export class Renderer {
         : art.wallFrame(def.wall, b.level);
       // The original draws a facility's floor, room and building from one
       // shared origin, so the room sits over the floor exactly as the artist
-      // drew it. The anchor is that origin.
-      const anchor = this.boothAnchor(b, floorFrame, artScale);
+      // drew it. The anchor is that origin. The artwork shows the plot the
+      // facility was built on, so it stays anchored to that when the
+      // facility grows into a bigger plot.
+      const anchor = this.boothAnchor(
+        { col: b.col, row: b.row, cols: def.COLS, rows: def.ROWS },
+        floorFrame,
+        artScale,
+      );
       anchors.set(b.id, anchor);
       const depth = b.col + b.row + (b.cols + b.rows) / 2;
       // The employee works inside the facility.
@@ -515,10 +579,20 @@ export class Renderer {
       const siteFrame = b.building ? this.buildSiteFrame(b.buildProgress) : undefined;
       // The original has a site clip for every footprint size, with the
       // workers standing on it.
-      const siteClip = b.building ? this.buildSiteClip(b) : undefined;
+      const siteClip = b.building ? this.buildSiteClip({ rows: def.ROWS, cols: def.COLS }) : undefined;
+      // The land a facility has grown into.
+      const plotFrame = b.cols > def.COLS ? art.frameFor("boothTile", PLOT_TILE_FRAME) : undefined;
       items.push({
         depth,
         draw: () => {
+          if (plotFrame) {
+            // The extra tiles of the plot are drawn under the facility.
+            for (let c = b.col + def.COLS; c < b.col + b.cols; c++) {
+              for (let r = b.row; r < b.row + b.rows; r++) {
+                this.drawPlotTile(ctx, plotFrame, c, r, artScale);
+              }
+            }
+          }
           if (siteClip) {
             drawSprite(ctx, siteClip, anchor.x, anchor.y, artScale);
           } else if (floorFrame) {
@@ -526,8 +600,8 @@ export class Renderer {
           }
           if (siteFrame) {
             // The original puts one scaffold on every tile of the site.
-            for (let r = 0; r < b.rows; r++) {
-              for (let c = 0; c < b.cols; c++) {
+            for (let r = 0; r < def.ROWS; r++) {
+              for (let c = 0; c < def.COLS; c++) {
                 const p = gridToScreen(b.col + c, b.row + r);
                 drawSprite(ctx, siteFrame, p.x, p.y + 12, artScale);
               }
@@ -627,8 +701,6 @@ export class Renderer {
       for (let r = 0; r < h; r++) {
         for (let c = 0; c < w; c++) {
           const p = gridToScreen(highlight.col + c, highlight.row + r);
-          p.x += Renderer.TILE_ART.x;
-          p.y += Renderer.TILE_ART.y;
           ctx.moveTo(p.x, p.y - TILE_H / 2);
           ctx.lineTo(p.x + TILE_W / 2, p.y);
           ctx.lineTo(p.x, p.y + TILE_H / 2);

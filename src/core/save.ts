@@ -7,7 +7,7 @@
  */
 
 import { tileDef } from "./data.ts";
-import type { World } from "./world.ts";
+import type { BoothInstance, World } from "./world.ts";
 import { World as WorldClass } from "./world.ts";
 
 const KEY = "resort-empire-reworked/saves";
@@ -48,6 +48,8 @@ interface SaveData {
     col: number;
     row: number;
     level: number;
+    /** The width of the plot, which grows when a facility is upgraded. */
+    cols?: number;
     served: number;
     satisfaction: number;
     building?: boolean;
@@ -74,6 +76,7 @@ export function serialize(world: World): string {
       col: b.col,
       row: b.row,
       level: b.level,
+      cols: b.cols,
       served: b.served,
       satisfaction: b.satisfaction,
       building: b.building,
@@ -117,6 +120,7 @@ export function deserialize(json: string): World | null {
   // Placing a facility normally costs money, but a load must not be limited
   // by the cash the resort happened to have.
   world.money = Number.MAX_SAFE_INTEGER;
+  const restored: { booth: BoothInstance; saved: SaveData["booths"][number] }[] = [];
   for (const b of data.booths ?? []) {
     const booth = world.placeBooth(b.type, b.col, b.row, true);
     if (!booth) continue;
@@ -127,8 +131,15 @@ export function deserialize(json: string): World | null {
     // under construction.
     booth.building = b.building ?? false;
     booth.buildProgress = b.buildProgress ?? (booth.building ? 0 : 1);
+    restored.push({ booth, saved: b });
   }
   world.money = data.money;
+  // A facility that grew into a bigger plot keeps the plot it had. The land
+  // is only taken once every facility is back, so one facility cannot take
+  // over the plot of another.
+  for (const { booth, saved } of restored) {
+    if (saved.cols) world.expandBooth(booth, saved.cols);
+  }
   world.refresh();
   return world;
 }

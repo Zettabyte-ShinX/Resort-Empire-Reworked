@@ -98,14 +98,14 @@ const keys = new Set<string>();
 const view = ui.canvas;
 const renderer = new Renderer(view);
 
-function localPoint(e: MouseEvent, canvas: HTMLCanvasElement): { x: number; y: number } {
-  const rect = canvas.getBoundingClientRect();
-  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+/** Where a mouse event happened, in the canvas' own pixels. */
+function localPoint(e: MouseEvent): { x: number; y: number } {
+  return renderer.pointerAt(e);
 }
 
 function bindCanvas(canvas: HTMLCanvasElement): void {
   canvas.addEventListener("mousemove", (e) => {
-    const p = localPoint(e, canvas);
+    const p = localPoint(e);
     if (layingPath) {
       // Dragging with the path tool lays a run of path.
       const g = renderer.pickTile(p.x, p.y);
@@ -133,13 +133,13 @@ function bindCanvas(canvas: HTMLCanvasElement): void {
     // Laying a path drags along instead of moving the camera.
     if (selection?.kind === "tile") {
       layingPath = true;
-      const p = localPoint(e, canvas);
+      const p = localPoint(e);
       handleClick(p.x, p.y);
       return;
     }
     dragging = true;
     moved = false;
-    const p = localPoint(e, canvas);
+    const p = localPoint(e);
     dragStart = p;
     camStart = { x: renderer.camera.x, y: renderer.camera.y };
   });
@@ -153,7 +153,7 @@ function bindCanvas(canvas: HTMLCanvasElement): void {
     "wheel",
     (e) => {
       e.preventDefault();
-      const p = localPoint(e, canvas);
+      const p = localPoint(e);
       const before = renderer.screenToWorld(p.x, p.y);
       const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
       renderer.camera.zoom = Math.max(0.3, Math.min(4, renderer.camera.zoom * factor));
@@ -184,8 +184,7 @@ window.addEventListener("mouseup", (e) => {
   if (!dragging) return;
   dragging = false;
   if (moved || e.button !== 0) return;
-  const canvas = document.querySelector("canvas.view") as HTMLCanvasElement;
-  const p = localPoint(e, canvas);
+  const p = localPoint(e);
   handleClick(p.x, p.y);
 });
 
@@ -350,6 +349,7 @@ window.addEventListener("resize", resize);
 ui.setTool("inspect");
 bindCanvas(view);
 resize();
+renderer.watchSize();
 renderer.fitMap(world);
 requestAnimationFrame(frame);
 

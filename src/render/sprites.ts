@@ -179,19 +179,22 @@ export class Art {
    * The original records a `fr` frame per facility and draws `fr` plus the
    * upgrade level from a separate frame set of pre-rendered floor shapes
    * (`Booth.as`, `creatingLantai`).
+   *
+   * Some of those plates carry the original's red marking on the tile the
+   * facility can take over when it is upgraded, and the marking is shown as
+   * it is, because it is what says the facility still has room to grow.
    */
   boothTileFrame(fr: number, level = 0): SpriteFrame | undefined {
     const entry = this.frameSet("boothTile");
     if (!entry || entry.frames.length === 0) return undefined;
     let idx = Math.max(0, Math.min(entry.frames.length - 1, fr - 1 + level));
     // The original marks the tile a facility can grow into with a red
-    // outline. This game has no facility that grows, so the frame with the
-    // marking is left out.
+    // outline, and the room covers most of it but not all of it, so a red
+    // line showed along the edge of every room. The marking is used to decide
+    // which facilities can grow, not to be drawn.
     if (entry.frames[idx]?.marked) {
       const marked = entry.frames[idx]!;
       const next = entry.frames[idx + 1];
-      // The next frame has to be the same size, or it belongs to a different
-      // facility.
       if (next && !next.marked && sameSize(marked, next)) idx += 1;
     }
     return entry.frames[idx];

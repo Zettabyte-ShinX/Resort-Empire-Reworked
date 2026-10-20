@@ -212,6 +212,56 @@ export function boothDef(id: string): BoothDef {
   return b;
 }
 
+/**
+ * The facilities that can grow into a bigger plot when they are upgraded.
+ *
+ * The original draws a facility's floor as a plate in the `BoothTile` clip:
+ * three plates per facility, one for each upgrade level. The plate of a
+ * facility that still has room to grow carries a red outline on the tile
+ * the facility can take over, and that marking is what says the facility
+ * can expand. The lobby and the small stalls have no such marking, so they
+ * never grow.
+ */
+export const GROWABLE = new Set<string>([
+  "Arcade",
+  "Bar",
+  "BaratResto",
+  "Cottage",
+  "Golf",
+  "Gym",
+  "IndiaResto",
+  "Jacuzi",
+  "JapanResto",
+  "Lodge",
+  "Medical",
+  "Minimarket",
+  "Pool",
+  "Sauna",
+  "Spa",
+]);
+
+/** Whether a facility of this type can grow into a bigger plot. */
+export function canGrow(type: string): boolean {
+  return GROWABLE.has(type);
+}
+
+/**
+ * How many guests a room sleeps.
+ *
+ * The original books one room per guest, and the rooms are not all the
+ * same size: a lodge has two beds, so a couple travelling together fits
+ * into one, while a cottage has a bed for a single guest.
+ */
+const ROOM_BEDS: Record<string, number> = {
+  Cottage: 1,
+  Lodge: 2,
+};
+
+/** How many guests a room of this kind holds. */
+export function roomBeds(type: string): number {
+  return ROOM_BEDS[type] ?? 1;
+}
+
 /** The original's guest type, numbered 1 to 29. */
 export function guestDef(variant: number): GuestDef {
   const g = DATA.visitor[`Visitor${variant}`] as GuestDef | undefined;
