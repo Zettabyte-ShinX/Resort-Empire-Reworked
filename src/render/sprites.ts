@@ -52,6 +52,14 @@ export class Art {
     return this.manifest !== null;
   }
 
+  /**
+   * Load the artwork the game needs to draw the resort.
+   *
+   * The ground, the facilities and the guests are all needed before the
+   * resort can be shown, so they are loaded first. The rest - the staff
+   * animations, the clips of guests inside facilities - are loaded
+   * afterwards by `loadExtra`, so the game starts straight away.
+   */
   async load(onProgress?: (loaded: number, total: number) => void): Promise<void> {
     let manifest: ArtManifest;
     try {
@@ -65,13 +73,31 @@ export class Art {
     this.manifest = manifest;
 
     const files: string[] = [];
-    for (const group of [manifest.booths, manifest.visitors, manifest.framesets, manifest.other]) {
+    for (const group of [manifest.booths, manifest.visitors, manifest.framesets]) {
       for (const entry of Object.values(group)) {
         for (const f of entry.frames) files.push(f.file);
       }
     }
     for (const file of Object.values(manifest.images ?? {})) files.push(file);
 
+    await this.loadFiles(files, onProgress);
+  }
+
+  /** Load the rest of the artwork, in the background. */
+  async loadExtra(onProgress?: (loaded: number, total: number) => void): Promise<void> {
+    const extra = this.manifest?.other;
+    if (!extra) return;
+    const files: string[] = [];
+    for (const entry of Object.values(extra)) {
+      for (const f of entry.frames) files.push(f.file);
+    }
+    await this.loadFiles(files, onProgress);
+  }
+
+  private async loadFiles(
+    files: string[],
+    onProgress?: (loaded: number, total: number) => void,
+  ): Promise<void> {
     let loaded = 0;
     await Promise.all(
       files.map(

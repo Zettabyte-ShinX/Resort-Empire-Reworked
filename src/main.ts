@@ -287,10 +287,16 @@ if (autosave) {
 
 // The artwork is optional: if it is missing the renderer falls back to
 // procedural shapes, so the game still runs.
-void art.load((loaded, total) => {
-  ui.setLoading(loaded, total);
-  renderer.markDirty();
-});
+void art
+  .load((loaded, total) => {
+    ui.setLoading(loaded, total);
+    renderer.markDirty();
+  })
+  .then(() => {
+    // The staff animations and the clips of guests inside facilities are
+    // not needed to show the resort, so they arrive in the background.
+    void art.loadExtra(() => renderer.markDirty());
+  });
 
 // Expose for debugging in the browser console.
 (window as unknown as { game: unknown }).game = {
