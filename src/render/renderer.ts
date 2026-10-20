@@ -178,9 +178,17 @@ export class Renderer {
   }
 
   /** Which tile is under this canvas pixel? */
+  /**
+   * Where a tile's artwork sits relative to its grid point.
+   *
+   * The original blits the ground in with the clip's origin at the bottom of
+   * the tile, so the artwork hangs below and to the right of the grid point.
+   */
+  static readonly TILE_ART = { x: 24, y: 13 };
+
   pickTile(px: number, py: number): GridPos {
     const w = this.screenToWorld(px, py);
-    const g = screenToGrid(w.x, w.y);
+    const g = screenToGrid(w.x - Renderer.TILE_ART.x, w.y - Renderer.TILE_ART.y);
     return { col: Math.floor(g.col), row: Math.floor(g.row) };
   }
 
@@ -619,6 +627,8 @@ export class Renderer {
       for (let r = 0; r < h; r++) {
         for (let c = 0; c < w; c++) {
           const p = gridToScreen(highlight.col + c, highlight.row + r);
+          p.x += Renderer.TILE_ART.x;
+          p.y += Renderer.TILE_ART.y;
           ctx.moveTo(p.x, p.y - TILE_H / 2);
           ctx.lineTo(p.x + TILE_W / 2, p.y);
           ctx.lineTo(p.x, p.y + TILE_H / 2);
