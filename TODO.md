@@ -25,26 +25,30 @@ Each item states what "done" means so it can be checked, not just felt.
       walk and stand poses, facing the way they walk, plus the original's
       clips for guests using a facility and the staff working in one.
       *Verify: guests walk between tiles, turn, and sit in the cottage.*
+- [x] **The original's balance** — guest types with their budgets and the
+      facilities they like, opening hours, staff wages, experience needed to
+      upgrade a facility, and the research levels that unlock new ones.
+- [x] **The original's sounds** — every sound the original plays, and the five
+      background tracks.
 
 ## Next
 
-- [ ] **Building site** — the original takes time to build a facility and
-      shows its progress. *Verify: a facility under construction shows the
-      original's scaffolding and the site is unusable until it is finished.*
-- [ ] **Guest needs and mood** — guests want a room, food, fun or hygiene;
-      unmet needs push mood down and drive the rating of the resort.
-      *Verify: a guest that cannot reach a facility loses mood over time.*
-- [ ] **Staff** — hiring, shifts, wages; the `sumStaff`/`salary` fields the
-      original's data already specifies. *Verify: wages leave the account
-      each day and facilities without staff run worse.*
-- [ ] **Research and upgrades** — the extracted `ResearchPoint` tree, spendable
-      in the interface. *Verify: points accrue and a purchase changes a
-      facility's level.*
+- [ ] **Building site** — a new facility is a site first: the original's
+      scaffold goes up on every tile and the facility opens when it is done.
+      *Done for the scaffold and the timing; the original's progress bar
+      still has to be lined up with the site.*
 - [ ] **Rooms** — the original has rooms inside the facilities, with the
       `booth_selimutRoom` artwork and the room tab in the interface.
-- [ ] **Audio** — the original's 5 background tracks and sound effects.
+- [ ] **Research tree** — the `Extra_Upgrade` table: extras the player can
+      buy with the research points.
+- [ ] **Expanding the resort** — the original grows the plot as the resort
+      is expanded, with the `Expand1` and `Expand2` unlocks.
+- [ ] **Janitor** — the original has a janitor that cleans up, and a janitor
+      room.
 - [ ] **Tutorial** — a first-run guide, the original had `GuideDialog` and
       `GuideInGame`.
+- [ ] **Achievements and missions** — the original's tables are extracted and
+      can be wired up.
 
 ## Platforms (last)
 
