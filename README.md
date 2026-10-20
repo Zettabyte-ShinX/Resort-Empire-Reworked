@@ -17,6 +17,21 @@ Android app.
 
 ## What works today
 
+* **A modern interface.** A top bar with live figures (cash, day and time,
+  guests, popularity, research), a tool rail on the left, a tabbed management
+  panel on the right and a scrolling event log.
+* **Build tools.** Inspect, facilities, rooms, scenery, paths and demolish.
+  The palette slides out of the tool rail, is searchable and shows prices and
+  footprints. Facilities are listed in the order the original unlocked them.
+* **Management panels.** Live guest list with mood, facility and room lists
+  with upgrade and demolish actions, a staff panel and a reports panel with
+  a revenue-by-hour chart.
+* **Dialogs.** Finishes, achievements, options, a how-to-play guide and
+  save/load (kept in `localStorage`, so saves follow the player between the
+  browser and the desktop app).
+* **A facility inspector.** Click any building to see its level, how many
+  guests it has served, its satisfaction, its popularity and its nightly
+  rate, and to upgrade or demolish it.
 * The starting map, rebuilt from the original's own data: an asphalt road
   ring, a sidewalk border, a sand buildable plot, a hedge ring and the
   original's scenery layout.
@@ -27,8 +42,8 @@ Android app.
   get served, pay and affect their mood, popularity driven research points,
   and building and demolition.
 * Native packages for Linux: a `.deb` and an `.AppImage`.
-* 12 unit tests covering the isometric maths, pathfinding, the building rules
-  and a frame budget check.
+* 17 unit tests covering the isometric maths, pathfinding, the building
+  rules, saving and a frame budget check.
 
 ---
 

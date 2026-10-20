@@ -91,6 +91,19 @@ export interface WorldOptions {
 
 const HOUR_SECONDS = 2.2;
 
+/** Aggregate numbers the management panels show. */
+export interface WorldStats {
+  guestsArrived: number;
+  guestsServed: number;
+  guestsLeftUnhappy: number;
+  revenue: number;
+  wages: number;
+  built: number;
+  demolished: number;
+}
+
+export const SPEEDS = [0, 1, 2, 4] as const;
+
 /** The eight neighbouring grid offsets. */
 const NB = new Int8Array([
   1, 0, -1, 0, 0, 1, 0, -1,
@@ -119,9 +132,23 @@ export class World {
   day = 1;
   /** Ticks elapsed, used for deterministic-ish animation phase. */
   time = 0;
-
+  /** 0 = paused, otherwise a multiplier on the simulation speed. */
+  speed = 1;
   /** Set when something the player should see happened. */
   log: string[] = [];
+  stats: WorldStats = {
+    guestsArrived: 0,
+    guestsServed: 0,
+    guestsLeftUnhappy: 0,
+    revenue: 0,
+    wages: 0,
+    built: 0,
+    demolished: 0,
+  };
+  /** Achievements the player has reached, by id. */
+  achievements: Record<string, number> = {};
+  /** Revenue earned in each hour of the day, for the reports panel. */
+  hourlyRevenue: number[] = new Array(24).fill(0);
 
   private nextBoothId = 1;
   private nextVisitorId = 1;
@@ -408,6 +435,7 @@ export class World {
       }
     }
     this.booths.push(booth);
+    this.stats.built++;
     this.invalidatePaths();
     this.recomputePopularity();
     this.recomputeReachable();
@@ -432,6 +460,65 @@ export class World {
     return true;
   }
 
+  /** Can a path tile be laid here? */
+  canPlaceTile(id: string, col: number, row: number): boolean {
+    const t = this.tileAt(col, row);
+    if (!t) return false;
+    if (t.booth) return false;
+    if (t.scenery) return false;
+    const def = tileDef(id);
+    if (def.price > this.money) return false;
+    // Laying a path on grass is fine; paving over paving is not.
+    return t.id !== id;
+  }
+
+  /** Lay a path tile. */
+  placeTile(id: string, col: number, row: number): boolean {
+    if (!this.canPlaceTile(id, col, row)) return false;
+    const def = tileDef(id);
+    this.money -= def.price;
+    const tile = this.tiles[row]![col]!;
+    tile.id = id;
+    tile.walkable = def.walkable;
+    this.invalidatePaths();
+    this.recomputeReachable();
+    return true;
+  }
+
+  /** Remove a plant from a tile. */
+  removeScenery(col: number, row: number): boolean {
+    const t = this.tileAt(col, row);
+    if (!t || !t.scenery) return false;
+    this.money += Math.floor(sceneryDef(t.scenery).price * 0.5);
+    t.scenery = null;
+    this.recomputePopularity();
+    return true;
+  }
+
+  /** Remove every facility, used when loading a save. */
+  clearBooths(): void {
+    for (const b of [...this.booths]) {
+      for (let r = b.row; r < b.row + b.rows; r++) {
+        for (let c = b.col; c < b.col + b.cols; c++) {
+          const t = this.tileAt(c, r);
+          if (t) t.booth = null;
+        }
+      }
+    }
+    this.booths = [];
+    this.invalidatePaths();
+    this.recomputePopularity();
+    this.recomputeReachable();
+  }
+
+  /** Recompute everything that depends on the map, after loading. */
+  refresh(): void {
+    this.recomputePopularity();
+    this.recomputeReachable();
+    this.invalidatePaths();
+  }
+
+  /** Remove a facility. */
   removeBooth(booth: BoothInstance): void {
     for (let r = booth.row; r < booth.row + booth.rows; r++) {
       for (let c = booth.col; c < booth.col + booth.cols; c++) {
@@ -440,6 +527,7 @@ export class World {
       }
     }
     this.booths = this.booths.filter((b) => b.id !== booth.id);
+    this.stats.demolished++;
     this.invalidatePaths();
     this.recomputePopularity();
     this.recomputeReachable();
@@ -492,6 +580,7 @@ export class World {
     ];
     const entryCol = this.entrance.col + (Math.random() < 0.5 ? -2 : 2);
 
+    this.stats.guestsArrived++;
     this.visitors.push({
       id: this.nextVisitorId++,
       col: entryCol,
@@ -677,6 +766,9 @@ export class World {
     const charge = Math.min(price || 0, Math.max(0, v.budget - v.spent));
     v.spent += charge;
     this.money += charge;
+    this.stats.revenue += charge;
+    const hourBucket = Math.floor(this.hour) % 24;
+    this.hourlyRevenue[hourBucket] = (this.hourlyRevenue[hourBucket] ?? 0) + charge;
 
     // Satisfaction depends on the booth's popularity and whether the guest
     // could afford the service.
@@ -686,6 +778,7 @@ export class World {
 
     booth.occupancy = Math.max(0, booth.occupancy - 1);
     booth.served++;
+    this.stats.guestsServed++;
     booth.satisfaction =
       (booth.satisfaction * (booth.served - 1) + v.mood) / booth.served;
 
@@ -728,8 +821,10 @@ export class World {
   // -------------------------------------------------------------- tick ----
 
   update(dt: number): void {
-    this.time += dt;
-    this.clockTick(dt);
+    if (this.speed === 0) return;
+    const scaled = dt * this.speed;
+    this.time += scaled;
+    this.clockTick(scaled);
     // Reset the per-frame pathfinding budget.
     this.pathBudget = 3;
     this.pathsQueued = 0;

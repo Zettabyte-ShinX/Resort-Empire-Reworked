@@ -81,6 +81,11 @@ export class Renderer {
     this.staticDirty = true;
   }
 
+  /** Change the mouse cursor over the canvas. */
+  setCursor(cursor: string): void {
+    this.canvas.style.cursor = cursor;
+  }
+
   resize(): void {
     const rect = this.canvas.getBoundingClientRect();
     this.dpr = Math.min(2, window.devicePixelRatio || 1);
