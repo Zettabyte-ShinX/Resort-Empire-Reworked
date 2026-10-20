@@ -10,6 +10,8 @@
  */
 
 import {
+  ACHIEVEMENTS,
+  BOOTH_IDS,
   DATA,
   EXTRAS,
   MAP_TIERS,
@@ -144,6 +146,10 @@ export interface WorldStats {
   wages: number;
   built: number;
   demolished: number;
+  /** How many facilities have been upgraded. */
+  upgraded: number;
+  /** How many of the original's special guests have visited. */
+  specialVisited: number;
 }
 
 export const SPEEDS = [0, 1, 2, 4] as const;
@@ -198,6 +204,8 @@ export class World {
     wages: 0,
     built: 0,
     demolished: 0,
+    upgraded: 0,
+    specialVisited: 0,
   };
   /** Achievements the player has reached, by id. */
   achievements: Record<string, number> = {};
@@ -584,12 +592,70 @@ export class World {
     booth.level++;
     booth.exp = 0;
     booth.canUpgrade = false;
+    this.stats.upgraded++;
     this.recomputePopularity();
     this.log.push(`Upgraded ${booth.type} to level ${booth.level + 1}`);
     return true;
   }
 
   /** Can a booth of this type be placed with its corner at (col,row)? */
+  /**
+   * Check the original's achievements and pay out the ones that are earned.
+   *
+   * The original gives money and research points for each of them.
+   */
+  checkAchievements(): void {
+    for (const [id, def] of Object.entries(ACHIEVEMENTS)) {
+      if (this.achievements[id]) continue;
+      if (!this.achievementEarned(id)) continue;
+      this.achievements[id] = 1;
+      this.money += def.bonus;
+      this.researchPoints += def.RP;
+      this.log.push(`${def.nama} - ${def.bonus} and ${def.RP} research points.`);
+    }
+  }
+
+  /** Whether the player has earned an achievement. */
+  private achievementEarned(id: string): boolean {
+    const happy = this.visitors.length
+      ? this.visitors.filter((v) => v.mood >= 65).length / this.visitors.length
+      : 0;
+    switch (id) {
+      case "acv_credit":
+        return true;
+      case "acv_rookieResort":
+        return this.visitors.length >= 10;
+      case "acv_goodResort":
+        return this.popularity >= 17 && happy >= 0.5;
+      case "acv_loveBeingHere":
+        return this.popularity >= 50 && happy >= 0.75;
+      case "acv_goodResearch":
+        return this.stats.upgraded >= 10;
+      case "acv_growingResort":
+        return this.booths.length >= 10;
+      case "acv_grandResort":
+        return this.booths.length >= 25;
+      case "acv_marvelousResort":
+        return this.booths.length >= BOOTH_IDS.length;
+      case "acv_awesomeContractor":
+        return this.tier >= 1;
+      case "acv_expertContractor":
+        return this.tier >= 2;
+      case "acv_masterDev":
+        return this.popularity >= 100 && this.tier >= 2;
+      case "acv_superDev":
+        return this.popularity >= 70 && this.booths.length >= BOOTH_IDS.length;
+      case "acv_greenBucks":
+        return this.money >= 250000;
+      case "acv_bagOfGold":
+        return this.money >= 500000;
+      case "acv_famousResort":
+        return this.stats.specialVisited >= 1;
+      default:
+        return false;
+    }
+  }
+
   /** The research level the resort has reached. */
   get researchLevel(): number {
     return researchLevel(this.researchPoints);
@@ -1335,6 +1401,7 @@ export class World {
     for (const v of this.visitors) {
       this.updateVisitor(v, dt);
     }
+    this.checkAchievements();
     // Drop finished guests.
     this.visitors = this.visitors.filter((v) => v.state !== "done");
   }

@@ -315,6 +315,9 @@ if (autosave) {
   ui.pushLog([`Restored your last resort (day ${world.day}).`]);
 } else {
   ui.update(world);
+  // A new player is shown how the resort works, because the paths and the
+  // rooms are not obvious.
+  ui.openDialog("guide");
 }
 
 // The artwork is optional: if it is missing the renderer falls back to

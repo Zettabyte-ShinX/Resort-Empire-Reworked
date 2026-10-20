@@ -1093,3 +1093,10 @@ button.small {
   align-self: flex-start;
   margin-top: 6px;
 }
+
+.ach-reward {
+  font-size: 11px;
+  color: var(--muted-2);
+  white-space: nowrap;
+  margin-left: 8px;
+}

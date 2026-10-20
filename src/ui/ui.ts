@@ -16,6 +16,7 @@
  */
 
 import {
+  ACHIEVEMENTS,
   DATA,
   EXTRAS,
   EXTRA_LIST,
@@ -887,19 +888,13 @@ export class UI {
   private renderAchievements(body: HTMLElement): void {
     const world = this.world!;
     const list = el("div", "ach-list");
-    const entries: [string, string, boolean][] = [
-      ["First steps", "Build your first facility", world.stats.built >= 1],
-      ["Grand opening", "Have 25 guests arrive", world.stats.guestsArrived >= 25],
-      ["Well reviewed", "Serve 100 guests", world.stats.guestsServed >= 100],
-      ["Profitable", "Earn $10,000 in revenue", world.stats.revenue >= 10000],
-      ["A place to stay", "Build 5 facilities", world.stats.built >= 5],
-      ["Popular resort", "Reach a popularity of 20", world.popularity >= 20],
-    ];
-    for (const [name, desc, done] of entries) {
+    for (const [id, def] of Object.entries(ACHIEVEMENTS)) {
+      const done = !!world.achievements[id];
       const row = el("div", `ach${done ? " is-done" : ""}`);
       row.innerHTML = `
         <span class="ach-mark">${done ? "✓" : ""}</span>
-        <span class="ach-text"><b>${name}</b><i>${desc}</i></span>`;
+        <span class="ach-text"><b>${def.nama}</b><i>${def.desc}</i></span>
+        <span class="ach-reward">${done ? "" : `${money(def.bonus)} + ${def.RP} RP`}</span>`;
       list.appendChild(row);
     }
     body.appendChild(list);

@@ -140,6 +140,7 @@ const d = raw as unknown as {
   };
   _statics: {
     EXPAND: { price: number[] };
+    Achievements: Record<string, AchievementDef>;
     Extra_Upgrade: {
       listing: string[];
       [id: string]: unknown;
@@ -231,6 +232,19 @@ export const EXTRAS: Record<string, ExtraDef> = raw._statics.Extra_Upgrade as un
   string,
   ExtraDef
 >;
+
+/** One of the original's achievements. */
+export interface AchievementDef {
+  nama: string;
+  desc: string;
+  /** The money the player is given. */
+  bonus: number;
+  /** The research points the player is given. */
+  RP: number;
+}
+
+export const ACHIEVEMENTS: Record<string, AchievementDef> = raw._statics
+  .Achievements as unknown as Record<string, AchievementDef>;
 
 /** The order the original lists its extras in. */
 export const EXTRA_LIST: string[] = (raw._statics.Extra_Upgrade as unknown as {
