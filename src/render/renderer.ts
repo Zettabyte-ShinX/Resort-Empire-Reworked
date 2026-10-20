@@ -306,6 +306,29 @@ export class Renderer {
   }
 
   /**
+   * The room a facility shows when it has a guest in it.
+   *
+   * The original has a clip for the rooms that can hold two guests, with a
+   * frame for a single room and one for a double one.
+   */
+  private roomFrame(booth: { type: string; level: number; occupancy: number }): SpriteFrame | undefined {
+    if (booth.occupancy <= 0) return undefined;
+    const name =
+      booth.type === "Cottage"
+        ? "booth_selimutRoom_cottage_132"
+        : booth.type === "Spa"
+          ? "booth_selimutSpa_359"
+          : null;
+    if (!name) return undefined;
+    const entry = art.named(name);
+    if (!entry) return undefined;
+    const level = Math.min(3, booth.level + 1);
+    const single = art.frameByLabel(entry, `level_${level}_single`);
+    const double = art.frameByLabel(entry, `level_${level}_double`);
+    return booth.occupancy > 1 ? (double ?? single) : (single ?? double);
+  }
+
+  /**
    * The site the original shows while a facility is being built.
    *
    * It has one clip for every footprint size, with the workers standing on
@@ -463,6 +486,8 @@ export class Renderer {
       // The employee works inside the facility.
       const staffEntry = FACILITY_STAFF[b.type] ? art.named(FACILITY_STAFF[b.type]) : undefined;
       const staffFrame = this.animatedFrame(staffEntry, phase, "anim");
+      // A room with two guests in it shows the second bed as well.
+      const roomFrame = this.roomFrame(b);
       // A facility under construction shows the original's building site.
       const siteFrame = b.building ? this.buildSiteFrame(b.buildProgress) : undefined;
       // The original has a site clip for every footprint size, with the
@@ -487,6 +512,9 @@ export class Renderer {
           }
           if (wallFrame && !b.building) {
             drawSprite(ctx, wallFrame, anchor.x, anchor.y, artScale);
+          }
+          if (roomFrame) {
+            drawSprite(ctx, roomFrame, anchor.x, anchor.y, artScale);
           }
           if (staffFrame && !b.building) {
             drawSprite(ctx, staffFrame, anchor.x, anchor.y, artScale);
