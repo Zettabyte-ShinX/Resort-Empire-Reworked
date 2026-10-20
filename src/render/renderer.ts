@@ -420,6 +420,9 @@ export class Renderer {
     // The staff and the guests work to the resort's clock, so their
     // animations stop when the game is paused.
     const phase = (world.day * 24 + world.hour) * 26;
+    // Where each facility is drawn from, so a guest inside it can be placed
+    // in the same spot.
+    const anchors = new Map<number, { x: number; y: number }>();
 
     for (const b of world.booths) {
       const def = boothDef(b.type);
@@ -435,6 +438,7 @@ export class Renderer {
       // floor is lined up with the footprint it belongs to, and the room and
       // the building follow it.
       const anchor = this.boothAnchor(b, floorFrame, artScale);
+      anchors.set(b.id, anchor);
       const depth = b.col + b.row + (b.cols + b.rows) / 2;
       // The employee works inside the facility.
       const staffEntry = FACILITY_STAFF[b.type] ? art.named(FACILITY_STAFF[b.type]) : undefined;
@@ -484,14 +488,16 @@ export class Renderer {
         entry?.frames[0];
       const flip = v.dirX < 0 || (v.dirX === 0 && v.dirY > 0);
       // A guest using a facility is drawn with the original's clip for that
-      // facility, so they sit in the cottage or swim in the pool.
+      // facility, so they sit in the cottage or swim in the pool. The clip is
+      // drawn from the facility's own anchor, which is where the room is.
       const using =
         v.state === "using" && v.target ? this.facilityGuestFrame(v.target.type, phase) : undefined;
+      const usingAt = using && v.target ? anchors.get(v.target.id) ?? p : p;
       items.push({
         depth: v.col + v.row,
         draw: () => {
           if (using) {
-            drawSprite(ctx, using, p.x, p.y, artScale);
+            drawSprite(ctx, using, usingAt.x, usingAt.y, artScale);
             return;
           }
           const ok = frame ? drawSprite(ctx, frame, p.x, p.y, artScale, flip) : false;
