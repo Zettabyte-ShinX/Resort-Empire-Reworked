@@ -17,6 +17,8 @@
 
 import {
   DATA,
+  EXTRAS,
+  EXTRA_LIST,
   boothDef,
   boothPopularity,
   boothPrice,
@@ -41,7 +43,7 @@ export type ToolId =
   | "path"
   | "demolish";
 
-export type SideTab = "guests" | "facilities" | "rooms" | "staff" | "stats";
+export type SideTab = "guests" | "facilities" | "rooms" | "staff" | "extras" | "stats";
 export type DialogId =
   | "finance"
   | "achievements"
@@ -64,6 +66,7 @@ export interface UICallbacks {
   onSpeed: (speed: number) => void;
   onSound: (muted: boolean) => void;
   onMusic: (on: boolean) => void;
+  onBuyExtra: (id: string) => void;
   onLoad: (id: string) => void;
 }
 
@@ -91,6 +94,7 @@ const SIDE_TABS: { id: SideTab; label: string; icon: IconName }[] = [
   { id: "facilities", label: "Facilities", icon: "build" },
   { id: "rooms", label: "Rooms", icon: "bed" },
   { id: "staff", label: "Staff", icon: "users" },
+  { id: "extras", label: "Extras", icon: "flask" },
   { id: "stats", label: "Reports", icon: "chart" },
 ];
 
@@ -482,6 +486,9 @@ export class UI {
       case "staff":
         this.renderStaff(body);
         break;
+      case "extras":
+        this.renderExtras(body);
+        break;
       case "stats":
         this.renderStats(body);
         break;
@@ -565,6 +572,50 @@ export class UI {
         this.cb.onDemolish(Number(btn.dataset.del)),
       );
     });
+  }
+
+  private renderExtras(body: HTMLElement): void {
+    const world = this.world!;
+    const level = world.researchLevel;
+    let bought = 0;
+    for (const id of EXTRA_LIST) {
+      const def = EXTRAS[id];
+      if (!def) continue;
+      const owned = world.hasExtra(id);
+      if (owned) bought++;
+      const hasFacility = world.booths.some((b) => b.type === def.unlocked);
+      const row = el("div", "fac-row");
+      const note = owned
+        ? "Bought"
+        : level < def.need_star
+          ? `Research level ${def.need_star}`
+          : !hasFacility
+            ? `Needs a ${def.unlocked.toLowerCase()}`
+            : world.money >= def.price
+              ? "Ready to buy"
+              : "Not enough money";
+      row.innerHTML = `
+        <div class="f-head">
+          <span class="f-name">${def.name}</span>
+          <span class="f-level">${note}</span>
+        </div>
+        <div class="f-meta">
+          <span>${def.effect}</span>
+          <span>${owned ? "" : money(def.price)}</span>
+        </div>`;
+      if (!owned && world.canBuyExtra(id)) {
+        const buy = el("button", "primary small", "Buy");
+        buy.addEventListener("click", () => {
+          this.cb.onBuyExtra(id);
+          this.renderSide();
+        });
+        row.appendChild(buy);
+      }
+      body.appendChild(row);
+    }
+    body.appendChild(
+      el("p", "empty", `${bought} of ${EXTRA_LIST.length} bought. Research level ${level}.`),
+    );
   }
 
   private renderStaff(body: HTMLElement): void {

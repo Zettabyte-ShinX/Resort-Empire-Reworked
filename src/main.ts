@@ -56,6 +56,12 @@ const ui = new UI(app, {
   onMusic: (on) => {
     audio.setMusicEnabled(on);
   },
+  onBuyExtra: (id) => {
+    if (!world.buyExtra(id)) return;
+    audio.play("coin1");
+    ui.pushLog(world.log.splice(0, world.log.length));
+    ui.update(world);
+  },
   onLoad: (id) => {
     const loaded = loadGame(id);
     if (!loaded) {

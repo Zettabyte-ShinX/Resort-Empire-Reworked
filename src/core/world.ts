@@ -11,6 +11,7 @@
 
 import {
   DATA,
+  EXTRAS,
   MAP_TIERS,
   RESEARCH,
   boothDef,
@@ -594,6 +595,80 @@ export class World {
     return researchLevel(this.researchPoints);
   }
 
+  /** The extras the player has bought. */
+  extras = new Set<string>();
+
+  /**
+   * Whether an extra can be bought: it needs the research level, the
+   * facility it is tied to, and the money.
+   */
+  canBuyExtra(id: string): boolean {
+    const def = EXTRAS[id];
+    if (!def) return false;
+    if (this.extras.has(id)) return false;
+    if (this.researchLevel < def.need_star) return false;
+    if (!this.booths.some((b) => b.type === def.unlocked)) return false;
+    return this.money >= def.price;
+  }
+
+  /** Buy an extra. */
+  buyExtra(id: string): boolean {
+    if (!this.canBuyExtra(id)) return false;
+    const def = EXTRAS[id]!;
+    this.money -= def.price;
+    this.extras.add(id);
+    this.log.push(`Bought ${def.name}.`);
+    this.recomputePopularity();
+    return true;
+  }
+
+  /** Whether the player has bought an extra. */
+  hasExtra(id: string): boolean {
+    return this.extras.has(id);
+  }
+
+  /**
+   * The price of a plant, after the extras that make it cheaper.
+   */
+  sceneryPrice(id: string): number {
+    const def = sceneryDef(id);
+    let price = def.price;
+    // The original's extras each make one kind of tree cheaper.
+    const cheaper: [string, string][] = [
+      ["leaf", "PLANT_5"], // the cedar
+      ["wallpaper", "PLANT_7"], // the palm
+      ["sauce", "PLANT_4"], // the bamboo
+    ];
+    for (const [extra, plant] of cheaper) {
+      if (!this.extras.has(extra)) continue;
+      if (id !== plant) continue;
+      const cut = EXTRAS[extra]?.val ?? 0;
+      price = Math.max(1, Math.round(price * (1 - cut / 100)));
+    }
+    return price;
+  }
+
+  /** How much extra a facility earns, from the extras the player has bought. */
+  private earningsBonus(type: string): number {
+    let bonus = 0;
+    if (this.extras.has("wine")) bonus += 0.2;
+    if (this.extras.has("meat") && type === "Hotdog") bonus += 0.3;
+    if (this.extras.has("bamboo") && type === "Cottage") bonus += 0.2;
+    if (this.extras.has("palm") && type === "Lodge") bonus += 0.2;
+    if (this.extras.has("irrigation") && type === "BaratResto") bonus += 0.3;
+    return bonus;
+  }
+
+  /** The extra mood the bought extras give a guest at a facility. */
+  private moodBonus(type: string, guestOld: boolean): number {
+    let bonus = 0;
+    if (this.extras.has("heater") && type === "Cottage") bonus += 4;
+    if (this.extras.has("towel") && type === "Lodge") bonus += 4;
+    if (this.extras.has("wifi")) bonus += 2;
+    if (this.extras.has("aid") && guestOld) bonus += 4;
+    return bonus;
+  }
+
   /** Whether a facility has been unlocked by research yet. */
   isUnlocked(type: string): boolean {
     const need = unlockLevel(type);
@@ -661,13 +736,12 @@ export class World {
     if (!t) return false;
     if (t.booth) return false;
     if (t.scenery) return false;
-    return this.money >= sceneryDef(id).price;
+    return this.money >= this.sceneryPrice(id);
   }
 
   placeScenery(id: string, col: number, row: number): boolean {
     if (!this.canPlaceScenery(id, col, row)) return false;
-    const def = sceneryDef(id);
-    this.money -= def.price;
+    this.money -= this.sceneryPrice(id);
     this.tiles[row][col].scenery = id;
     this.recomputePopularity();
     return true;
@@ -772,12 +846,14 @@ export class World {
     for (const b of this.booths) {
       total += boothPopularity(b.type, b.level);
     }
-    // Plants add a little charm.
+    // Plants add a little charm, and the ornamental gardening extra makes
+    // them count for more.
+    const garden = this.extras.has("gardening") ? 1 + (EXTRAS.gardening?.val ?? 0) / 100 : 1;
     for (const row of this.tiles) {
       for (const t of row) {
         if (!t.scenery) continue;
         const def = DATA.scenery[t.scenery];
-        if (def) total += def.pop;
+        if (def) total += def.pop * garden;
       }
     }
     this.popularityCache = total;
@@ -1124,7 +1200,8 @@ export class World {
       ? def.booked_price[Math.min(booth.level, def.booked_price.length - 1)]
       : def.booked_price;
 
-    const charge = Math.min(price || 0, Math.max(0, v.budget - v.spent));
+    const charge = Math.min(price || 0, Math.max(0, v.budget - v.spent)) *
+      (1 + this.earningsBonus(booth.type));
     v.spent += charge;
     this.money += charge;
     this.stats.revenue += charge;
@@ -1135,7 +1212,12 @@ export class World {
     const worth =
       this.wantedFacilities(v).find((w) => w.type === booth.type)?.worth ?? 40;
     const pop = boothPopularity(booth.type, booth.level);
-    const delta = (worth - 40) / 4 + pop * 3 + (charge > 0 ? 4 : -8);
+    const old = guestDef(v.variant).old;
+    const delta =
+      (worth - 40) / 4 +
+      pop * 3 +
+      (charge > 0 ? 4 : -8) +
+      this.moodBonus(booth.type, old);
     v.mood = Math.max(0, Math.min(100, v.mood + delta));
     v.visits++;
     // Checking in books the guest into a room, and going to that room is

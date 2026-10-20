@@ -140,6 +140,10 @@ const d = raw as unknown as {
   };
   _statics: {
     EXPAND: { price: number[] };
+    Extra_Upgrade: {
+      listing: string[];
+      [id: string]: unknown;
+    };
     ResearchPoint: {
       level_: number[];
       bonusLevel: number[];
@@ -209,6 +213,29 @@ export function guestDef(variant: number): GuestDef {
   if (!g) throw new Error(`unknown guest ${variant}`);
   return g;
 }
+
+/** One of the original's purchasable extras. */
+export interface ExtraDef {
+  name: string;
+  effect: string;
+  /** The facility that has to be built for it to show up. */
+  unlocked: string;
+  price: number;
+  /** The research level it needs. */
+  need_star: number;
+  /** A percentage, for the extras that change a price. */
+  val?: number;
+}
+
+export const EXTRAS: Record<string, ExtraDef> = raw._statics.Extra_Upgrade as unknown as Record<
+  string,
+  ExtraDef
+>;
+
+/** The order the original lists its extras in. */
+export const EXTRA_LIST: string[] = (raw._statics.Extra_Upgrade as unknown as {
+  listing: string[];
+}).listing;
 
 /** The original's research tree. */
 export interface ResearchDef {
