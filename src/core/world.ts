@@ -675,10 +675,7 @@ export class World {
    * is in the `batas` field.
    */
   missionProgress(id: string): number {
-    const plants = this.tiles.reduce(
-      (n, row) => n + row.filter((t) => t.scenery).length,
-      0,
-    );
+    const plants = this.plantCount;
     const rooms = this.booths.filter((b) => boothDef(b.type).mainJenis === "Room").length;
     const facilities = this.booths.length - rooms;
     const janitors = this.booths.filter((b) => b.type === "JanitorRoom").length;
@@ -869,6 +866,12 @@ export class World {
 
   /** Litter left by the guests, by tile. */
   litter = new Map<string, number>();
+
+  /** How many plants are in the resort, kept up to date as they change. */
+  private plantCount = 0;
+
+  /** How long until the rewards are looked at again. */
+  private rewardTimer = 0;
 
   /** The janitor, if the resort has a janitor room. */
   janitor: { col: number; row: number; timer: number; working: number } | null = null;
@@ -1201,6 +1204,7 @@ export class World {
     for (const b of this.booths) {
       total += boothPopularity(b.type, b.level);
     }
+    this.plantCount = 0;
     // Litter left lying about puts the resort off.
     for (const amount of this.litter.values()) {
       total -= amount * 0.2;
@@ -1211,6 +1215,7 @@ export class World {
     for (const row of this.tiles) {
       for (const t of row) {
         if (!t.scenery) continue;
+        this.plantCount++;
         const def = DATA.scenery[t.scenery];
         if (def) total += def.pop * garden;
       }
@@ -1708,8 +1713,13 @@ export class World {
       this.updateVisitor(v, dt);
     }
     this.updateJanitor(scaled);
-    this.checkAchievements();
-    this.checkMissions();
+    // The rewards are looked at once a second rather than every frame.
+    this.rewardTimer -= scaled;
+    if (this.rewardTimer <= 0) {
+      this.rewardTimer = 1;
+      this.checkAchievements();
+      this.checkMissions();
+    }
     // Drop finished guests.
     this.visitors = this.visitors.filter((v) => v.state !== "done");
   }
