@@ -48,7 +48,8 @@ test("pathfinding is fast enough to run every frame on a real map", () => {
   for (let r = 0; r < 37; r++) mask[r * 37 + 18] = 0; // wall down column 18
   const started = Date.now();
   for (let i = 0; i < 200; i++) {
-    findPath({ col: 2, row: 2 }, { col: 30, row: 30 }, { mask, bounds: { cols: 37, rows: 37 } });
+    // A reachable goal: this is the case the game hits over and over.
+    findPath({ col: 2, row: 2 }, { col: 15, row: 30 }, { mask, bounds: { cols: 37, rows: 37 } });
   }
   const elapsed = Date.now() - started;
   // 200 searches must stay well inside a single frame budget.

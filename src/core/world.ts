@@ -249,7 +249,7 @@ export class World {
       const r = Number(m[1]);
       const c = Number(m[2]);
       if (r < 0 || c < 0 || r >= this.rows || c >= this.cols) continue;
-      this.tiles[r]![c]!.scenery = "PLANT_11";
+      this.tiles[r]![c]!.scenery = "HEDGE";
     }
 
     // The original rings the buildable plot with a hedge. The coordinates in
@@ -261,7 +261,7 @@ export class World {
         if (tile.id !== "TILE_82" || tile.scenery) continue;
         const onNorth = this.tiles[r]![c + 1]?.id === "TILE_80";
         const onWest = this.tiles[r + 1]?.[c]?.id === "TILE_80";
-        if (onNorth || onWest) tile.scenery = "PLANT_11";
+        if (onNorth || onWest) tile.scenery = "HEDGE";
       }
     }
 
@@ -489,7 +489,8 @@ export class World {
   removeScenery(col: number, row: number): boolean {
     const t = this.tileAt(col, row);
     if (!t || !t.scenery) return false;
-    this.money += Math.floor(sceneryDef(t.scenery).price * 0.5);
+    const def = DATA.scenery[t.scenery];
+    if (def) this.money += Math.floor(def.price * 0.5);
     t.scenery = null;
     this.recomputePopularity();
     return true;
@@ -558,7 +559,9 @@ export class World {
     // Plants add a little charm.
     for (const row of this.tiles) {
       for (const t of row) {
-        if (t.scenery) total += sceneryDef(t.scenery).pop;
+        if (!t.scenery) continue;
+        const def = DATA.scenery[t.scenery];
+        if (def) total += def.pop;
       }
     }
     this.popularityCache = total;

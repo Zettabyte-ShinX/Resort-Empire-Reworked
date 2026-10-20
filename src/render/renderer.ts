@@ -14,7 +14,11 @@
 
 import { TILE_H, TILE_W, gridToScreen, mapBounds, screenToGrid } from "../core/iso.ts";
 import type { GridPos } from "../core/iso.ts";
-import { tileDef } from "../core/data.ts";
+import { sceneryDef, tileDef } from "../core/data.ts";
+
+/** The hedge the original draws around the buildable plot. */
+export const HEDGE = "HEDGE";
+const HEDGE_FRAME = 11;
 import type { World } from "../core/world.ts";
 import { drawBooth, drawGuest, drawPlant, drawTile } from "./art.ts";
 import { art } from "./sprites.ts";
@@ -184,7 +188,7 @@ export class Renderer {
     }
 
     // Scenery, drawn back to front so nearer plants overlap farther ones.
-    const plants: { col: number; row: number; species: number; seed: number }[] = [];
+    const plants: { col: number; row: number; species: string; seed: number }[] = [];
     for (let r = 0; r < world.rows; r++) {
       for (let col = 0; col < world.cols; col++) {
         const tile = world.tiles[r]![col]!;
@@ -192,7 +196,7 @@ export class Renderer {
         plants.push({
           col,
           row: r,
-          species: Number(tile.scenery.replace(/\D/g, "")) || 0,
+          species: tile.scenery,
           seed: (col * 37 + r * 91) % 997,
         });
       }
@@ -202,18 +206,25 @@ export class Renderer {
       const s = gridToScreen(p.col, p.row);
       const def = this.sceneryFrame(p.species);
       const drawn = def ? drawSprite(c, def, s.x, s.y, artScale) : false;
-      if (!drawn) drawPlant(c, s.x, s.y, p.species, p.seed);
+      if (!drawn) {
+        const fallback = Number(p.species.replace(/\D/g, "")) || 0;
+        drawPlant(c, s.x, s.y, fallback, p.seed);
+      }
     }
 
     this.staticZoom = zoom;
     this.staticDirty = false;
   }
 
-  /** The plant graphic for a species number, from the original's frame set. */
-  private sceneryFrame(species: number): SpriteFrame | undefined {
+  /** The plant graphic for a species, from the original's frame set. */
+  private sceneryFrame(species: string): SpriteFrame | undefined {
     const entry = art.frameSet("plants");
     if (!entry || entry.frames.length === 0) return undefined;
-    const idx = Math.max(0, Math.min(entry.frames.length - 1, species));
+    // The original addresses plant art by the frame number recorded in the
+    // data, not by the species index. The hedge is not a plant at all: it is
+    // the unused frame the original draws its plot border with.
+    const fr = species === HEDGE ? HEDGE_FRAME : sceneryDef(species).fr;
+    const idx = Math.max(0, Math.min(entry.frames.length - 1, fr - 1));
     return entry.frames[idx];
   }
 
