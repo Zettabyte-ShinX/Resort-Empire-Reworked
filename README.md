@@ -29,6 +29,8 @@ Android app.
 * **Dialogs.** Finishes, achievements, options, a how-to-play guide and
   save/load (kept in `localStorage`, so saves follow the player between the
   browser and the desktop app).
+* **Autosaving.** The resort is saved every twenty seconds and restored on the
+  next launch, so closing the tab does not lose progress.
 * **A facility inspector.** Click any building to see its level, how many
   guests it has served, its satisfaction, its popularity and its nightly
   rate, and to upgrade or demolish it.
@@ -124,6 +126,8 @@ npm run tauri:build  # native installers for the current platform
 | Drag | pan the camera |
 | Wheel | zoom |
 | `W` `A` `S` `D` / arrow keys | pan the camera |
+| `1` - `6` | pick a build tool |
+| `Space` | pause and resume |
 | `Esc` | cancel the current selection |
 
 ## The original
