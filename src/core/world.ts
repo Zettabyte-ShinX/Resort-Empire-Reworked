@@ -82,6 +82,11 @@ export interface Visitor {
   timer: number;
   /** Visual variety seed. */
   seed: number;
+  /** Screen-space direction of travel, -1, 0 or 1 on each axis. */
+  dirX: number;
+  dirY: number;
+  /** Whether the guest is on the move. */
+  moving: boolean;
 }
 
 export interface WorldOptions {
@@ -90,6 +95,16 @@ export interface WorldOptions {
 }
 
 const HOUR_SECONDS = 2.2;
+
+/**
+ * Where the original anchors the buildable plot.
+ *
+ * The plot is not centred on the grid: `MapContainer` uses a fixed corner
+ * (row 10, column 11) and measures the plot outwards from there, so it
+ * grows towards the bottom right of the map as the resort expands.
+ */
+const PLOT_CORNER_ROW = 10;
+const PLOT_CORNER_COL = 11;
 
 /** Aggregate numbers the management panels show. */
 export interface WorldStats {
@@ -181,19 +196,17 @@ export class World {
 
   private generate(): void {
     const t = MAP_TIERS[this.tier];
-    const cx = Math.floor(this.cols / 2);
-    const cy = Math.floor(this.rows / 2);
-    const half = t.lahan.x;
 
-    // The original's starting map, reproduced from `pack/MapContainer.as`:
+    // The original's starting map, reproduced from `pack/MapContainer.as`
+    // (`BuildMap`) and `pack/serbi.as`. The plot is not centred on the grid:
+    // the original anchors it at a fixed corner and lets it grow from there.
     //
-    //   * an asphalt road ring around the outside
-    //   * a sidewalk border just inside it
+    //   * an asphalt road along two edges and around the far side
+    //   * a sidewalk band inside the road
     //   * a sand coloured buildable plot in the middle
-    //   * grass everywhere else
-    //   * hedges and scenery placed at the coordinates in `zmap.MAP`
-    const boundX = cx + half;
-    const boundY = cy + half;
+    //   * a hedge of green blocks around the plot, with a gap for the gate
+    const boundX = PLOT_CORNER_ROW + t.lahan.x;
+    const boundY = PLOT_CORNER_COL + t.lahan.y;
     const bound2X = boundX + 3;
     const bound2Y = boundY + 3;
     const bound3X = bound2X + 2;
@@ -202,19 +215,23 @@ export class World {
     for (let r = 0; r < this.rows; r++) {
       const row: Tile[] = [];
       for (let c = 0; c < this.cols; c++) {
-        let id = "TILE_5"; // grass
-        if (r === 4 || r === 5 || c === 5 || c === 6) {
+        let id: string;
+        if (r === 4 || r === 5) {
           id = "TILE_83"; // asphalt road
-        } else if ((c > bound2Y && c <= bound3Y) || (r > bound2X && r <= bound3X)) {
+        } else if (c === 5 || c === 6) {
+          id = "TILE_83"; // asphalt road
+        } else if (c > bound2Y && c <= bound3Y) {
+          id = "TILE_83"; // asphalt road
+        } else if (r > bound2X && r <= bound3X) {
           id = "TILE_83"; // asphalt road
         } else if (c > 6 && c <= bound2Y && r > 5 && r <= bound2X) {
-          if (r > cx && r < boundX && c > cy && c < boundY) {
+          if (r > PLOT_CORNER_ROW && r < boundX && c > PLOT_CORNER_COL && c < boundY) {
             id = "TILE_80"; // sand plot
           } else {
-            id = "TILE_82"; // sidewalk border
+            id = "TILE_82"; // sidewalk band
           }
-        } else if (r > 6 && r <= bound2X && c > 5 && c <= bound2X) {
-          id = "TILE_82";
+        } else {
+          id = "TILE_0"; // bare ground
         }
         row.push(makeTile(id));
       }
@@ -252,42 +269,61 @@ export class World {
       this.tiles[r]![c]!.scenery = "HEDGE";
     }
 
-    // The original rings the buildable plot with a hedge. The coordinates in
-    // `zmap.MAP.kepiting` are relative to the plot edge, so the ring is
-    // rebuilt from the sidewalk border directly.
-    for (let r = 0; r < this.rows; r++) {
-      for (let c = 0; c < this.cols; c++) {
-        const tile = this.tiles[r]![c]!;
-        if (tile.id !== "TILE_82" || tile.scenery) continue;
-        const onNorth = this.tiles[r]![c + 1]?.id === "TILE_80";
-        const onWest = this.tiles[r + 1]?.[c]?.id === "TILE_80";
-        if (onNorth || onWest) tile.scenery = "HEDGE";
-      }
+    // The original rings the buildable plot with a row of green hedge blocks,
+    // leaving a gap for the gate (`MapContainer.CreatingSceneryDefault`).
+    const hedge: [number, number][] = [];
+    for (let r = 10; r <= boundX; r++) hedge.push([r, 11]);
+    for (let c = 12; c <= boundY; c++) {
+      if (c < 20 || c > 23) hedge.push([10, c]);
+    }
+    for (let r = 11; r < boundX; r++) hedge.push([r, boundY]);
+    for (let c = 12; c <= boundY; c++) hedge.push([boundX, c]);
+    for (const [r, c] of hedge) {
+      if (r < 0 || c < 0 || r >= this.rows || c >= this.cols) continue;
+      this.tiles[r]![c]!.scenery = "HEDGE";
     }
 
-    // The entrance, where guests arrive.
-    this.entrance = { col: cx, row: this.rows - 2 };
-    for (let c = cx - 3; c <= cx + 3; c++) {
-      if (c >= 0 && c < this.cols) {
-        this.tiles[this.entrance.row]![c] = makeTile("TILE_82");
+    // The gate: the original leaves a gap in the hedge for the entrance and
+    // makes those tiles walkable (`zmap.MAP.tileDefault`).
+    this.entrance = { col: PLOT_CORNER_COL + 10, row: PLOT_CORNER_ROW + 1 };
+    for (let c = PLOT_CORNER_COL + 9; c <= PLOT_CORNER_COL + 12; c++) {
+      if (c < 0 || c >= this.cols) continue;
+      const gate = this.tiles[PLOT_CORNER_ROW]![c]!;
+      gate.id = "TILE_1";
+      gate.walkable = true;
+    }
+
+    // The plot itself is the buildable ground, and the guests walk across it
+    // between the facilities, so it is walkable even though the original's
+    // tile table lists the sand as unbuildable ground.
+    for (let r = PLOT_CORNER_ROW + 1; r < boundX; r++) {
+      for (let c = PLOT_CORNER_COL + 1; c < boundY; c++) {
+        this.tiles[r]![c]!.walkable = true;
       }
     }
 
     this.recomputePopularity();
     this.recomputeReachable();
-    this.seedStarterResort(cx, this.entrance.row);
+    this.seedStarterResort();
   }
 
   /**
    * Lay down the resort the player starts with: a lobby to check in at and a
    * couple of facilities so there is something to do from the first minute.
+   *
+   * They are placed on the buildable plot, in the order the original puts
+   * them up: the lobby at the entrance end, then rooms and facilities
+   * spreading back into the resort.
    */
-  private seedStarterResort(cx: number, entranceRow: number): void {
+  private seedStarterResort(): void {
+    const plot = this.plotBounds();
     const starters: [string, number, number][] = [
-      ["Lobby", cx - 1, entranceRow - 6],
-      ["Cottage", cx - 6, entranceRow - 6],
-      ["Pool", cx + 3, entranceRow - 5],
-      ["Icecream", cx + 2, entranceRow - 1],
+      // The lobby is 4 rows deep, so it sits in the southern half of the
+      // plot; the pool takes the northern corner and the rest fills in.
+      ["Lobby", plot.c0 + 2, plot.r1 - 6],
+      ["Cottage", plot.c0 + 2, plot.r0 + 2],
+      ["Pool", plot.c1 - 6, plot.r0 + 2],
+      ["Icecream", plot.c1 - 2, plot.r0 + 2],
     ];
     for (const [type, col, row] of starters) {
       if (col < 0 || row < 0 || col >= this.cols || row >= this.rows) continue;
@@ -298,7 +334,7 @@ export class World {
       if (placed) continue;
       // The spot was taken: try a couple of nearby alternatives.
       for (const [dc, dr] of [
-        [0, -3], [3, 0], [-3, 0], [0, 3], [4, -4], [-4, -4],
+        [0, -3], [3, 0], [-3, 0], [0, 3], [4, -4], [-4, -4], [0, -6], [6, 0],
       ]) {
         const nc = col + dc;
         const nr = row + dr;
@@ -309,6 +345,17 @@ export class World {
         if (ok) break;
       }
     }
+  }
+
+  /** The extent of the buildable plot, in grid coordinates. */
+  plotBounds(): { c0: number; c1: number; r0: number; r1: number } {
+    const t = MAP_TIERS[this.tier];
+    return {
+      c0: PLOT_CORNER_COL + 1,
+      c1: PLOT_CORNER_COL + t.lahan.y - 1,
+      r0: PLOT_CORNER_ROW + 1,
+      r1: PLOT_CORNER_ROW + t.lahan.x - 1,
+    };
   }
 
   tileAt(col: number, row: number): Tile | null {
@@ -597,6 +644,9 @@ export class World {
       archetype: arch,
       timer: 0,
       seed: Math.random(),
+      dirX: 0,
+      dirY: 0,
+      moving: false,
     });
     void archetypes;
   }
@@ -737,7 +787,10 @@ export class World {
   }
 
   private advanceAlongPath(v: Visitor, dt: number): void {
-    if (v.path.length === 0) return;
+    if (v.path.length === 0) {
+      v.moving = false;
+      return;
+    }
     const speed = 2.2; // tiles per second
     let remaining = speed * dt;
 
@@ -757,7 +810,13 @@ export class World {
         v.row += dr * t;
         remaining = 0;
       }
+      // Record which way the guest is heading on screen, so the renderer can
+      // pick the right pose and mirror it. The grid maps to the screen as
+      // x = (row - col), y = -(row + col).
+      v.dirX = Math.sign(dr - dc);
+      v.dirY = -Math.sign(dr + dc);
     }
+    v.moving = true;
   }
 
   private completeVisit(v: Visitor, booth: BoothInstance): void {

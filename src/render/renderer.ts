@@ -14,11 +14,17 @@
 
 import { TILE_H, TILE_W, gridToScreen, mapBounds, screenToGrid } from "../core/iso.ts";
 import type { GridPos } from "../core/iso.ts";
-import { sceneryDef, tileDef } from "../core/data.ts";
+import { boothDef, sceneryDef, tileDef } from "../core/data.ts";
 
 /** The hedge the original draws around the buildable plot. */
 export const HEDGE = "HEDGE";
-const HEDGE_FRAME = 11;
+/**
+ * The frame of the original's `Scenery` clip that draws the plot's hedge.
+ *
+ * It is the same model as the "corner plant" the original scatters around
+ * the map: a block of greenery.
+ */
+const HEDGE_FRAME = 10;
 import type { World } from "../core/world.ts";
 import { drawBooth, drawGuest, drawPlant, drawTile } from "./art.ts";
 import { art } from "./sprites.ts";
@@ -43,10 +49,25 @@ function drawSprite(
   x: number,
   y: number,
   scale = 1,
+  flip = false,
 ): boolean {
   if (!frame) return false;
   const img = art.image(frame.file);
   if (!img || !img.complete || img.naturalWidth === 0) return false;
+  if (flip) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(-1, 1);
+    ctx.drawImage(
+      img,
+      -frame.ox * scale,
+      -frame.oy * scale,
+      frame.w * scale,
+      frame.h * scale,
+    );
+    ctx.restore();
+    return true;
+  }
   ctx.drawImage(
     img,
     x - frame.ox * scale,
@@ -179,6 +200,10 @@ export class Renderer {
         const tile = world.tiles[r]![col]!;
         const p = gridToScreen(col, r);
         const def = tileDef(tile.id);
+        // The plot's sand is drawn underneath; the original marks the
+        // buildable tiles with an outline, but a built-out resort looks
+        // better without them.
+        if (tile.id === "TILE_80") continue;
         const frame = art.frameFor("tiles", def.fr);
         const drawn = frame ? drawSprite(c, frame, p.x, p.y, artScale) : false;
         if (!drawn) {
@@ -216,13 +241,37 @@ export class Renderer {
     this.staticDirty = false;
   }
 
+  /**
+   * Where a facility's artwork is anchored on the map.
+   *
+   * The original's floors are drawn from a fixed offset in the sprite, so
+   * lining the visible artwork up with the middle of the footprint is what
+   * puts the floor on its tiles. The room and the building are drawn from
+   * the same point, which is how the original keeps them together.
+   */
+  private boothAnchor(
+    b: { col: number; row: number; cols: number; rows: number },
+    floor: SpriteFrame | undefined,
+    scale: number,
+  ): { x: number; y: number } {
+    const centre = gridToScreen(b.col + b.cols / 2, b.row + b.rows / 2);
+    if (!floor || !floor.bbox) {
+      const west = gridToScreen(b.col + b.cols, b.row);
+      return { x: west.x, y: west.y + 12 };
+    }
+    const [x0, y0, x1, y1] = floor.bbox;
+    const artX = ((x0 + x1) / 2 - floor.ox) * scale;
+    const artY = ((y0 + y1) / 2 - floor.oy) * scale;
+    return { x: centre.x - artX, y: centre.y - artY };
+  }
+
   /** The plant graphic for a species, from the original's frame set. */
   private sceneryFrame(species: string): SpriteFrame | undefined {
     const entry = art.frameSet("plants");
     if (!entry || entry.frames.length === 0) return undefined;
     // The original addresses plant art by the frame number recorded in the
-    // data, not by the species index. The hedge is not a plant at all: it is
-    // the unused frame the original draws its plot border with.
+    // data, not by the species index. The hedge is the corner plant: the
+    // original rings the plot with rows of green blocks.
     const fr = species === HEDGE ? HEDGE_FRAME : sceneryDef(species).fr;
     const idx = Math.max(0, Math.min(entry.frames.length - 1, fr - 1));
     return entry.frames[idx];
@@ -271,15 +320,29 @@ export class Renderer {
     const items: Renderable[] = [];
 
     for (const b of world.booths) {
-      const entry = art.booth(b.type);
-      const frame = entry?.frames[0];
-      // The original anchors a booth on the corner tile of its footprint and
-      // places the clip's origin there, so the building grows upwards from it.
-      const anchor = gridToScreen(b.col, b.row + b.rows - 1);
+      const def = boothDef(b.type);
+      // Each facility has its own artwork per upgrade level.
+      const frame = art.boothFrame(b.type, b.level);
+      const floorFrame = art.boothTileFrame(def.fr, b.level);
+      // The room the facility is built in, from the original's `Wall` clip.
+      const wallFrame = def.standbooth
+        ? undefined
+        : art.wallFrame(def.wall, b.level);
+      // The original draws a facility's floor, room and building from one
+      // shared origin, so they keep the arrangement the artist gave them. The
+      // floor is lined up with the footprint it belongs to, and the room and
+      // the building follow it.
+      const anchor = this.boothAnchor(b, floorFrame, artScale);
       const depth = b.col + b.row + (b.cols + b.rows) / 2;
       items.push({
         depth,
         draw: () => {
+          if (floorFrame) {
+            drawSprite(ctx, floorFrame, anchor.x, anchor.y, artScale);
+          }
+          if (wallFrame) {
+            drawSprite(ctx, wallFrame, anchor.x, anchor.y, artScale);
+          }
           const ok = frame ? drawSprite(ctx, frame, anchor.x, anchor.y, artScale) : false;
           if (!ok) {
             drawBooth(ctx, b.col, b.row, b.cols, b.rows, b.type, b.level);
@@ -291,11 +354,19 @@ export class Renderer {
     for (const v of world.visitors) {
       const p = gridToScreen(v.col, v.row);
       const entry = art.visitor(variantFor(v));
-      const frame = entry?.frames[0];
+      // The guest artwork has a pose for standing and walking, facing towards
+      // or away from the camera, and is mirrored to face the way it walks.
+      const pose = v.moving ? "walk" : "stand";
+      const facing = v.dirY < 0 ? "back" : "front";
+      const frame =
+        art.frameByLabel(entry, `${pose}_${facing}`) ??
+        art.frameByLabel(entry, "stand_front") ??
+        entry?.frames[0];
+      const flip = v.dirX < 0 || (v.dirX === 0 && v.dirY > 0);
       items.push({
         depth: v.col + v.row,
         draw: () => {
-          const ok = frame ? drawSprite(ctx, frame, p.x, p.y, artScale) : false;
+          const ok = frame ? drawSprite(ctx, frame, p.x, p.y, artScale, flip) : false;
           if (!ok) drawGuest(ctx, p.x, p.y, v.seed, v.mood);
         },
       });

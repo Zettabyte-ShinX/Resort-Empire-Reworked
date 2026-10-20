@@ -298,6 +298,7 @@ void art.load(() => {
   },
   renderer,
   ui,
+  art,
   boothPrice,
   tileDef,
 };

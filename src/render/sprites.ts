@@ -20,6 +20,10 @@ export interface SpriteFrame {
   /** Sprite origin within the PNG, measured from the top left. */
   ox: number;
   oy: number;
+  /** The animation this frame is, e.g. `walk_front` or `level_2`. */
+  label?: string;
+  /** The visible pixels of the frame, in PNG pixels. */
+  bbox?: [number, number, number, number];
 }
 
 export interface SpriteEntry {
@@ -119,6 +123,59 @@ export class Art {
   imageAsset(name: string): HTMLImageElement | undefined {
     const file = this.manifest?.images?.[name];
     return file ? this.images.get(file) : undefined;
+  }
+
+  /**
+   * The floor plate for a facility.
+   *
+   * The original records a `fr` frame per facility and draws `fr` plus the
+   * upgrade level from a separate frame set of pre-rendered floor shapes
+   * (`Booth.as`, `creatingLantai`).
+   */
+  boothTileFrame(fr: number, level = 0): SpriteFrame | undefined {
+    const entry = this.frameSet("boothTile");
+    if (!entry || entry.frames.length === 0) return undefined;
+    const idx = Math.max(0, Math.min(entry.frames.length - 1, fr - 1 + level));
+    return entry.frames[idx];
+  }
+
+  /**
+   * The room a facility is built in.
+   *
+   * The original keeps a separate `Wall` clip with the interior of every
+   * room; `Booth.as` draws the frame recorded in the facility's `wall` and
+   * `wall_alpha` fields, one set per upgrade level.
+   */
+  wallFrame(wall: number, level = 0): SpriteFrame | undefined {
+    const entry = this.frameSet("wall");
+    if (!entry || entry.frames.length === 0) return undefined;
+    const idx = Math.max(0, Math.min(entry.frames.length - 1, wall - 1 + level));
+    return entry.frames[idx];
+  }
+
+  /**
+   * The frame of a sprite with a given label.
+   *
+   * The original addresses its animations by name - `walk_front` for a guest
+   * walking towards the camera, `level_2` for a facility at its second
+   * upgrade - so the labels recovered from the SWF are what let the original
+   * artwork be used as-is.
+   */
+  frameByLabel(entry: SpriteEntry | undefined, label: string): SpriteFrame | undefined {
+    if (!entry) return undefined;
+    return entry.frames.find((f) => f.label === label);
+  }
+
+  /** The frame for a facility at a given upgrade level. */
+  boothFrame(type: string, level: number): SpriteFrame | undefined {
+    const entry = this.booth(type);
+    if (!entry) return undefined;
+    return (
+      this.frameByLabel(entry, `level_${level + 1}`) ??
+      // Facilities that have no level frames still need something to show.
+      entry.frames.find((f) => f.label !== "_build") ??
+      entry.frames[0]
+    );
   }
 }
 

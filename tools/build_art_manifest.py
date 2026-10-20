@@ -25,6 +25,7 @@ from __future__ import annotations
 import json
 import re
 import shutil
+import zlib
 import sys
 from pathlib import Path
 
@@ -59,6 +60,7 @@ FRAME_SETS = {
     "SandTile": "sand",
     "BoothTile": "boothTile",
     "Plant": "plantMarker",
+    "Wall": "wall",
 }
 
 VISITOR_RE = re.compile(r"^Visitor(\d+)$")
@@ -88,8 +90,79 @@ def png_size(path: Path) -> tuple[int, int]:
     return (int.from_bytes(head[16:20], "big"), int.from_bytes(head[20:24], "big"))
 
 
-def svg_anchor(path: Path) -> tuple[float, float] | None:
-    """Return the (tx, ty) translate of the SVG's outer group."""
+def png_bbox(path: Path) -> list[int] | None:
+    """The bounding box of the visible pixels of a PNG, in pixels.
+
+    The original draws its floors and rooms from a fixed origin, which does
+    not always line up with the footprint they belong to. Knowing where the
+    artwork actually is lets the game place it exactly on its tiles.
+    """
+    data = path.read_bytes()
+    pos, width, height, colour = 8, 0, 0, 6
+    idat = b""
+    while pos < len(data):
+        length = int.from_bytes(data[pos:pos + 4], "big")
+        tag = data[pos + 4:pos + 8]
+        body = data[pos + 8:pos + 8 + length]
+        pos += 12 + length
+        if tag == b"IHDR":
+            width = int.from_bytes(body[0:4], "big")
+            height = int.from_bytes(body[4:8], "big")
+            colour = body[9]
+        elif tag == b"IDAT":
+            idat += body
+    if width == 0 or height == 0 or colour not in (2, 6):
+        return None
+    bpp = 4 if colour == 6 else 3
+    raw = zlib.decompress(idat)
+    stride = width * bpp
+    previous = bytearray(stride)
+    x0 = y0 = width
+    x1 = y1 = -1
+    offset = 0
+    for y in range(height):
+        filter_type = raw[offset]
+        offset += 1
+        line = bytearray(raw[offset:offset + stride])
+        offset += stride
+        for i in range(stride):
+            a = line[i - bpp] if i >= bpp else 0
+            b = previous[i]
+            c = previous[i - bpp] if i >= bpp else 0
+            if filter_type == 1:
+                line[i] = (line[i] + a) & 255
+            elif filter_type == 2:
+                line[i] = (line[i] + b) & 255
+            elif filter_type == 3:
+                line[i] = (line[i] + (a + b) // 2) & 255
+            elif filter_type == 4:
+                pa, pb, pc = abs(b - c), abs(a - c), abs(a + b - 2 * c)
+                line[i] = (line[i] + (a if (pa <= pb and pa <= pc) else (b if pb <= pc else c))) & 255
+        if bpp == 4:
+            for i in range(0, stride, 4):
+                if line[i + 3] > 16:
+                    px = i // 4
+                    if px < x0: x0 = px
+                    if px > x1: x1 = px
+                    if y < y0: y0 = y
+                    if y > y1: y1 = y
+        previous = line
+    if x1 < 0:
+        return None
+    return [x0, y0, x1, y1]
+
+
+SVG_SIZE_RE = re.compile(r'width="([\d.]+)px"\s+height="([\d.]+)px"|height="([\d.]+)px"\s+width="([\d.]+)px"')
+
+
+def svg_anchor(path: Path, png_w: int, png_h: int) -> tuple[float, float] | None:
+    """Return where the sprite's origin sits inside its exported PNG.
+
+    The SVG the decompiler writes is in its own units, which are not always the
+    same as the pixels of the PNG it accompanies: the zoom is sometimes baked
+    into the transform and sometimes into the canvas. Scaling the translate by
+    the ratio between the two puts the origin in PNG pixels either way.
+    """
     text = path.read_text(encoding="utf-8", errors="replace")
     m = MATRIX_RE.search(text)
     if not m:
@@ -98,9 +171,17 @@ def svg_anchor(path: Path) -> tuple[float, float] | None:
     if len(parts) < 6:
         return None
     try:
-        return (float(parts[4]), float(parts[5]))
+        tx, ty = float(parts[4]), float(parts[5])
     except ValueError:
         return None
+    size = SVG_SIZE_RE.search(text)
+    if not size:
+        return (tx, ty)
+    w = float(size.group(1) or size.group(4))
+    h = float(size.group(2) or size.group(3))
+    if w <= 0 or h <= 0:
+        return (tx, ty)
+    return (tx * png_w / w, ty * png_h / h)
 
 
 def main() -> int:
@@ -112,12 +193,21 @@ def main() -> int:
     svg_root = Path(sys.argv[2])
     symbols_csv = Path(sys.argv[3])
     out_dir = Path(sys.argv[4])
+    extra_dir = Path(sys.argv[5]) if len(sys.argv) > 5 else None
+    labels_path = Path(sys.argv[6]) if len(sys.argv) > 6 else None
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # The PNGs were exported at twice the original resolution.
     zoom = 2.0
 
     symbols = load_symbols(symbols_csv)
+
+    # Frame labels tell us which frame is which animation: `walk_front` for a
+    # guest, `level_2` for a facility at its second upgrade, `_sand` for the
+    # plot's ground. They come from the SWF and are matched by frame number.
+    labels: dict[str, dict[str, int]] = {}
+    if labels_path and labels_path.exists():
+        labels = json.loads(labels_path.read_text())
 
     manifest: dict[str, object] = {"booths": {}, "visitors": {}, "framesets": {}, "other": {}}
 
@@ -132,17 +222,29 @@ def main() -> int:
         # (`ClipCottage_136`); strip it before matching.
         base = re.sub(r"_\d+$", "", short)
         svg_dir = svg_root / d.name
+        frame_labels = labels.get(str(chid), {})
 
         frames = []
         for png in sorted(d.glob("*.png"), key=lambda p: int(FRAME_NUM.findall(p.stem)[0])):
             n = int(FRAME_NUM.findall(png.stem)[0])
             svg = svg_dir / f"{n}.svg"
-            anchor = svg_anchor(svg) if svg.exists() else None
             dst = out_dir / f"{chid}_{n}.png"
             shutil.copyfile(png, dst)
             w, h = png_size(dst)
-            ox, oy = (anchor[0] * zoom, anchor[1] * zoom) if anchor else (w / 2, h)
-            frames.append({"file": dst.name, "w": w, "h": h, "ox": round(ox, 2), "oy": round(oy, 2)})
+            anchor = svg_anchor(svg, w, h) if svg.exists() else None
+            ox, oy = anchor if anchor else (w / 2, h)
+            frame: dict[str, object] = {
+                "file": dst.name, "w": w, "h": h,
+                "ox": round(ox, 2), "oy": round(oy, 2),
+            }
+            box = png_bbox(dst)
+            if box:
+                frame["bbox"] = box
+            for name, frame_no in frame_labels.items():
+                if frame_no == n:
+                    frame["label"] = name
+                    break
+            frames.append(frame)
 
         if not frames:
             continue
@@ -164,7 +266,7 @@ def main() -> int:
 
     # Standalone bitmaps that are not part of a sprite. The plot floor is a
     # single sand texture that the original tiles across the buildable area.
-    for extra in Path(sys.argv[5]).glob("*.png") if len(sys.argv) > 5 else []:
+    for extra in (extra_dir.glob("*.png") if extra_dir else []):
         shutil.copyfile(extra, out_dir / extra.name)
         manifest.setdefault("images", {})[extra.stem] = extra.name  # type: ignore[union-attr]
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")

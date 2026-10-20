@@ -44,6 +44,8 @@ DEFINE_SHAPE4 = 83
 PLACE_OBJECT = 4
 PLACE_OBJECT2 = 26
 PLACE_OBJECT3 = 70
+FRAME_LABEL = 43
+SHOW_FRAME = 1
 END = 0
 
 SHAPE_TAGS = (DEFINE_SHAPE, DEFINE_SHAPE2, DEFINE_SHAPE3, DEFINE_SHAPE4)
@@ -256,15 +258,27 @@ class Parser:
             self.bitmaps[cid] = (0.0, 0.0)
         elif code == DEFINE_SPRITE:
             cid, frames = struct.unpack_from("<HH", body, 0)
-            bounds = self.sprite_bounds(off + 4, off + length)
-            self.sprites[cid] = {"frames": frames, "bounds": bounds}
+            bounds, labels = self.sprite_info(off + 4, off + length)
+            self.sprites[cid] = {"frames": frames, "bounds": bounds, "labels": labels}
 
-    def sprite_bounds(self, start: int, end: int):
-        """Walk a sprite's children and union their transformed bounds."""
+    def sprite_info(self, start: int, end: int):
+        """Walk a sprite's children: its content bounds and its frame labels.
+
+        A FrameLabel tag names the frame that follows it, which is how the
+        original addresses its animations (`walk_front`, `_build` and so on).
+        """
         d = self.d
         bounds = None
+        labels: dict[str, int] = {}
+        frame = 0
         for code, off, length in parse_tags(d, start, end):
             body = d[off:off + length]
+            if code == FRAME_LABEL:
+                name, _ = read_string(body, 0)
+                if name and name not in labels:
+                    labels[name] = frame + 1
+            elif code == SHOW_FRAME:
+                frame += 1
             try:
                 if code == PLACE_OBJECT:
                     cid = struct.unpack_from("<H", body, 0)[0]
@@ -328,7 +342,7 @@ class Parser:
                         bounds = union(bounds, transform_bounds(b, m))
             except Exception:
                 continue
-        return bounds
+        return bounds, labels
 
     def bounds_of(self, cid: int):
         if cid in self.shapes:
@@ -359,7 +373,11 @@ def main() -> int:
         "shapes": {str(k): list(v) for k, v in p.shapes.items()},
         "bitmaps": {str(k): list(v) for k, v in p.bitmaps.items()},
         "sprites": {
-            str(k): {"frames": v["frames"], "bounds": list(v["bounds"]) if v["bounds"] else None}
+            str(k): {
+                "frames": v["frames"],
+                "bounds": list(v["bounds"]) if v["bounds"] else None,
+                "labels": v.get("labels", {}),
+            }
             for k, v in p.sprites.items()
         },
     }
