@@ -506,6 +506,38 @@ export class Renderer {
       });
     }
 
+    // Litter left on the ground, and the janitor that picks it up.
+    const litterArt = art.named("Sampah");
+    if (litterArt) {
+      for (const [key, amount] of world.litter) {
+        const [c, r] = key.split(",").map(Number);
+        const p = gridToScreen(c!, r!);
+        const frame = litterArt.frames[Math.min(litterArt.frames.length - 1, amount - 1)];
+        items.push({
+          depth: c! + r! - 0.1,
+          draw: () => {
+            drawSprite(ctx, frame, p.x, p.y, artScale);
+          },
+        });
+      }
+    }
+    if (world.janitor) {
+      const entry = art.booth("Janitor");
+      const frame =
+        (world.janitor.working > 0
+          ? art.frameByLabel(entry, "work_front")
+          : art.frameByLabel(entry, "walk_front")) ??
+        art.frameByLabel(entry, "stand_front") ??
+        entry?.frames[0];
+      const p = gridToScreen(world.janitor.col, world.janitor.row);
+      items.push({
+        depth: world.janitor.col + world.janitor.row,
+        draw: () => {
+          drawSprite(ctx, frame, p.x, p.y, artScale);
+        },
+      });
+    }
+
     items.sort((a, b) => a.depth - b.depth);
     for (const it of items) it.draw();
 

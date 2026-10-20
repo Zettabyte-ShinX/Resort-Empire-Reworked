@@ -110,6 +110,8 @@ export interface Visitor {
   dirY: number;
   /** Whether the guest is on the move. */
   moving: boolean;
+  /** Counts down to the guest leaving litter behind. */
+  hygieneCounter: number;
 }
 
 export interface WorldOptions {
@@ -726,6 +728,92 @@ export class World {
   /** The extras the player has bought. */
   extras = new Set<string>();
 
+  /** Litter left by the guests, by tile. */
+  litter = new Map<string, number>();
+
+  /** The janitor, if the resort has a janitor room. */
+  janitor: { col: number; row: number; timer: number; working: number } | null = null;
+
+  /**
+   * Leave litter on a tile, the way the original's guests do.
+   *
+   * The chance depends on how dirty the guest is and how cross they are.
+   */
+  private dropLitter(v: Visitor): void {
+    const def = guestDef(v.variant);
+    const range = DATA.visitor.HYGIENE_RANGE as
+      | { chance: number[]; sampah: number[][] }
+      | undefined;
+    if (!range) return;
+    const chance = (range.chance[def.hygiene - 1] ?? 1) + (v.mood < 55 ? (55 - v.mood) / 12.5 : 0);
+    if (Math.random() * 51 > chance) return;
+    const samples = range.sampah[def.hygiene - 1] ?? [1];
+    const n = v.mood > 50 ? 1 : samples[Math.floor(Math.random() * samples.length)] ?? 1;
+    const key = `${Math.round(v.col)},${Math.round(v.row)}`;
+    this.litter.set(key, (this.litter.get(key) ?? 0) + n);
+    if (!this.janitor) this.log.push("Somebody should clean this up.");
+  }
+
+  /**
+   * Move the janitor along the paths, picking up what it passes.
+   */
+  private updateJanitor(dt: number): void {
+    const room = this.booths.find((b) => b.type === "JanitorRoom" && !b.building);
+    if (!room) {
+      this.janitor = null;
+      return;
+    }
+    if (!this.janitor) {
+      const door = this.boothDoor(room);
+      this.janitor = {
+        col: door?.col ?? room.col,
+        row: door?.row ?? room.row,
+        timer: 0,
+        working: 0,
+      };
+    }
+    const j = this.janitor;
+    // Cleaning takes a moment.
+    if (j.working > 0) {
+      j.working -= dt;
+      return;
+    }
+    j.timer -= dt;
+    if (j.timer > 0) return;
+    j.timer = 0.45;
+    // Pick up the litter underfoot.
+    const key = `${j.col},${j.row}`;
+    const here = this.litter.get(key);
+    if (here) {
+      this.litter.delete(key);
+      j.working = 0.8;
+      return;
+    }
+    // Otherwise wander to a neighbouring tile the guests can walk on.
+    const options: GridPos[] = [];
+    for (const [dc, dr] of [[0, -1], [0, 1], [-1, 0], [1, 0]] as [number, number][]) {
+      const c = j.col + dc;
+      const r = j.row + dr;
+      if (this.isWalkable(c, r) && this.isReachable(c, r)) options.push({ col: c, row: r });
+    }
+    if (options.length === 0) return;
+    // Head for the litter if there is any.
+    let best = options[0]!;
+    let bestDist = Infinity;
+    for (const o of options) {
+      for (const [key2] of this.litter) {
+        const [c, r] = key2.split(",").map(Number);
+        const d = Math.abs(o.col - c!) + Math.abs(o.row - r!);
+        if (d < bestDist) {
+          bestDist = d;
+          best = o;
+        }
+      }
+    }
+    j.col = best.col;
+    j.row = best.row;
+  }
+
   /**
    * Whether an extra can be bought: it needs the research level, the
    * facility it is tied to, and the money.
@@ -1021,6 +1109,7 @@ export class World {
       dirX: 0,
       dirY: 0,
       moving: false,
+      hygieneCounter: def.hygCounter,
     });
   }
 
@@ -1242,6 +1331,15 @@ export class World {
   }
 
   private updateVisitor(v: Visitor, dt: number): void {
+    // The original's guests get dirty, and leave litter behind when they do.
+    if (v.state !== "done" && v.state !== "leaving") {
+      v.hygieneCounter -= dt * 4;
+      if (v.hygieneCounter <= 0) {
+        const def = guestDef(v.variant);
+        v.hygieneCounter = def.hygCounter;
+        this.dropLitter(v);
+      }
+    }
     switch (v.state) {
       case "arriving": {
         v.timer += dt;
@@ -1463,6 +1561,7 @@ export class World {
     for (const v of this.visitors) {
       this.updateVisitor(v, dt);
     }
+    this.updateJanitor(scaled);
     this.checkAchievements();
     // Drop finished guests.
     this.visitors = this.visitors.filter((v) => v.state !== "done");
