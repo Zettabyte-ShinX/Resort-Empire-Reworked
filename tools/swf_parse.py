@@ -360,6 +360,11 @@ def main() -> int:
         print(__doc__, file=sys.stderr)
         return 2
     data = open(sys.argv[1], "rb").read()
+    # A compressed SWF stores its body as zlib; the header stays as it is.
+    if data[:3] == b"CWS":
+        import zlib
+
+        data = data[:8] + zlib.decompress(data[8:])
     p = Parser(data)
 
     # Skip the header: signature + length, then the stage RECT, then the

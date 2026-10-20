@@ -294,15 +294,25 @@ export class Renderer {
     floor: SpriteFrame | undefined,
     scale: number,
   ): { x: number; y: number } {
-    const centre = gridToScreen(b.col + b.cols / 2, b.row + b.rows / 2);
-    if (!floor || !floor.bbox) {
-      const west = gridToScreen(b.col + b.cols, b.row);
-      return { x: west.x, y: west.y + 12 };
+    // The tiles the facility stands on, in the same terms the ground is
+    // drawn: the artwork of a tile hangs above and to the left of its grid
+    // point.
+    let minX = Infinity;
+    let minY = Infinity;
+    for (let r = 0; r < b.rows; r++) {
+      for (let c = 0; c < b.cols; c++) {
+        const p = gridToScreen(b.col + c, b.row + r);
+        minX = Math.min(minX, p.x - 2);
+        minY = Math.min(minY, p.y - 25.2);
+      }
     }
-    const [x0, y0, x1, y1] = floor.bbox;
-    const artX = ((x0 + x1) / 2 - floor.ox) * scale;
-    const artY = ((y0 + y1) / 2 - floor.oy) * scale;
-    return { x: centre.x - artX, y: centre.y - artY };
+    if (!floor || !floor.bbox) return { x: minX, y: minY };
+    const [bx0, by0] = floor.bbox;
+    // Put the floor's artwork over its tiles, which puts its origin here.
+    return {
+      x: minX + (floor.ox - bx0) * scale,
+      y: minY + (floor.oy - by0) * scale,
+    };
   }
 
   /**
@@ -388,6 +398,7 @@ export class Renderer {
     const count = Math.max(1, end - start);
     return entry.frames[start + (Math.floor(phase) % count)];
   }
+
 
   /**
    * The artwork the original uses for a guest inside a facility.
@@ -480,9 +491,8 @@ export class Renderer {
         ? undefined
         : art.wallFrame(def.wall, b.level);
       // The original draws a facility's floor, room and building from one
-      // shared origin, so they keep the arrangement the artist gave them. The
-      // floor is lined up with the footprint it belongs to, and the room and
-      // the building follow it.
+      // shared origin, so the room sits over the floor exactly as the artist
+      // drew it. The anchor is that origin.
       const anchor = this.boothAnchor(b, floorFrame, artScale);
       anchors.set(b.id, anchor);
       const depth = b.col + b.row + (b.cols + b.rows) / 2;

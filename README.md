@@ -130,11 +130,7 @@ npm run tauri:build  # native installers for the current platform
 | `Space` | pause and resume |
 | `Esc` | cancel the current selection |
 
-## The original
 
-* Game by [LittleGiantWorld](https://www.littlegiantworld.com), released in 2013.
-* The decompiled sources used as a reference are **not** committed here. They
-  can be reproduced with JPEXS ffdec:
 
   ```sh
   ffdec -export script <outdir> ResortEmpire.swf

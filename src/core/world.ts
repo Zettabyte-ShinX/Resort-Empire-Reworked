@@ -123,6 +123,9 @@ export interface WorldOptions {
 
 const HOUR_SECONDS = 2.2;
 
+/** The ground the player can walk on, and so cannot build over. */
+export const PATH_TILES = new Set(["TILE_1", "TILE_2", "TILE_3", "TILE_4"]);
+
 /**
  * How long a facility takes to build, in seconds of game time.
  *
@@ -1042,6 +1045,13 @@ export class World {
         if (!t) return false;
         if (t.booth) return false;
         if (t.scenery) return false;
+        // A facility cannot be built over a path: the paths are how the
+        // guests get to it.
+        if (t.id.startsWith("TILE_") && PATH_TILES.has(t.id)) return false;
+        // Nor over the gate.
+        if (r === this.entrance.row && c >= this.entrance.col - 3 && c <= this.entrance.col + 2) {
+          return false;
+        }
       }
     }
     return true;
@@ -1125,6 +1135,19 @@ export class World {
     const tile = this.tiles[row]![col]!;
     tile.id = id;
     tile.walkable = def.walkable;
+    this.invalidatePaths();
+    this.recomputeReachable();
+    return true;
+  }
+
+  /** Take up a path again, refunding half of what it cost. */
+  removeTile(col: number, row: number): boolean {
+    const tile = this.tileAt(col, row);
+    if (!tile || tile.booth || tile.scenery) return false;
+    if (!PATH_TILES.has(tile.id)) return false;
+    this.money += Math.floor(tileDef(tile.id).price * 0.5);
+    tile.id = "TILE_80";
+    tile.walkable = false;
     this.invalidatePaths();
     this.recomputeReachable();
     return true;

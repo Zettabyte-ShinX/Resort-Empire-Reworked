@@ -7,6 +7,7 @@ import { Renderer } from "./render/renderer.ts";
 import { UI } from "./ui/ui.ts";
 import type { BuildChoice, ToolId } from "./ui/ui.ts";
 import { boothDef, boothPrice, tileDef } from "./core/data.ts";
+import { PATH_TILES } from "./core/world.ts";
 import { loadGame, saveGame } from "./core/save.ts";
 import { art } from "./render/sprites.ts";
 import { audio } from "./render/audio.ts";
@@ -235,6 +236,14 @@ function handleClick(px: number, py: number, dragging = false): void {
     if (tile.scenery) {
       world.removeScenery(g.col, g.row);
       renderer.markDirty();
+      return;
+    }
+    // A path can be taken up again.
+    if (PATH_TILES.has(tile.id)) {
+      if (world.removeTile(g.col, g.row)) {
+        audio.play("destroy2");
+        renderer.markDirty();
+      }
     }
     return;
   }
