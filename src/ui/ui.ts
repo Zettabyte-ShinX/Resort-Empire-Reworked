@@ -568,11 +568,39 @@ export class UI {
   }
 
   private renderStaff(body: HTMLElement): void {
+    const world = this.world!;
+    const list = world.booths.filter((b) => boothDef(b.type).sumStaff > 0);
+    if (list.length === 0) {
+      body.appendChild(
+        el("p", "empty", "No staff yet. Facilities like the bar, the medical centre and the shops need one."),
+      );
+      return;
+    }
+
+    let total = 0;
+    for (const b of list) {
+      const def = boothDef(b.type);
+      const rate = def.salary[Math.min(b.level, def.salary.length - 1)] ?? 0;
+      const wage = rate * def.sumStaff;
+      total += wage;
+      const row = el("div", "fac-row");
+      row.innerHTML = `
+        <div class="f-head">
+          <span class="f-name">${def.nic || def.nama}</span>
+          <span class="f-level">${def.sumStaff} staff</span>
+        </div>
+        <div class="f-meta">
+          <span>${money(rate)} each a day</span>
+          <span>${money(wage)} a day</span>
+        </div>`;
+      body.appendChild(row);
+    }
+
     body.appendChild(
       el(
         "p",
         "empty",
-        "Staffing is not implemented yet. Facilities that need staff currently run without it.",
+        `The staff of the resort costs ${money(total)} a day, which is paid at midnight.`,
       ),
     );
   }

@@ -228,6 +228,9 @@ export class Renderer {
             sand.naturalWidth,
             sand.naturalHeight,
           );
+          // The original marks out the tiles of the plot, so the ground
+          // reads as separate tiles rather than one flat sheet.
+          drawSprite(c, sandTile, p.x, p.y, artScale);
         }
       }
     }
