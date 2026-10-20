@@ -19,6 +19,8 @@ import {
   ACHIEVEMENTS,
   DATA,
   EXTRAS,
+  MISSIONS,
+  MISSION_LIST,
   EXTRA_LIST,
   boothDef,
   boothPopularity,
@@ -713,6 +715,26 @@ export class UI {
       );
     }
     body.appendChild(grid);
+
+    // The original's missions, with how far along each one is.
+    const missionList = el("div", "ach-list");
+    let done = 0;
+    for (const id of MISSION_LIST) {
+      const def = MISSIONS[id];
+      if (!def) continue;
+      const finished = !!world.missions[id];
+      if (finished) done++;
+      const progress = world.missionProgress(id);
+      const goal = def.batas || 1;
+      const row = el("div", `ach${finished ? " is-done" : ""}`);
+      row.innerHTML = `
+        <span class="ach-mark">${finished ? "\u2713" : ""}</span>
+        <span class="ach-text"><b>${def.desc}</b><i>${Math.min(progress, goal)} of ${goal}</i></span>
+        <span class="ach-reward">${finished ? "" : money(def.bonus)}</span>`;
+      missionList.appendChild(row);
+    }
+    body.appendChild(el("div", "chart-title", `Missions (${done} done)`));
+    body.appendChild(missionList);
 
     // Revenue by hour of the day.
     const hist = world.hourlyRevenue;

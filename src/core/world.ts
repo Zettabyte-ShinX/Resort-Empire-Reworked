@@ -14,6 +14,8 @@ import {
   BOOTH_IDS,
   DATA,
   EXTRAS,
+  MISSIONS,
+  MISSION_LIST,
   MAP_TIERS,
   RESEARCH,
   boothDef,
@@ -150,6 +152,8 @@ export interface WorldStats {
   demolished: number;
   /** How many facilities have been upgraded. */
   upgraded: number;
+  /** How many guests have stayed the night. */
+  guestsStayed: number;
   /** How many of the original's special guests have visited. */
   specialVisited: number;
 }
@@ -207,6 +211,7 @@ export class World {
     built: 0,
     demolished: 0,
     upgraded: 0,
+    guestsStayed: 0,
     specialVisited: 0,
   };
   /** Achievements the player has reached, by id. */
@@ -663,6 +668,140 @@ export class World {
   }
 
   /** Can a booth of this type be placed with its corner at (col,row)? */
+  /**
+   * How far along a mission is.
+   *
+   * The original's missions are named after what they ask for, and the goal
+   * is in the `batas` field.
+   */
+  missionProgress(id: string): number {
+    const plants = this.tiles.reduce(
+      (n, row) => n + row.filter((t) => t.scenery).length,
+      0,
+    );
+    const rooms = this.booths.filter((b) => boothDef(b.type).mainJenis === "Room").length;
+    const facilities = this.booths.length - rooms;
+    const janitors = this.booths.filter((b) => b.type === "JanitorRoom").length;
+    switch (id) {
+      case "build_room":
+        return rooms;
+      case "build_facility":
+        return facilities;
+      case "put_scenery":
+      case "scenery_grass":
+        return plants;
+      case "connect_tiles":
+        return this.visitors.length ? 1 : 0;
+      case "one_stayed":
+      case "x_stayed":
+      case "xx_stayed":
+        return this.stats.guestsStayed;
+      case "one_janitor":
+      case "x_janitor":
+      case "x_janitorRoom":
+        return janitors;
+      case "one_lodge":
+        return this.booths.filter((b) => b.type === "Lodge").length;
+      case "x_money":
+      case "x_money2":
+        return Math.floor(this.money);
+      case "x_profit":
+      case "x_profit2":
+        return this.stats.revenue;
+      case "x_tree":
+      case "xx_tree":
+      case "xx_tree2":
+      case "xx_tree3":
+      case "xx_tree4":
+      case "xx_tree5":
+        return plants;
+      case "x_facility":
+      case "xx_facility":
+      case "xxx_facility":
+      case "x_facilityRoom":
+        return facilities + rooms;
+      case "x_room":
+      case "xx_room":
+        return rooms;
+      case "x_customer":
+      case "x_customer2":
+      case "x_customer3":
+      case "x_customer4":
+        return this.stats.guestsServed;
+      case "x_visitors":
+      case "x_visitors2":
+      case "x_visitors3":
+        return this.stats.guestsArrived;
+      case "x_booths":
+      case "x_booths2":
+        return this.booths.length;
+      case "x_janitorRoom":
+        return janitors;
+      case "one_facilityUpgrade":
+      case "x_facilityUpgrade":
+      case "x_facilityUpgrade2":
+      case "x_facilityUpgrade3":
+      case "x_cottageUpgrade":
+      case "x_cottageFullUpgrade":
+      case "x_lodgeUpgrade":
+      case "x_lodgeFullUpgrade":
+      case "x_medicalUpgrade":
+      case "x_medicalUpgrade2":
+      case "x_jacuziFullUpgrade":
+      case "x_barFullUpgrade":
+      case "x_poolFullUpgrade":
+      case "x_roomUpgrade":
+      case "lobby_upgrade":
+      case "lobby_upgrade2":
+      case "janitorRoom_upgrade":
+        return this.stats.upgraded;
+      case "expand1":
+      case "expand2":
+        return this.tier;
+      case "x_trash":
+      case "x_trash2":
+        return this.litter.size;
+      case "x_unlocked":
+        return this.researchLevel;
+      case "all_booth":
+        return this.booths.length;
+      case "all_extraUpgrade":
+        return this.extras.size;
+      case "stars_5":
+        return this.researchLevel;
+      case "spend_1":
+        return this.stats.revenue > 0 ? 1 : 0;
+      case "first_meal":
+        return this.stats.guestsServed;
+      case "x_acv":
+      case "complete_acv":
+        return Object.keys(this.achievements).length;
+      case "x_promote":
+      case "x_promote2":
+        return this.stats.guestsServed;
+      default:
+        return 0;
+    }
+  }
+
+  /** The missions the player has finished, by id. */
+  missions: Record<string, number> = {};
+
+  /**
+   * Check the original's missions and pay out the ones that are finished.
+   */
+  checkMissions(): void {
+    for (const id of MISSION_LIST) {
+      if (this.missions[id]) continue;
+      const def = MISSIONS[id];
+      if (!def) continue;
+      if (this.missionProgress(id) < (def.batas || 1)) continue;
+      this.missions[id] = 1;
+      this.money += def.bonus;
+      this.log.push(`${def.desc} - ${def.bonus}.`);
+    }
+  }
+
   /**
    * Check the original's achievements and pay out the ones that are earned.
    *
@@ -1563,6 +1702,7 @@ export class World {
     }
     this.updateJanitor(scaled);
     this.checkAchievements();
+    this.checkMissions();
     // Drop finished guests.
     this.visitors = this.visitors.filter((v) => v.state !== "done");
   }
