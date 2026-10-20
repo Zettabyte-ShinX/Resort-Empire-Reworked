@@ -925,10 +925,11 @@ export class UI {
     body.innerHTML = `
       <ol class="guide">
         <li><b>Build something.</b> Use the tools on the left. Facilities earn money; rooms let guests stay overnight.</li>
-        <li><b>Lay paths.</b> Guests can only walk on paths, so connect your facilities to the entrance at the bottom of the map.</li>
+        <li><b>Lay paths.</b> The plot of sand cannot be walked on. Guests reach a facility only if a path joins it to the gate, so lay paths from the gate to what you build.</li>
+        <li><b>Give them a room.</b> A guest will not come into the resort until there is a cottage or a lodge for it, and it has to be connected by a path.</li>
         <li><b>Plant scenery.</b> Trees and shrubs raise the resort's popularity, which brings more guests.</li>
-        <li><b>Watch the clock.</b> The resort opens at 6am and closes at 11pm. Guests leave when it closes.</li>
-        <li><b>Upgrade and expand.</b> Click a facility to upgrade it, and spend research points on the technology tree.</li>
+        <li><b>Watch the clock.</b> The resort opens at 6am and closes at 11pm. Guests leave when it closes, and each facility has its own opening hours.</li>
+        <li><b>Upgrade and expand.</b> A facility needs experience from the guests it serves before it can be upgraded, and research unlocks new ones.</li>
       </ol>
       <p class="empty">Drag to pan, scroll to zoom, and use the arrow keys or WASD to move the camera. Press Esc to cancel the current tool.</p>`;
   }

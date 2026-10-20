@@ -94,6 +94,10 @@ export interface Visitor {
   variant: number;
   /** How many facilities the guest has visited. */
   visits: number;
+  /** Whether the guest has checked in at the lobby. */
+  checkedIn: boolean;
+  /** Whether the guest has been to the room it was given. */
+  usedRoom: boolean;
   /** Seconds remaining in the current activity. */
   timer: number;
   /** Visual variety seed. */
@@ -318,22 +322,14 @@ export class World {
     }
 
     // The gate: the original leaves a gap in the hedge for the entrance and
-    // makes those tiles walkable (`zmap.MAP.tileDefault`).
-    this.entrance = { col: PLOT_CORNER_COL + 10, row: PLOT_CORNER_ROW + 1 };
+    // makes those tiles walkable (`zmap.MAP.tileDefault`). The plot itself
+    // is not walkable: the guest walks on the paths the player lays.
+    this.entrance = { col: PLOT_CORNER_COL + 10, row: PLOT_CORNER_ROW };
     for (let c = PLOT_CORNER_COL + 9; c <= PLOT_CORNER_COL + 12; c++) {
       if (c < 0 || c >= this.cols) continue;
       const gate = this.tiles[PLOT_CORNER_ROW]![c]!;
       gate.id = "TILE_1";
       gate.walkable = true;
-    }
-
-    // The plot itself is the buildable ground, and the guests walk across it
-    // between the facilities, so it is walkable even though the original's
-    // tile table lists the sand as unbuildable ground.
-    for (let r = PLOT_CORNER_ROW + 1; r < boundX; r++) {
-      for (let c = PLOT_CORNER_COL + 1; c < boundY; c++) {
-        this.tiles[r]![c]!.walkable = true;
-      }
     }
 
     this.recomputePopularity();
@@ -359,16 +355,18 @@ export class World {
       ["Pool", plot.c1 - 6, plot.r0 + 2],
       ["Icecream", plot.c1 - 2, plot.r0 + 2],
     ];
+    const placed: BoothInstance[] = [];
     for (const [type, col, row] of starters) {
       if (col < 0 || row < 0 || col >= this.cols || row >= this.rows) continue;
       const saved = this.money;
       this.money = Number.MAX_SAFE_INTEGER;
-      const placed = this.placeBooth(type, col, row, true);
+      const booth = this.placeBooth(type, col, row, true);
       this.money = saved;
-      if (placed) {
+      if (booth) {
         // The resort the player starts with is already built.
-        placed.building = false;
-        placed.buildProgress = 1;
+        booth.building = false;
+        booth.buildProgress = 1;
+        placed.push(booth);
         continue;
       }
       // The spot was taken: try a couple of nearby alternatives.
@@ -384,11 +382,103 @@ export class World {
         if (ok) {
           ok.building = false;
           ok.buildProgress = 1;
+          placed.push(ok);
           break;
         }
       }
     }
+    this.layStarterPaths(placed);
+    // The paths change what the guests can reach.
+    this.recomputeWalkMask();
+    this.recomputeReachable();
   }
+
+  /**
+   * Lay the paths that join the starting resort to the gate.
+   *
+   * The plot is not walkable ground: the guests can only reach what the
+   * player has connected with paths, so the resort the player starts with
+   * comes with the paths already laid.
+   */
+  private layStarterPaths(booths: BoothInstance[]): void {
+    const gate = this.entrance;
+    // The trunk: a path from the gate into the middle of the plot.
+    const trunkCol = gate.col;
+    const trunkRow = gate.row + 2;
+    for (let r = gate.row + 1; r <= trunkRow; r++) this.layPath(trunkCol, r);
+
+    for (const booth of booths) {
+      // Try each way into the facility until one of them can be joined to
+      // the trunk with a path.
+      let done = false;
+      for (const door of this.doorCandidates(booth)) {
+        this.layPath(door.col, door.row);
+        if (this.layPathTo(door, trunkCol, trunkRow, true)) {
+          done = true;
+          break;
+        }
+        if (this.layPathTo(door, trunkCol, trunkRow, false)) {
+          done = true;
+          break;
+        }
+      }
+      if (!done) continue;
+    }
+  }
+
+  /**
+   * Lay a path from a tile to the trunk.
+   *
+   * `alongRow` picks whether the path runs along the row first or the
+   * column first. Returns false when the way is blocked.
+   */
+  private layPathTo(from: GridPos, col: number, row: number, alongRow: boolean): boolean {
+    const tiles: GridPos[] = [];
+    if (alongRow) {
+      const step = from.col < col ? 1 : -1;
+      for (let c = from.col; c !== col; c += step) tiles.push({ col: c, row: from.row });
+      const rstep = from.row < row ? 1 : -1;
+      for (let r = from.row; r !== row; r += rstep) tiles.push({ col, row: r });
+    } else {
+      const rstep = from.row < row ? 1 : -1;
+      for (let r = from.row; r !== row; r += rstep) tiles.push({ col: from.col, row: r });
+      const step = from.col < col ? 1 : -1;
+      for (let c = from.col; c !== col; c += step) tiles.push({ col: c, row });
+    }
+    for (const t of tiles) {
+      const tile = this.tileAt(t.col, t.row);
+      if (!tile || tile.booth || tile.scenery) return false;
+    }
+    for (const t of tiles) this.layPath(t.col, t.row);
+    return true;
+  }
+
+  /** Lay a single path tile, if the ground is free. */
+  private layPath(col: number, row: number): void {
+    const tile = this.tileAt(col, row);
+    if (!tile || tile.booth || tile.scenery) return;
+    if (tile.walkable && tile.id !== "TILE_80") return;
+    tile.id = "TILE_1";
+    tile.walkable = true;
+  }
+
+  /** The tiles a guest could stand on to reach a facility. */
+  private doorCandidates(booth: BoothInstance): GridPos[] {
+    const candidates: GridPos[] = [];
+    for (let c = booth.col; c < booth.col + booth.cols; c++) {
+      candidates.push({ col: c, row: booth.row - 1 });
+      candidates.push({ col: c, row: booth.row + booth.rows });
+    }
+    for (let r = booth.row; r < booth.row + booth.rows; r++) {
+      candidates.push({ col: booth.col - 1, row: r });
+      candidates.push({ col: booth.col + booth.cols, row: r });
+    }
+    return candidates.filter((c) => {
+      const t = this.tileAt(c.col, c.row);
+      return !!t && !t.booth && !t.scenery;
+    });
+  }
+
 
   /** The extent of the buildable plot, in grid coordinates. */
   plotBounds(): { c0: number; c1: number; r0: number; r1: number } {
@@ -406,9 +496,15 @@ export class World {
     return this.tiles[row][col];
   }
 
+  /**
+   * Whether a guest can walk over this tile.
+   *
+   * The original's map has walkable and unwalkable ground: the plot of sand
+   * and the grass are not walkable, the paths and the rooms are.
+   */
   isWalkable(col: number, row: number): boolean {
     const t = this.tileAt(col, row);
-    return !!t && t.walkable && t.booth === null;
+    return !!t && t.walkable;
   }
 
   // ------------------------------------------------------------- build ----
@@ -427,7 +523,7 @@ export class World {
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
         const t = this.tiles[r][c];
-        this.walkMask[r * this.cols + c] = t.walkable && t.booth === null ? 1 : 0;
+        this.walkMask[r * this.cols + c] = t.walkable ? 1 : 0;
       }
     }
   }
@@ -544,7 +640,11 @@ export class World {
     };
     for (let r = row; r < row + def.ROWS; r++) {
       for (let c = col; c < col + def.COLS; c++) {
-        this.tiles[r][c].booth = type;
+        const tile = this.tiles[r][c]!;
+        tile.booth = type;
+        // The original makes the tiles a facility stands on walkable, so the
+        // guests can walk into the room.
+        tile.walkable = true;
       }
     }
     this.booths.push(booth);
@@ -637,7 +737,10 @@ export class World {
     for (let r = booth.row; r < booth.row + booth.rows; r++) {
       for (let c = booth.col; c < booth.col + booth.cols; c++) {
         const t = this.tileAt(c, r);
-        if (t) t.booth = null;
+        if (!t) continue;
+        t.booth = null;
+        // The ground goes back to being whatever it was before.
+        t.walkable = tileDef(t.id).walkable;
       }
     }
     this.booths = this.booths.filter((b) => b.id !== booth.id);
@@ -707,6 +810,8 @@ export class World {
       archetype: `Visitor${variant}`,
       variant,
       visits: 0,
+      checkedIn: false,
+      usedRoom: false,
       timer: 0,
       seed: Math.random(),
       dirX: 0,
@@ -793,9 +898,26 @@ export class World {
     return null;
   }
 
+  /**
+   * The facility a guest should head for.
+   *
+   * The original checks in at the lobby when there is a room for the guest
+   * to stay in, and only looks for something to do otherwise. A guest that
+   * cannot get to either turns around and goes home.
+   */
   private pickTarget(visitor: Visitor): boolean {
-    // A guest only goes to the facilities it wants, and only to ones that
-    // are built, open and finished.
+    // The guest checks in at the lobby when there is a room for it to stay
+    // in and the resort is connected to the gate by a path.
+    if (!visitor.checkedIn && this.canCheckIn(visitor)) {
+      const lobby = this.booths.find((b) => b.type === "Lobby");
+      if (lobby && this.walkTo(visitor, lobby)) return true;
+    }
+    // Then it goes to the room it was given.
+    if (visitor.checkedIn && !visitor.usedRoom) {
+      const room = this.roomFor(visitor);
+      if (room && this.walkTo(visitor, room)) return true;
+    }
+    // Otherwise it looks for something it likes.
     const wanted = this.wantedFacilities(visitor);
     if (wanted.length === 0) return false;
     const open = wanted.filter((w) => {
@@ -821,6 +943,49 @@ export class World {
     }
     const chosen = this.booths.find((b) => b.type === chosenType)!;
 
+    return this.walkTo(visitor, chosen);
+  }
+
+  /**
+   * The room a guest has been given.
+   *
+   * The original books the guest into a cottage or a lodge when it checks in.
+   */
+  private roomFor(visitor: Visitor): BoothInstance | null {
+    const def = guestDef(visitor.variant);
+    for (const type of def.likes.Room) {
+      const room = this.booths.find((b) => b.type === type && !b.building);
+      if (room) return room;
+    }
+    return null;
+  }
+
+  /**
+   * Whether a guest can check in: there is a room for it to stay in, and the
+   * lobby is connected to the entrance by a path.
+   */
+  private canCheckIn(visitor: Visitor): boolean {
+    const def = guestDef(visitor.variant);
+    const rooms = def.likes.Room;
+    if (rooms.length === 0) return false;
+    for (const type of rooms) {
+      const room = this.booths.find((b) => b.type === type && !b.building);
+      if (!room) continue;
+      // The room has to be connected to the resort, or the guest cannot get
+      // to it.
+      if (!this.boothDoor(room)) continue;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Set a guest walking towards a facility.
+   *
+   * Returns false when there is no way there, which is what stops a guest
+   * from setting off for a facility that is not connected to the resort.
+   */
+  private walkTo(visitor: Visitor, chosen: BoothInstance): boolean {
     const door = this.boothDoor(chosen);
     if (!door) return false;
     // Never chase a facility the guest physically cannot reach.
@@ -973,6 +1138,10 @@ export class World {
     const delta = (worth - 40) / 4 + pop * 3 + (charge > 0 ? 4 : -8);
     v.mood = Math.max(0, Math.min(100, v.mood + delta));
     v.visits++;
+    // Checking in books the guest into a room, and going to that room is
+    // what the original does next.
+    if (booth.type === "Lobby") v.checkedIn = true;
+    if (booth.type === "Cottage" || booth.type === "Lodge") v.usedRoom = true;
 
     booth.occupancy = Math.max(0, booth.occupancy - 1);
     booth.served++;
