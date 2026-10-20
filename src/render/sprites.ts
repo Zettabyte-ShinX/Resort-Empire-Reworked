@@ -13,16 +13,6 @@
  * shapes in `art.ts`, so the game always runs.
  */
 
-/** Whether two frames cover the same ground. */
-function sameSize(a: SpriteFrame, b: SpriteFrame): boolean {
-  if (!a.bbox || !b.bbox) return true;
-  const aw = a.bbox[2] - a.bbox[0];
-  const ah = a.bbox[3] - a.bbox[1];
-  const bw = b.bbox[2] - b.bbox[0];
-  const bh = b.bbox[3] - b.bbox[1];
-  return Math.abs(aw - bw) <= aw * 0.2 && Math.abs(ah - bh) <= ah * 0.2;
-}
-
 export interface SpriteFrame {
   file: string;
   w: number;
@@ -182,22 +172,28 @@ export class Art {
    *
    * Some of those plates carry the original's red marking on the tile the
    * facility can take over when it is upgraded, and the marking is shown as
-   * it is, because it is what says the facility still has room to grow.
+   * it is, because it is what says the facility still has room to grow. The
+   * frame is used exactly as the original uses it: stepping over a marked
+   * plate would put the next facility's floor underneath this one.
    */
   boothTileFrame(fr: number, level = 0): SpriteFrame | undefined {
     const entry = this.frameSet("boothTile");
     if (!entry || entry.frames.length === 0) return undefined;
-    let idx = Math.max(0, Math.min(entry.frames.length - 1, fr - 1 + level));
-    // The original marks the tile a facility can grow into with a red
-    // outline, and the room covers most of it but not all of it, so a red
-    // line showed along the edge of every room. The marking is used to decide
-    // which facilities can grow, not to be drawn.
-    if (entry.frames[idx]?.marked) {
-      const marked = entry.frames[idx]!;
-      const next = entry.frames[idx + 1];
-      if (next && !next.marked && sameSize(marked, next)) idx += 1;
-    }
+    const idx = Math.max(0, Math.min(entry.frames.length - 1, fr - 1 + level));
     return entry.frames[idx];
+  }
+
+  /**
+   * The red outline the original draws around the tile a facility can grow
+   * into.
+   *
+   * The original has a `Redground1x1` clip for it, and the same marking is
+   * baked into the floor plates it renders, so a facility that can still grow
+   * shows the spare tile picked out in red.
+   */
+  redGroundFrame(): SpriteFrame | undefined {
+    const entry = this.manifest?.other?.["Redground1x1_271"];
+    return entry?.frames?.[0];
   }
 
   /**
