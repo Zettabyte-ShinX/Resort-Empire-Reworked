@@ -287,6 +287,22 @@ input {
   background: var(--accent);
 }
 
+/* The keyboard shortcut badge. */
+.rail-key {
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--muted-2);
+  opacity: 0.75;
+}
+
+.rail-btn.is-active .rail-key {
+  color: var(--accent);
+  opacity: 1;
+}
+
 /* Tooltips */
 [data-tip] {
   position: relative;

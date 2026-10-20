@@ -7,11 +7,14 @@ import { Renderer } from "./render/renderer.ts";
 import { UI } from "./ui/ui.ts";
 import type { BuildChoice, ToolId } from "./ui/ui.ts";
 import { boothPrice, tileDef } from "./core/data.ts";
-import { loadGame } from "./core/save.ts";
+import { loadGame, saveGame } from "./core/save.ts";
 import { art } from "./render/sprites.ts";
 import "./ui/ui.css";
 
 const app = document.getElementById("app")!;
+
+/** The slot the game autosaves into. */
+const AUTOSAVE_SLOT = "autosave";
 
 let world = new World({ tier: 0, startingMoney: 20000 });
 
@@ -139,6 +142,12 @@ window.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
     e.preventDefault();
     world.speed = world.speed === 0 ? 1 : 0;
+    return;
+  }
+  // Number keys pick the tools in rail order.
+  const n = Number(e.key);
+  if (Number.isInteger(n) && n >= 1 && n <= 6) {
+    ui.selectToolByIndex(n - 1);
   }
 });
 window.addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
@@ -209,8 +218,11 @@ function handleClick(px: number, py: number): void {
 // ----------------------------------------------------------- main loop ----
 
 let last = performance.now();
+let sinceAutosave = 0;
 function frame(now: number): void {
-  const dt = Math.min(0.1, (now - last) / 1000);
+  const rawDt = (now - last) / 1000;
+  // The simulation step is capped so a long stall does not teleport guests.
+  const dt = Math.min(0.1, rawDt);
   last = now;
 
   // Keyboard panning.
@@ -223,6 +235,13 @@ function frame(now: number): void {
   world.update(dt);
   ui.update(world);
   if (world.log.length) ui.pushLog(world.log.splice(0, world.log.length));
+
+  // Autosave every twenty seconds of real time.
+  sinceAutosave += rawDt;
+  if (sinceAutosave > 20) {
+    sinceAutosave = 0;
+    saveGame(world, "Autosave", AUTOSAVE_SLOT);
+  }
 
   const highlight =
     selection && hover.col >= 0
@@ -253,6 +272,18 @@ bindCanvas(view);
 resize();
 renderer.fitMap(world);
 requestAnimationFrame(frame);
+
+// Restore the last autosave, if there is one.
+const autosave = loadGame(AUTOSAVE_SLOT);
+if (autosave) {
+  world = autosave;
+  renderer.markDirty();
+  renderer.fitMap(world);
+  ui.update(world);
+  ui.pushLog([`Restored your last resort (day ${world.day}).`]);
+} else {
+  ui.update(world);
+}
 
 // The artwork is optional: if it is missing the renderer falls back to
 // procedural shapes, so the game still runs.

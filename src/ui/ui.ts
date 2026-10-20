@@ -72,13 +72,16 @@ interface ToolDef {
 }
 
 const TOOLS: ToolDef[] = [
-  { id: "inspect", icon: "inspect", label: "Inspect", hint: "Select a facility to see its details" },
-  { id: "facility", icon: "build", label: "Facilities", hint: "Build a facility" },
-  { id: "room", icon: "room", label: "Rooms", hint: "Build a guest room" },
-  { id: "scenery", icon: "scenery", label: "Scenery", hint: "Plant trees and shrubs" },
-  { id: "path", icon: "path", label: "Paths", hint: "Lay paths for guests to walk on" },
-  { id: "demolish", icon: "demolish", label: "Demolish", hint: "Remove a facility or plant" },
+  { id: "inspect", icon: "inspect", label: "Inspect", hint: "Inspect - select a facility to see its details" },
+  { id: "facility", icon: "build", label: "Facilities", hint: "Facilities - build a facility" },
+  { id: "room", icon: "room", label: "Rooms", hint: "Rooms - build a guest room" },
+  { id: "scenery", icon: "scenery", label: "Scenery", hint: "Scenery - plant trees and shrubs" },
+  { id: "path", icon: "path", label: "Paths", hint: "Paths - lay paths for guests to walk on" },
+  { id: "demolish", icon: "demolish", label: "Demolish", hint: "Demolish - remove a facility or plant" },
 ];
+
+/** Keyboard shortcut for each tool, in rail order. */
+const TOOL_KEYS = ["1", "2", "3", "4", "5", "6"];
 
 const SIDE_TABS: { id: SideTab; label: string; icon: IconName }[] = [
   { id: "guests", label: "Guests", icon: "guest" },
@@ -203,7 +206,7 @@ export class UI {
 
   private buildRail(): void {
     this.railEl.innerHTML = "";
-    for (const t of TOOLS) {
+    TOOLS.forEach((t, i) => {
       const b = el("button", "rail-btn");
       b.dataset.tool = t.id;
       b.innerHTML = icons[t.icon];
@@ -211,7 +214,10 @@ export class UI {
       b.dataset.tip = t.hint;
       b.addEventListener("click", () => this.setTool(t.id));
       this.railEl.appendChild(b);
-    }
+      // The shortcut is shown as a small badge in the corner.
+      const key = el("span", "rail-key", TOOL_KEYS[i] ?? "");
+      b.appendChild(key);
+    });
   }
 
   private buildSideTabs(): void {
@@ -334,6 +340,14 @@ export class UI {
     if (!list.querySelector(".palette-item")) {
       list.appendChild(el("p", "palette-hint", "Nothing matches that search."));
     }
+  }
+
+  /** Switch tool by its number key. Returns true if a tool was selected. */
+  selectToolByIndex(index: number): boolean {
+    const tool = TOOLS[index];
+    if (!tool) return false;
+    this.setTool(tool.id);
+    return true;
   }
 
   private sameChoice(a: BuildChoice | null, b: BuildChoice): boolean {
