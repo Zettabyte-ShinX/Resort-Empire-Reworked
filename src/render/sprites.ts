@@ -13,6 +13,16 @@
  * shapes in `art.ts`, so the game always runs.
  */
 
+/** Whether two frames cover the same ground. */
+function sameSize(a: SpriteFrame, b: SpriteFrame): boolean {
+  if (!a.bbox || !b.bbox) return true;
+  const aw = a.bbox[2] - a.bbox[0];
+  const ah = a.bbox[3] - a.bbox[1];
+  const bw = b.bbox[2] - b.bbox[0];
+  const bh = b.bbox[3] - b.bbox[1];
+  return Math.abs(aw - bw) <= aw * 0.2 && Math.abs(ah - bh) <= ah * 0.2;
+}
+
 export interface SpriteFrame {
   file: string;
   w: number;
@@ -24,6 +34,8 @@ export interface SpriteFrame {
   label?: string;
   /** The visible pixels of the frame, in PNG pixels. */
   bbox?: [number, number, number, number];
+  /** Whether the frame carries the red marking of a plot that can grow. */
+  marked?: boolean;
 }
 
 export interface SpriteEntry {
@@ -171,7 +183,17 @@ export class Art {
   boothTileFrame(fr: number, level = 0): SpriteFrame | undefined {
     const entry = this.frameSet("boothTile");
     if (!entry || entry.frames.length === 0) return undefined;
-    const idx = Math.max(0, Math.min(entry.frames.length - 1, fr - 1 + level));
+    let idx = Math.max(0, Math.min(entry.frames.length - 1, fr - 1 + level));
+    // The original marks the tile a facility can grow into with a red
+    // outline. This game has no facility that grows, so the frame with the
+    // marking is left out.
+    if (entry.frames[idx]?.marked) {
+      const marked = entry.frames[idx]!;
+      const next = entry.frames[idx + 1];
+      // The next frame has to be the same size, or it belongs to a different
+      // facility.
+      if (next && !next.marked && sameSize(marked, next)) idx += 1;
+    }
     return entry.frames[idx];
   }
 

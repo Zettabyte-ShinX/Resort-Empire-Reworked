@@ -245,7 +245,9 @@ export class Renderer {
         // better without them.
         if (tile.id === "TILE_80") continue;
         const frame = art.frameFor("tiles", def.fr);
-        const drawn = frame ? drawSprite(c, frame, p.x, p.y, artScale) : false;
+        // The original blits the ground into its canvas a tile lower than the
+        // grid point, because the clip's origin is at the bottom of the tile.
+        const drawn = frame ? drawSprite(c, frame, p.x, p.y + 25, artScale) : false;
         if (!drawn) {
           drawTile(c, p.x, p.y, def.mainJenis === 1 ? "grass" : "path", 0);
         }
@@ -294,21 +296,21 @@ export class Renderer {
     floor: SpriteFrame | undefined,
     scale: number,
   ): { x: number; y: number } {
-    // The tiles the facility stands on, in the same terms the ground is
-    // drawn: the artwork of a tile hangs above and to the left of its grid
-    // point.
+    // The corner of the tiles the facility stands on.
     let minX = Infinity;
     let minY = Infinity;
     for (let r = 0; r < b.rows; r++) {
       for (let c = 0; c < b.cols; c++) {
         const p = gridToScreen(b.col + c, b.row + r);
         minX = Math.min(minX, p.x - 2);
-        minY = Math.min(minY, p.y - 25.2);
+        minY = Math.min(minY, p.y);
       }
     }
     if (!floor || !floor.bbox) return { x: minX, y: minY };
     const [bx0, by0] = floor.bbox;
-    // Put the floor's artwork over its tiles, which puts its origin here.
+    // The original draws the floor from the top left of its tiles, and the
+    // room and the building from the same point, so the room sits over the
+    // floor exactly as the artist drew it.
     return {
       x: minX + (floor.ox - bx0) * scale,
       y: minY + (floor.oy - by0) * scale,

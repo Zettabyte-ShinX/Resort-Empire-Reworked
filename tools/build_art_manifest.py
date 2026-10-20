@@ -90,6 +90,9 @@ def png_size(path: Path) -> tuple[int, int]:
     return (int.from_bytes(head[16:20], "big"), int.from_bytes(head[20:24], "big"))
 
 
+BBOX_CACHE: dict[str, list[int]] = {}
+
+
 def png_bbox(path: Path) -> list[int] | None:
     """The bounding box of the visible pixels of a PNG, in pixels.
 
@@ -97,6 +100,9 @@ def png_bbox(path: Path) -> list[int] | None:
     not always line up with the footprint they belong to. Knowing where the
     artwork actually is lets the game place it exactly on its tiles.
     """
+    key = f"{path.parent.name}/{path.name}"
+    if key in BBOX_CACHE:
+        return BBOX_CACHE[key]
     data = path.read_bytes()
     pos, width, height, colour = 8, 0, 0, 6
     idat = b""
@@ -149,7 +155,78 @@ def png_bbox(path: Path) -> list[int] | None:
         previous = line
     if x1 < 0:
         return None
+    BBOX_CACHE[key] = [x0, y0, x1, y1]
     return [x0, y0, x1, y1]
+
+
+def png_red(path: Path) -> list[int] | None:
+    """The bounds of the red markings in a PNG, if it has any.
+
+    The original's floor textures mark the tile a facility can grow into
+    with a red outline. The game has no facility that grows, so the frames
+    that carry a marking are left out.
+    """
+    data = path.read_bytes()
+    pos, width, height, colour = 8, 0, 0, 6
+    idat = b""
+    while pos < len(data):
+        length = int.from_bytes(data[pos:pos + 4], "big")
+        tag = data[pos + 4:pos + 8]
+        body = data[pos + 8:pos + 8 + length]
+        pos += 12 + length
+        if tag == b"IHDR":
+            width = int.from_bytes(body[0:4], "big")
+            height = int.from_bytes(body[4:8], "big")
+            colour = body[9]
+        elif tag == b"IDAT":
+            idat += body
+    if width == 0 or height == 0 or colour not in (2, 6):
+        return None
+    bpp = 4 if colour == 6 else 3
+    raw = zlib.decompress(idat)
+    stride = width * bpp
+    previous = bytearray(stride)
+    x0 = y0 = width
+    x1 = y1 = -1
+    count = 0
+    offset = 0
+    for y in range(height):
+        filter_type = raw[offset]
+        offset += 1
+        line = bytearray(raw[offset:offset + stride])
+        offset += stride
+        for i in range(stride):
+            a = line[i - bpp] if i >= bpp else 0
+            b = previous[i]
+            c = previous[i - bpp] if i >= bpp else 0
+            if filter_type == 1:
+                line[i] = (line[i] + a) & 255
+            elif filter_type == 2:
+                line[i] = (line[i] + b) & 255
+            elif filter_type == 3:
+                line[i] = (line[i] + (a + b) // 2) & 255
+            elif filter_type == 4:
+                pa, pb, pc = abs(b - c), abs(a - c), abs(a + b - 2 * c)
+                line[i] = (line[i] + (a if (pa <= pb and pa <= pc) else (b if pb <= pc else c))) & 255
+        for i in range(0, stride, bpp):
+            r, g, b = line[i], line[i + 1], line[i + 2]
+            if bpp == 4 and line[i + 3] < 60:
+                continue
+            if r > 120 and r > g + 45 and r > b + 45:
+                x = i // bpp
+                count += 1
+                x0 = min(x0, x)
+                x1 = max(x1, x)
+                y0 = min(y0, y)
+                y1 = max(y1, y)
+        previous = line
+    if x1 < 0:
+        return None
+    # A marking is a thin outline; a red carpet is a solid area.
+    area = (x1 - x0 + 1) * (y1 - y0 + 1)
+    if area == 0 or count > area * 0.3:
+        return None
+    return [x0, y0, x1, y1, count]
 
 
 SVG_SIZE_RE = re.compile(r'width="([\d.]+)px"\s+height="([\d.]+)px"|height="([\d.]+)px"\s+width="([\d.]+)px"')
@@ -209,6 +286,18 @@ def main() -> int:
     if labels_path and labels_path.exists():
         labels = json.loads(labels_path.read_text())
 
+    # The bounds of every image, cached so a rebuild is quick.
+    cache_path = out_dir / "bbox-cache.json"
+    BBOX_CACHE.update(json.loads(cache_path.read_text()) if cache_path.exists() else {})
+
+    # Which of the floor frames carry a red marking.
+    red_frames: dict[str, bool] = {}
+    booth_dir = png_root / "DefineSprite_858_BoothTile"
+    if booth_dir.exists():
+        for png in booth_dir.glob("*.png"):
+            if png_red(png):
+                red_frames[f"858_{png.stem}.png"] = True
+
     manifest: dict[str, object] = {"booths": {}, "visitors": {}, "framesets": {}, "other": {}}
 
     for d in sorted(png_root.iterdir()):
@@ -240,6 +329,10 @@ def main() -> int:
             box = png_bbox(dst)
             if box:
                 frame["bbox"] = box
+            # A floor with a red marking is the frame that shows the tile
+            # the facility can grow into.
+            if red_frames and red_frames.get(dst.name):
+                frame["marked"] = True
             for name, frame_no in frame_labels.items():
                 if frame_no == n:
                     frame["label"] = name
@@ -263,6 +356,7 @@ def main() -> int:
             manifest["other"][short or str(chid)] = entry  # type: ignore[index]
 
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
+    cache_path.write_text(json.dumps(BBOX_CACHE), encoding="utf-8")
 
     # Standalone bitmaps that are not part of a sprite. The plot floor is a
     # single sand texture that the original tiles across the buildable area.
