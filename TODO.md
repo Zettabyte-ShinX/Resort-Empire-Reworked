@@ -19,12 +19,9 @@ Each item states what "done" means so it can be checked, not just felt.
       artwork: the floor plate from the `BoothTile` clip, the room from the
       `Wall` clip and the building from its own clip, each at the upgrade
       level the data records, lined up with the tiles it stands on.
-      *Verify: a plot with every facility type, each with its own floor,
-      room and staff.*
 - [x] **Characters and their movement** — the 29 guest sprites with their
       walk and stand poses, facing the way they walk, plus the original's
       clips for guests using a facility and the staff working in one.
-      *Verify: guests walk between tiles, turn, and sit in the cottage.*
 - [x] **The original's balance** — guest types with their budgets and the
       facilities they like, opening hours, staff wages, experience needed to
       upgrade a facility, and the research levels that unlock new ones.
@@ -35,33 +32,40 @@ Each item states what "done" means so it can be checked, not just felt.
       and a guest will not come into the resort at all until there is a room
       for it and that room is connected. A guest checks in at the lobby, goes
       to the room it was given, and then looks for something it likes.
-      *Verify: build a facility with no path to it and no guest comes; lay a
-      path and they do.*
+- [x] **The original's extras** — the fifteen purchasable upgrades, each
+      needing a research level and the facility it belongs to.
+- [x] **The original's achievements and missions** — all of them, paying out
+      money and research points as they are finished.
+- [x] **The janitor** — the guests get dirty and leave rubbish behind, and a
+      janitor room gets a janitor to pick it up.
+- [x] **The resort can be expanded** — three sizes, each with a bigger plot
+      and the land away from the gate.
+- [x] **The special guests** — the last five guest types, who turn up now and
+      then and bring a lot of money.
+- [x] **Continuous integration** — the web build, the Linux app and the
+      Windows app are built on every push.
 
 ## Next
 
-- [ ] **Building site** — a new facility is a site first: the original's
-      scaffold goes up on every tile and the facility opens when it is done.
-      *Done for the scaffold and the timing; the original's progress bar
-      still has to be lined up with the site.*
-- [ ] **Rooms** — the original has rooms inside the facilities, with the
-      `booth_selimutRoom` artwork and the room tab in the interface.
-- [ ] **Research tree** — the `Extra_Upgrade` table: extras the player can
-      buy with the research points.
-- [ ] **Expanding the resort** — the original grows the plot as the resort
-      is expanded, with the `Expand1` and `Expand2` unlocks.
-- [ ] **Janitor** — the original has a janitor that cleans up, and a janitor
-      room.
-- [ ] **Tutorial** — a first-run guide, the original had `GuideDialog` and
-      `GuideInGame`.
-- [ ] **Achievements and missions** — the original's tables are extracted and
-      can be wired up.
-
-## Platforms (last)
-
-- [ ] **Windows** — `.msi` and `.exe` from the same Tauri project.
+- [ ] **Building site** — the original's site clips and scaffold are in place;
+      its progress bar still has to be lined up with the site.
+- [ ] **Rooms** — the rooms inside the facilities can take two guests, and the
+      `booth_selimutRoom` artwork is only partly wired up.
+- [ ] **The remaining guest animations** — the original has twenty thousand
+      frames of guests using facilities; only the first of each is in.
+- [ ] **The janitor's own staff** — the original has janitors as employees,
+      with their own wage and stamina.
+- [ ] **Expanding a facility** — the original lets some facilities grow into
+      a bigger plot.
 - [ ] **Android** — APK/AAB, touch controls, smaller screen layout.
-- [ ] **CI** — build all platforms on every push.
+
+## Platforms
+
+- [x] **Linux** — `.deb` and `.AppImage`.
+- [x] **Windows** — `.msi` and `.exe`, built in CI.
+- [ ] **Android** — APK/AAB, touch controls, smaller screen layout.
+- [x] **CI** — the web build, the Linux app and the Windows app are built on
+      every push.
 
 ## Commercial
 
