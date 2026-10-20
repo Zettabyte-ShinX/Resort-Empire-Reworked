@@ -510,9 +510,10 @@ export class UI {
     for (const v of [...world.visitors].sort((a, b) => a.mood - b.mood)) {
       const row = el("div", "guest-row");
       const moodClass = v.mood >= 70 ? "good" : v.mood >= 45 ? "ok" : "bad";
+      const special = v.variant >= 25;
       row.innerHTML = `
         <div class="g-top">
-          <span class="g-name">${guestName(v)}</span>
+          <span class="g-name">${guestName(v)}${special ? " <i>special</i>" : ""}</span>
           <span class="g-mood ${moodClass}">${Math.round(v.mood)}%</span>
         </div>
         <div class="bar"><i class="${moodClass}" style="width:${Math.max(2, v.mood)}%"></i></div>

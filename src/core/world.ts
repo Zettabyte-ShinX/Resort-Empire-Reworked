@@ -1231,12 +1231,17 @@ export class World {
 
   private spawnVisitor(): void {
     // Each guest is one of the original's 29 types, which decides how it
-    // looks, what it can afford and what it wants from the resort.
-    const variant = 1 + Math.floor(Math.random() * 29) % 29;
+    // looks, what it can afford and what it wants from the resort. The last
+    // five are the special guests, who only turn up now and then.
+    const special = Math.random() < 0.06;
+    const variant = special
+      ? 25 + Math.floor(Math.random() * 5) % 5
+      : 1 + Math.floor(Math.random() * 24) % 24;
     const def = guestDef(variant);
     const entryCol = this.entrance.col + (Math.random() < 0.5 ? -2 : 2);
 
     this.stats.guestsArrived++;
+    if (special) this.stats.specialVisited++;
     this.visitors.push({
       id: this.nextVisitorId++,
       col: entryCol,

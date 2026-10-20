@@ -1100,3 +1100,15 @@ button.small {
   white-space: nowrap;
   margin-left: 8px;
 }
+
+.g-name i {
+  font-style: normal;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin-left: 4px;
+}
