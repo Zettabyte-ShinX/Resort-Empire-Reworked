@@ -69,6 +69,33 @@ export interface SmileyDef {
   nilai: number;
 }
 
+/**
+ * One of the original's guest types.
+ *
+ * The `likes` table says which facilities the guest wants and how much each
+ * one is worth to them; the rooms are the ones they can stay the night in.
+ */
+export interface GuestDef {
+  jenis: number;
+  sex: number;
+  speed: number;
+  MAX_MOOD: number;
+  money: number;
+  room_stay: number;
+  tip: number;
+  hygiene: number;
+  hygCounter: number;
+  medical_prob: number;
+  maxK: number;
+  old: boolean;
+  likes: {
+    Room: string[];
+    Room2: number;
+    Facility: [string[], number[]];
+    Other: string[];
+  };
+}
+
 /** A map size tier from the original's EXPAND table. */
 export interface MapTier {
   cols: number;
@@ -167,6 +194,13 @@ export function boothDef(id: string): BoothDef {
   const b = DATA.booths[id];
   if (!b) throw new Error(`unknown booth ${id}`);
   return b;
+}
+
+/** The original's guest type, numbered 1 to 29. */
+export function guestDef(variant: number): GuestDef {
+  const g = DATA.visitor[`Visitor${variant}`] as GuestDef | undefined;
+  if (!g) throw new Error(`unknown guest ${variant}`);
+  return g;
 }
 
 /** Price of a booth at a given upgrade level (0..2). */

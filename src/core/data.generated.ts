@@ -550,7 +550,10 @@ export default {
             0.1,
             0.2,
             0.3
-          ]
+          ],
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "desc": [
           "For check in dan check out room resort.",
@@ -645,7 +648,9 @@ export default {
               0.2
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "desc": [
           "",
@@ -835,7 +840,9 @@ export default {
               0.075
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": null,
         "desc": [
@@ -931,7 +938,9 @@ export default {
               0.09
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "treadmill",
         "desc": [
@@ -1027,7 +1036,9 @@ export default {
               0.1
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "leaf",
         "desc": [
@@ -1123,7 +1134,9 @@ export default {
               0.075
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "heater",
         "desc": [
@@ -1219,7 +1232,9 @@ export default {
               0.06
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "wine",
         "desc": [
@@ -1315,7 +1330,9 @@ export default {
               0.09
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "palm",
         "desc": [
@@ -1411,7 +1428,9 @@ export default {
               0.07
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "towel",
         "desc": [
@@ -1507,7 +1526,9 @@ export default {
               0.12
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "bamboo",
         "desc": [
@@ -1603,7 +1624,9 @@ export default {
               0.12
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "uniform",
         "desc": [
@@ -1699,7 +1722,9 @@ export default {
               0.09
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "aid",
         "desc": [
@@ -1795,7 +1820,9 @@ export default {
               0.15
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "irrigation",
         "desc": [
@@ -1891,7 +1918,9 @@ export default {
               0.09
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "wifi",
         "desc": [
@@ -1987,7 +2016,9 @@ export default {
               0.15
             ]
           ],
-          "canceled": []
+          "canceled": {
+            "__ref": "canceledMood"
+          }
         },
         "extraUpgrade": "gardening",
         "desc": [
@@ -3230,6 +3261,1328 @@ export default {
       ]
     ],
     "Visitor": {
+      "Visitor1": {
+        "jenis": 1,
+        "sex": 1,
+        "speed": 1.15,
+        "MAX_MOOD": 3,
+        "money": 5000,
+        "room_stay": 2,
+        "tip": 4,
+        "hygiene": 3,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 40,
+        "medical_prob": 35,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 10,
+          "Facility": [
+            [
+              "Arcade",
+              "IndiaResto",
+              "Jacuzi",
+              "Giftshop"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor2": {
+        "jenis": 2,
+        "sex": 0,
+        "speed": 1,
+        "MAX_MOOD": 3,
+        "money": 5000,
+        "room_stay": 2,
+        "tip": 3,
+        "hygiene": 2,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 39,
+        "medical_prob": 40,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 10,
+          "Facility": [
+            [
+              "JapanResto",
+              "Arcade",
+              "Sauna",
+              "Taco"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor3": {
+        "jenis": 3,
+        "sex": 1,
+        "speed": 1.8,
+        "MAX_MOOD": 2,
+        "money": 6500,
+        "room_stay": 2,
+        "tip": 2,
+        "hygiene": 4,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 38,
+        "medical_prob": 29,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 9,
+          "Facility": [
+            [
+              "Pool",
+              "Arcade",
+              "Spa",
+              "JapanResto"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor4": {
+        "jenis": 4,
+        "sex": 0,
+        "speed": 1.2,
+        "MAX_MOOD": 4,
+        "money": 7000,
+        "room_stay": 2,
+        "tip": 3,
+        "hygiene": 1,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 33,
+        "medical_prob": 25,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 7,
+          "Facility": [
+            [
+              "Golf",
+              "BaratResto",
+              "Pool",
+              "Bar"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor5": {
+        "jenis": 5,
+        "sex": 1,
+        "speed": 2,
+        "MAX_MOOD": 3,
+        "money": 8000,
+        "room_stay": 2,
+        "tip": 2,
+        "hygiene": 5,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 36,
+        "medical_prob": 25,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 11,
+          "Facility": [
+            [
+              "Pool",
+              "Jacuzi",
+              "Sauna",
+              "Minimarket"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor6": {
+        "jenis": 6,
+        "sex": 0,
+        "speed": 1.5,
+        "MAX_MOOD": 1,
+        "money": 8800,
+        "room_stay": 2,
+        "tip": 3,
+        "hygiene": 3,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 32,
+        "medical_prob": 30,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 9,
+          "Facility": [
+            [
+              "IndiaResto",
+              "Bar",
+              "Arcade",
+              "Taco"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor7": {
+        "jenis": 7,
+        "sex": 1,
+        "speed": 0.95,
+        "MAX_MOOD": 2,
+        "money": 9250,
+        "room_stay": 2,
+        "tip": 4,
+        "hygiene": 5,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 37,
+        "medical_prob": 45,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 10,
+          "Facility": [
+            [
+              "Giftshop",
+              "Icecream",
+              "Gym",
+              "Sauna"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor8": {
+        "jenis": 8,
+        "sex": 0,
+        "speed": 1.5,
+        "MAX_MOOD": 4,
+        "money": 9500,
+        "room_stay": 2,
+        "tip": 5,
+        "hygiene": 1,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 32,
+        "medical_prob": 45,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 10,
+          "Facility": [
+            [
+              "Bar",
+              "BaratResto",
+              "Jacuzi",
+              "Hotdog"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor9": {
+        "jenis": 9,
+        "sex": 0,
+        "speed": 1.4,
+        "MAX_MOOD": 2,
+        "money": 9800,
+        "room_stay": 3,
+        "tip": 4,
+        "hygiene": 2,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 36,
+        "medical_prob": 45,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 10,
+          "Facility": [
+            [
+              "Arcade",
+              "Gym",
+              "Golf",
+              "Pool"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor10": {
+        "jenis": 10,
+        "sex": 1,
+        "speed": 1.35,
+        "MAX_MOOD": 2,
+        "money": 10000,
+        "room_stay": 3,
+        "tip": 5,
+        "hygiene": 2,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 35,
+        "medical_prob": 45,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 3,
+          "Facility": [
+            [
+              "IndiaResto",
+              "JapanResto",
+              "Sauna",
+              "Minimarket"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor11": {
+        "jenis": 11,
+        "sex": 0,
+        "speed": 0.75,
+        "MAX_MOOD": 2,
+        "money": 11000,
+        "room_stay": 2,
+        "tip": 2,
+        "hygiene": 2,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 34,
+        "medical_prob": 95,
+        "maxK": 8,
+        "old": true,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 11,
+          "Facility": [
+            [
+              "Jacuzi",
+              "Sauna",
+              "Giftshop",
+              "BaratResto"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor12": {
+        "jenis": 12,
+        "sex": 1,
+        "speed": 0.95,
+        "MAX_MOOD": 3,
+        "money": 11200,
+        "room_stay": 3,
+        "tip": 3,
+        "hygiene": 3,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 35,
+        "medical_prob": 85,
+        "maxK": 8,
+        "old": true,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 11,
+          "Facility": [
+            [
+              "Icecream",
+              "Pool",
+              "JapanResto",
+              "Sauna"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor13": {
+        "jenis": 13,
+        "sex": 0,
+        "speed": 0.6,
+        "MAX_MOOD": 4,
+        "money": 12500,
+        "room_stay": 3,
+        "tip": 2,
+        "hygiene": 2,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 34,
+        "medical_prob": 90,
+        "maxK": 8,
+        "old": true,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 10,
+          "Facility": [
+            [
+              "Golf",
+              "Spa",
+              "Medical",
+              "BaratResto"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor14": {
+        "jenis": 14,
+        "sex": 1,
+        "speed": 0.8,
+        "MAX_MOOD": 1,
+        "money": 13000,
+        "room_stay": 3,
+        "tip": 3,
+        "hygiene": 5,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 33,
+        "medical_prob": 85,
+        "maxK": 8,
+        "old": true,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 10,
+          "Facility": [
+            [
+              "IndiaResto",
+              "Gym",
+              "Giftshop",
+              "Minimarket"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor15": {
+        "jenis": 15,
+        "sex": 0,
+        "speed": 0.75,
+        "MAX_MOOD": 4,
+        "money": 9500,
+        "room_stay": 2,
+        "tip": 4,
+        "hygiene": 2,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 32,
+        "medical_prob": 90,
+        "maxK": 8,
+        "old": true,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 13,
+          "Facility": [
+            [
+              "Arcade",
+              "Jacuzi",
+              "Taco",
+              "Sauna"
+            ],
+            [
+              35,
+              60,
+              80,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor16": {
+        "jenis": 16,
+        "sex": 1,
+        "speed": 0.7,
+        "MAX_MOOD": 4,
+        "money": 9800,
+        "room_stay": 2,
+        "tip": 4,
+        "hygiene": 2,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 35,
+        "medical_prob": 95,
+        "maxK": 8,
+        "old": true,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 12,
+          "Facility": [
+            [
+              "Minimarket",
+              "Hotdog",
+              "Jacuzi",
+              "Spa",
+              "Pool"
+            ],
+            [
+              30,
+              55,
+              73,
+              88,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor17": {
+        "jenis": 17,
+        "sex": 3,
+        "jenis1": 2,
+        "jenis2": 1,
+        "speed": 0.95,
+        "MAX_MOOD": 3,
+        "money": 12500,
+        "room_stay": 1,
+        "tip": 6,
+        "hygiene": 3,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 37,
+        "medical_prob": 75,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 15,
+          "Facility": [
+            [
+              "Bar",
+              "Hotdog",
+              "Taco",
+              "Giftshop",
+              "Golf",
+              "Gym",
+              "IndiaResto"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor18": {
+        "jenis": 18,
+        "sex": 3,
+        "jenis1": 4,
+        "jenis2": 3,
+        "speed": 0.95,
+        "MAX_MOOD": 4,
+        "money": 13000,
+        "room_stay": 3,
+        "tip": 5,
+        "hygiene": 4,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 38,
+        "medical_prob": 45,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 15,
+          "Facility": [
+            [
+              "Bar",
+              "BaratResto",
+              "Spa",
+              "Gym",
+              "Jacuzi",
+              "Gym",
+              "Arcade"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor19": {
+        "jenis": 19,
+        "sex": 3,
+        "jenis1": 6,
+        "jenis2": 5,
+        "speed": 0.95,
+        "MAX_MOOD": 3,
+        "money": 13500,
+        "room_stay": 2,
+        "tip": 4,
+        "hygiene": 5,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 37,
+        "medical_prob": 60,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 15,
+          "Facility": [
+            [
+              "BaratResto",
+              "Hotdog",
+              "Taco",
+              "Icecream",
+              "JapanResto",
+              "Spa",
+              "IndiaResto"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor20": {
+        "jenis": 20,
+        "sex": 3,
+        "jenis1": 8,
+        "jenis2": 7,
+        "speed": 0.95,
+        "MAX_MOOD": 2,
+        "money": 13700,
+        "room_stay": 3,
+        "tip": 5,
+        "hygiene": 4,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 36,
+        "medical_prob": 55,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 15,
+          "Facility": [
+            [
+              "IndiaResto",
+              "Bar",
+              "Pool",
+              "Jacuzi",
+              "Minimarket",
+              "Hotdog",
+              "Giftshop"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor21": {
+        "jenis": 21,
+        "sex": 3,
+        "jenis1": 9,
+        "jenis2": 10,
+        "speed": 0.95,
+        "MAX_MOOD": 3,
+        "money": 13500,
+        "room_stay": 3,
+        "tip": 4,
+        "hygiene": 3,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 48,
+        "medical_prob": 50,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 15,
+          "Facility": [
+            [
+              "IndiaResto",
+              "Minimarket",
+              "Golf",
+              "Hotdog",
+              "JapanResto",
+              "Sauna",
+              "Taco"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor22": {
+        "jenis": 22,
+        "sex": 3,
+        "jenis1": 11,
+        "jenis2": 12,
+        "speed": 1,
+        "MAX_MOOD": 4,
+        "money": 14550,
+        "room_stay": 3,
+        "tip": 6,
+        "hygiene": 2,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 33,
+        "medical_prob": 90,
+        "maxK": 9,
+        "old": true,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 20,
+          "Facility": [
+            [
+              "Pool",
+              "BaratResto",
+              "Gym",
+              "Giftshop",
+              "Jacuzi",
+              "Golf",
+              "Sauna"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor23": {
+        "jenis": 23,
+        "sex": 3,
+        "jenis1": 13,
+        "jenis2": 14,
+        "speed": 0.95,
+        "MAX_MOOD": 3,
+        "money": 14500,
+        "room_stay": 3,
+        "tip": 7,
+        "hygiene": 1,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 32,
+        "medical_prob": 95,
+        "maxK": 9,
+        "old": true,
+        "likes": {
+          "Room": [
+            "Cottage",
+            "Lodge"
+          ],
+          "Room2": 30,
+          "Facility": [
+            [
+              "Golf",
+              "Medical",
+              "JapanResto",
+              "Taco",
+              "Jacuzi",
+              "Spa",
+              "Sauna"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor24": {
+        "jenis": 24,
+        "sex": 3,
+        "jenis1": 15,
+        "jenis2": 16,
+        "speed": 0.7,
+        "MAX_MOOD": 2,
+        "money": 15000,
+        "room_stay": 2,
+        "tip": 4,
+        "hygiene": 1,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 30,
+        "medical_prob": 98,
+        "maxK": 9,
+        "old": true,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 25,
+          "Facility": [
+            [
+              "Medical",
+              "Golf",
+              "IndiaResto",
+              "Minimarket",
+              "Gym",
+              "Hotdog",
+              "Giftshop"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor25": {
+        "jenis": 25,
+        "sex": 1,
+        "nick": "Ann Hat Away",
+        "car": 1,
+        "speed": 0.8,
+        "MAX_MOOD": 2,
+        "money": 17000,
+        "room_stay": 3,
+        "tip": 12,
+        "hygiene": 5,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 43,
+        "medical_prob": 75,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 8,
+          "Facility": [
+            [
+              "Golf",
+              "Bar",
+              "Pool",
+              "Gym",
+              "Arcade",
+              "Medical",
+              "Taco"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor26": {
+        "jenis": 26,
+        "sex": 1,
+        "nick": "Mr. Rock",
+        "car": 1,
+        "speed": 1.4,
+        "MAX_MOOD": 3,
+        "money": 18500,
+        "room_stay": 3,
+        "tip": 13,
+        "hygiene": 5,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 43,
+        "medical_prob": 90,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 6,
+          "Facility": [
+            [
+              "Minimarket",
+              "Pool",
+              "Golf",
+              "Spa",
+              "Giftshop",
+              "Medical",
+              "Icecream"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor27": {
+        "jenis": 27,
+        "sex": 1,
+        "nick": "Naomi Volts",
+        "car": 0,
+        "speed": 0.95,
+        "MAX_MOOD": 2,
+        "money": 20000,
+        "room_stay": 3,
+        "tip": 14,
+        "hygiene": 5,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 43,
+        "medical_prob": 75,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge"
+          ],
+          "Room2": 0,
+          "Facility": [
+            [
+              "Icecream",
+              "Taco",
+              "JapanResto",
+              "IndiaResto",
+              "BaratResto",
+              "Bar",
+              "Hotdog"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor28": {
+        "jenis": 28,
+        "sex": 1,
+        "nick": "Robert Fatinson",
+        "car": 0,
+        "speed": 0.5,
+        "MAX_MOOD": 4,
+        "money": 24000,
+        "room_stay": 3,
+        "tip": 20,
+        "hygiene": 5,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 43,
+        "medical_prob": 90,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge"
+          ],
+          "Room2": 0,
+          "Facility": [
+            [
+              "Medical",
+              "Pool",
+              "Spa",
+              "Sauna",
+              "Jacuzi",
+              "IndiaResto",
+              "Icecream"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
+      "Visitor29": {
+        "jenis": 29,
+        "sex": 1,
+        "nick": "Jason State",
+        "car": 1,
+        "speed": 1.35,
+        "MAX_MOOD": 3,
+        "money": 25000,
+        "room_stay": 3,
+        "tip": 15,
+        "hygiene": 5,
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "hygCounter": 43,
+        "medical_prob": 80,
+        "maxK": 12,
+        "old": false,
+        "likes": {
+          "Room": [
+            "Lodge",
+            "Cottage"
+          ],
+          "Room2": 0,
+          "Facility": [
+            [
+              "Minimarket",
+              "Golf",
+              "Arcade",
+              "Giftshop",
+              "JapanResto",
+              "Gym",
+              "Spa"
+            ],
+            [
+              20,
+              35,
+              50,
+              70,
+              80,
+              90,
+              100
+            ]
+          ],
+          "Other": []
+        },
+        "Other": {
+          "__ref": "otherFacility"
+        }
+      },
       "Cottage": [
         2,
         3,
@@ -3517,6 +4870,77 @@ export default {
       ]
     },
     "Employee": {
+      "Janitor": {
+        "nama": "JANITOR",
+        "jenis": 1,
+        "sex": 0,
+        "MAX_MOOD": [
+          3,
+          4,
+          5
+        ],
+        "smiley": {
+          "__ref": "dataOb.Smiley"
+        },
+        "price": [
+          0,
+          100,
+          200
+        ],
+        "gaji_pokok": [
+          5,
+          10,
+          15
+        ],
+        "pop": [
+          0.25,
+          0.5,
+          0.75
+        ],
+        "speedWork": [
+          1,
+          1.5,
+          2
+        ],
+        "Exp_add": [
+          1,
+          1,
+          1
+        ],
+        "Exp": [
+          0,
+          0,
+          0
+        ],
+        "breakTimer": [
+          50,
+          40,
+          30
+        ],
+        "sleepTimer": 125,
+        "sleepMinus": [
+          0.25,
+          0.5,
+          1
+        ],
+        "jamTidur": [
+          21,
+          23
+        ],
+        "istirahatTimer": [
+          25,
+          60
+        ],
+        "jamBangun": [
+          8,
+          9
+        ],
+        "speed": [
+          1,
+          1.5,
+          2
+        ]
+      },
       "FIRSTNAME": [
         "Max",
         "Budi",
@@ -3563,11 +4987,26 @@ export default {
       ]
     }
   },
+  "_loc4_": {
+    "__ref": "param1"
+  },
+  "_loc5_": {
+    "__ref": "param1.length"
+  },
   "m": 0,
-  "_loc3_": 0,
-  "_loc5_": 0,
-  "_loc4_": 0,
+  "_loc3_": {
+    "__ref": "_loc2_"
+  },
+  "_loc7_": {
+    "__ref": "_loc9_.length"
+  },
+  "_loc8_": {
+    "__ref": "param2.length"
+  },
   "n": 0,
+  "_loc6_": {
+    "__ref": "_loc2_.length"
+  },
   "MAP": {
     "sceneries": {
       "tile_0_17": 15,

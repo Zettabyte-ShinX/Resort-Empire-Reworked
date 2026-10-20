@@ -542,6 +542,6 @@ export class Renderer {
 }
 
 /** Pick a guest sprite variant, spread over the available artwork. */
-function variantFor(v: { seed: number }): number {
-  return 1 + Math.floor(v.seed * 29) % 29;
+function variantFor(v: { variant: number }): number {
+  return v.variant;
 }

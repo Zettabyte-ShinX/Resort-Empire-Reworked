@@ -15,6 +15,7 @@ import {
   boothDef,
   boothPopularity,
   boothPrice,
+  guestDef,
   sceneryDef,
   tileDef,
 } from "./data.ts";
@@ -55,6 +56,10 @@ export interface BoothInstance {
   satisfaction: number;
   /** Whether the facility is still being built. */
   building: boolean;
+  /** Experience gained from the guests it has served. */
+  exp: number;
+  /** Whether it has enough experience to be upgraded. */
+  canUpgrade: boolean;
   /** How far the building has got, 0..1. */
   buildProgress: number;
 }
@@ -82,6 +87,10 @@ export interface Visitor {
   budget: number;
   spent: number;
   archetype: string;
+  /** The original's guest type, 1 to 29. */
+  variant: number;
+  /** How many facilities the guest has visited. */
+  visits: number;
   /** Seconds remaining in the current activity. */
   timer: number;
   /** Visual variety seed. */
@@ -141,6 +150,14 @@ const NB = new Int8Array([
 function makeTile(id: string): Tile {
   const def = tileDef(id);
   return { id, walkable: def.walkable, scenery: null, booth: null };
+}
+
+/** The smiley a guest's mood falls into, as the original's bands. */
+function moodBand(mood: number): number {
+  if (mood >= 80) return 0;
+  if (mood >= 65) return 1;
+  if (mood >= 55) return 2;
+  return 3;
 }
 
 export class World {
@@ -454,10 +471,17 @@ export class World {
   /** Upgrade a booth to the next level if it can be afforded. */
   upgradeBooth(booth: BoothInstance): boolean {
     if (booth.level >= 2) return false;
+    // The original only lets a facility be upgraded once it has enough
+    // experience from the guests it has served.
+    const def = boothDef(booth.type);
+    const expMax = def.Exp?.[booth.level + 1] ?? 0;
+    if (expMax > 0 && booth.exp < expMax) return false;
     const cost = boothPrice(booth.type, booth.level + 1);
     if (this.money < cost) return false;
     this.money -= cost;
     booth.level++;
+    booth.exp = 0;
+    booth.canUpgrade = false;
     this.recomputePopularity();
     this.log.push(`Upgraded ${booth.type} to level ${booth.level + 1}`);
     return true;
@@ -498,6 +522,8 @@ export class World {
       satisfaction: 0,
       building: true,
       buildProgress: 0,
+      exp: 0,
+      canUpgrade: false,
     };
     for (let r = row; r < row + def.ROWS; r++) {
       for (let c = col; c < col + def.COLS; c++) {
@@ -644,13 +670,10 @@ export class World {
   // ---------------------------------------------------------- visitors ----
 
   private spawnVisitor(): void {
-    const archetypes = DATA.visitor.Cottage as number[];
-    const archetypePool = [
-      "Cottage", "Lodge", "Old", "TanpaOld",
-    ];
-    const arch = archetypePool[
-      Math.floor(Math.random() * archetypePool.length)
-    ];
+    // Each guest is one of the original's 29 types, which decides how it
+    // looks, what it can afford and what it wants from the resort.
+    const variant = 1 + Math.floor(Math.random() * 29) % 29;
+    const def = guestDef(variant);
     const entryCol = this.entrance.col + (Math.random() < 0.5 ? -2 : 2);
 
     this.stats.guestsArrived++;
@@ -662,16 +685,72 @@ export class World {
       target: null,
       state: "arriving",
       mood: 55 + Math.random() * 20,
-      budget: 150 + Math.random() * 350,
+      budget: def.money,
       spent: 0,
-      archetype: arch,
+      archetype: `Visitor${variant}`,
+      variant,
+      visits: 0,
       timer: 0,
       seed: Math.random(),
       dirX: 0,
       dirY: 0,
       moving: false,
     });
-    void archetypes;
+  }
+
+  /**
+   * The facilities a guest wants to visit.
+   *
+   * The original gives every guest type a list of the facilities it likes
+   * and what each of them is worth to it. Any other facility is still worth
+   * a visit, just less, so a guest is never stuck with nothing to do.
+   */
+  private wantedFacilities(v: Visitor): { type: string; worth: number }[] {
+    const def = guestDef(v.variant);
+    const names = def.likes.Facility[0];
+    const worth = def.likes.Facility[1];
+    const out: { type: string; worth: number }[] = [];
+    const seen = new Set<string>();
+    names.forEach((name, i) => {
+      if (seen.has(name)) return;
+      seen.add(name);
+      if (this.booths.some((b) => b.type === name)) {
+        out.push({ type: name, worth: worth[i] ?? 20 });
+      }
+    });
+    // A guest that has been at the resort long enough looks for a room.
+    if (v.visits >= 1) {
+      for (const name of def.likes.Room) {
+        if (seen.has(name)) continue;
+        seen.add(name);
+        if (this.booths.some((b) => b.type === name)) {
+          out.push({ type: name, worth: def.likes.Room2 });
+        }
+      }
+    }
+    // Anything else the resort has to offer.
+    for (const b of this.booths) {
+      if (seen.has(b.type)) continue;
+      out.push({ type: b.type, worth: 15 });
+    }
+    return out;
+  }
+
+  /** The upgrade level of the newest facility of a type. */
+  private levelOf(type: string): number {
+    let level = 0;
+    for (const b of this.booths) if (b.type === type) level = Math.max(level, b.level);
+    return level;
+  }
+
+  /** Whether a facility is open at the current hour. */
+  private isBoothOpen(booth: BoothInstance): boolean {
+    const def = boothDef(booth.type);
+    if (!def.opened && !def.closed) return true;
+    const h = this.hour;
+    if (def.opened < def.closed) return h >= def.opened && h < def.closed;
+    // Some facilities, such as the bar, are open past midnight.
+    return h >= def.opened || h < def.closed;
   }
 
   /** The tile a guest should stand on to reach a booth. */
@@ -698,21 +777,32 @@ export class World {
   }
 
   private pickTarget(visitor: Visitor): boolean {
-    // A facility that is still being built cannot be used.
-    const open = this.booths.filter((b) => !b.building);
+    // A guest only goes to the facilities it wants, and only to ones that
+    // are built, open and finished.
+    const wanted = this.wantedFacilities(visitor);
+    if (wanted.length === 0) return false;
+    const open = wanted.filter((w) => {
+      const booth = this.booths.find((b) => b.type === w.type);
+      return booth && !booth.building && this.isBoothOpen(booth);
+    });
     if (open.length === 0) return false;
-    // Weight the choice by popularity so popular facilities get busier.
-    const weights = open.map((b) => Math.max(0.05, boothPopularity(b.type, b.level)));
+    // Weight the choice by popularity and by how much the guest wants it, so
+    // popular facilities get busier and the ones the guest likes get used.
+    const weights = open.map(
+      (w) =>
+        Math.max(0.05, boothPopularity(w.type, this.levelOf(w.type))) * (w.worth / 40),
+    );
     const total = weights.reduce((a, b) => a + b, 0);
     let roll = Math.random() * total;
-    let chosen = open[0]!;
+    let chosenType = open[0]!.type;
     for (let i = 0; i < open.length; i++) {
       roll -= weights[i]!;
       if (roll <= 0) {
-        chosen = open[i]!;
+        chosenType = open[i]!.type;
         break;
       }
     }
+    const chosen = this.booths.find((b) => b.type === chosenType)!;
 
     const door = this.boothDoor(chosen);
     if (!door) return false;
@@ -777,9 +867,11 @@ export class World {
       }
       case "seeking": {
         if (this.pickTarget(v)) break;
-        // Nothing reachable right now: mill about or leave.
+        // Nothing it wants is open or reachable: it gets cross about it, and
+        // eventually goes home.
         v.timer += dt;
-        if (v.timer > 3) {
+        v.mood = Math.max(0, v.mood - dt * 3);
+        if (v.timer > 12) {
           v.state = "leaving";
           v.timer = 0;
         }
@@ -857,11 +949,13 @@ export class World {
     const hourBucket = Math.floor(this.hour) % 24;
     this.hourlyRevenue[hourBucket] = (this.hourlyRevenue[hourBucket] ?? 0) + charge;
 
-    // Satisfaction depends on the booth's popularity and whether the guest
-    // could afford the service.
+    // The original's guest types say what each facility is worth to them.
+    const worth =
+      this.wantedFacilities(v).find((w) => w.type === booth.type)?.worth ?? 40;
     const pop = boothPopularity(booth.type, booth.level);
-    const delta = 6 + pop * 4 + (charge > 0 ? 4 : -8);
+    const delta = (worth - 40) / 4 + pop * 3 + (charge > 0 ? 4 : -8);
     v.mood = Math.max(0, Math.min(100, v.mood + delta));
+    v.visits++;
 
     booth.occupancy = Math.max(0, booth.occupancy - 1);
     booth.served++;
@@ -869,13 +963,26 @@ export class World {
     booth.satisfaction =
       (booth.satisfaction * (booth.served - 1) + v.mood) / booth.served;
 
+    // The facility gains experience from the guests it serves, and can be
+    // upgraded once it has enough.
+    const exp = def.Exp_add?.[Math.min(booth.level, 2)]?.[moodBand(v.mood)] ?? 1;
+    booth.exp += exp;
+    const expMax = def.Exp?.[booth.level + 1] ?? 0;
+    if (expMax > 0 && booth.exp >= expMax) booth.canUpgrade = true;
+
     // Research points accrue from satisfied guests.
     const rp = Math.round((v.mood / 100) * (def.xpt || 0) * 0.2);
     if (rp > 0) this.researchPoints += rp;
 
     v.target = null;
-    v.state = "seeking";
-    v.timer = 0;
+    // A guest stays as long as it has things to do, then goes home.
+    if (v.visits >= guestDef(v.variant).maxK) {
+      v.state = "leaving";
+      v.timer = 0;
+    } else {
+      v.state = "seeking";
+      v.timer = 0;
+    }
   }
 
   // ------------------------------------------------------------- clock ----
@@ -903,6 +1010,24 @@ export class World {
         if (v.state !== "done") v.state = "leaving";
       }
     }
+    // The staff are paid every day, as the original does.
+    if (h === 0) this.payWages();
+  }
+
+  /** The daily wage bill of the staff working in the resort. */
+  private payWages(): void {
+    let wages = 0;
+    for (const b of this.booths) {
+      if (b.building) continue;
+      const def = boothDef(b.type);
+      if (!def.sumStaff) continue;
+      const rate = def.salary[Math.min(b.level, def.salary.length - 1)] ?? 0;
+      wages += rate * def.sumStaff;
+    }
+    if (wages <= 0) return;
+    this.money -= wages;
+    this.stats.wages += wages;
+    this.log.push(`Paid $${wages} in wages.`);
   }
 
   // -------------------------------------------------------------- tick ----

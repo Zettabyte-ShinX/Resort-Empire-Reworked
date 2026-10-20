@@ -107,19 +107,28 @@ class Parser:
             r"(true|false|null|undefined|NaN|-?\d+\.?\d*(?:[eE][-+]?\d+)?)",
             self.s[self.i:],
         )
-        if not m:
-            raise ValueError(f"cannot parse primitive at {self.s[self.i:self.i + 40]!r}")
-        tok = m.group(1)
-        self.i += len(tok)
-        if tok == "true":
-            return True
-        if tok == "false":
-            return False
-        if tok in ("null", "undefined"):
-            return None
-        if tok == "NaN":
-            return float("nan")
-        return float(tok) if any(c in tok for c in ".eE") else int(tok)
+        if m:
+            tok = m.group(1)
+            self.i += len(tok)
+            if tok == "true":
+                return True
+            if tok == "false":
+                return False
+            if tok in ("null", "undefined"):
+                return None
+            if tok == "NaN":
+                return float("nan")
+            return float(tok) if any(c in tok for c in ".eE") else int(tok)
+
+        # A reference to another table, e.g. `dataOb.Smiley`. The value is not
+        # known here, but keeping the reference lets the rest of the object
+        # be read.
+        ref = re.match(r"[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*", self.s[self.i:])
+        if ref:
+            self.i += ref.end()
+            return {"__ref": ref.group(0)}
+
+        raise ValueError(f"cannot parse primitive at {self.s[self.i:self.i + 40]!r}")
 
     def arr(self) -> list:
         self.i += 1  # consume '['

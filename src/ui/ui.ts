@@ -20,6 +20,7 @@ import {
   boothDef,
   boothPopularity,
   boothPrice,
+  guestDef,
   sceneryDef,
   tileDef,
 } from "../core/data.ts";
@@ -482,7 +483,7 @@ export class UI {
       const moodClass = v.mood >= 70 ? "good" : v.mood >= 45 ? "ok" : "bad";
       row.innerHTML = `
         <div class="g-top">
-          <span class="g-name">${guestLabel(v.archetype)}</span>
+          <span class="g-name">${guestName(v)}</span>
           <span class="g-mood ${moodClass}">${Math.round(v.mood)}%</span>
         </div>
         <div class="bar"><i class="${moodClass}" style="width:${Math.max(2, v.mood)}%"></i></div>
@@ -629,14 +630,34 @@ export class UI {
 
     const body = el("div", "modal-body");
     const grid = el("div", "stat-grid");
-    for (const [k, v] of [
+    const expMax = def.Exp?.[booth.level + 1] ?? 0;
+    const rows: [string, string][] = [
       ["Level", `${booth.level + 1} of 3`],
       ["Guests served", `${booth.served}`],
       ["Inside now", `${booth.occupancy}`],
       ["Satisfaction", `${Math.round(booth.satisfaction)}%`],
       ["Popularity", boothPop(booth.type, booth.level).toFixed(2)],
       ["Nightly rate", money(nightlyRate(booth.type, booth.level))],
-    ] as [string, string][]) {
+    ];
+    if (expMax > 0) {
+      rows.push([
+        "Experience",
+        `${booth.exp} of ${expMax} to the next level`,
+      ]);
+    }
+    if (def.sumStaff) {
+      rows.push([
+        "Staff",
+        `${def.sumStaff} at ${money(
+          (def.salary[Math.min(booth.level, def.salary.length - 1)] ?? 0) * def.sumStaff,
+        )} a day`,
+      ]);
+    }
+    const open = def.opened || def.closed;
+    if (open) {
+      rows.push(["Open", `${def.opened}:00 to ${def.closed}:00`]);
+    }
+    for (const [k, v] of rows) {
       grid.appendChild(
         el("div", "stat-cell", `<span class="k">${k}</span><span class="v">${v}</span>`),
       );
@@ -651,8 +672,15 @@ export class UI {
     const canUpgrade = booth.level < 2;
     const price = boothPrice(booth.type, booth.level + 1);
     const up = el("button", canUpgrade ? "" : "ghost");
-    up.textContent = canUpgrade ? `Upgrade - ${money(price)}` : "Already at the highest level";
-    up.disabled = !canUpgrade;
+    if (!canUpgrade) {
+      up.textContent = "Already at the highest level";
+    } else if (expMax > 0 && booth.exp < expMax) {
+      // The original only upgrades a facility once it has enough experience.
+      up.textContent = `Needs ${expMax - booth.exp} more experience`;
+    } else {
+      up.textContent = `Upgrade - ${money(price)}`;
+    }
+    up.disabled = !canUpgrade || (expMax > 0 && booth.exp < expMax);
     up.addEventListener("click", () => {
       this.cb.onUpgrade(booth.id);
       this.showFacility(booth.id);
@@ -931,16 +959,16 @@ function nightlyRate(type: string, level: number): number {
   return Array.isArray(p) ? (p[Math.min(level, p.length - 1)] ?? 0) : p;
 }
 
-function guestLabel(archetype: string): string {
-  const names: Record<string, string> = {
-    Cottage: "Couple",
-    Lodge: "Family",
-    Old: "Senior",
-    TanpaOld: "Traveller",
-    Cottage_TanpaOld: "Friend",
-    Lodge_TanpaOld: "Group",
-  };
-  return names[archetype] ?? "Guest";
+/** A guest's name, from the original's lists of names. */
+function guestName(v: { variant: number; seed: number }): string {
+  const def = guestDef(v.variant);
+  const male = def.sex === 1;
+  const first = (male ? DATA.visitor.FIRSTNAME_MALE : DATA.visitor.FIRSTNAME_FEMALE) as string[];
+  const second = (male ? DATA.visitor.SECONDNAME_MALE : DATA.visitor.SECONDNAME_FEMALE) as string[];
+  if (!first?.length || !second?.length) return "Guest";
+  const a = first[Math.floor(v.seed * first.length) % first.length]!;
+  const b = second[Math.floor(v.seed * 977) % second.length]!;
+  return `${a} ${b}`;
 }
 
 function activityLabel(state: string): string {
