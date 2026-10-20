@@ -1077,3 +1077,12 @@ button.ghost.danger:hover {
   background: linear-gradient(90deg, #4ade80, #22c55e);
   transition: width 0.2s linear;
 }
+
+.palette-item.is-locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.palette-item.is-locked .pi-price {
+  color: var(--muted-2);
+}

@@ -12,12 +12,15 @@
 import {
   DATA,
   MAP_TIERS,
+  RESEARCH,
   boothDef,
   boothPopularity,
   boothPrice,
   guestDef,
+  researchLevel,
   sceneryDef,
   tileDef,
+  unlockLevel,
 } from "./data.ts";
 import type { BoothDef } from "./data.ts";
 import { findPath } from "./pathfind.ts";
@@ -490,8 +493,20 @@ export class World {
   }
 
   /** Can a booth of this type be placed with its corner at (col,row)? */
+  /** The research level the resort has reached. */
+  get researchLevel(): number {
+    return researchLevel(this.researchPoints);
+  }
+
+  /** Whether a facility has been unlocked by research yet. */
+  isUnlocked(type: string): boolean {
+    const need = unlockLevel(type);
+    return need === null || this.researchLevel >= need;
+  }
+
   canPlaceBooth(type: string, col: number, row: number): boolean {
     const def = boothDef(type);
+    if (!this.isUnlocked(type)) return false;
     for (let r = row; r < row + def.ROWS; r++) {
       for (let c = col; c < col + def.COLS; c++) {
         const t = this.tileAt(c, r);
@@ -973,8 +988,9 @@ export class World {
     const expMax = def.Exp?.[booth.level + 1] ?? 0;
     if (expMax > 0 && booth.exp >= expMax) booth.canUpgrade = true;
 
-    // Research points accrue from satisfied guests.
-    const rp = Math.round((v.mood / 100) * (def.xpt || 0) * 0.2);
+    // Research points accrue from the guests a facility serves, as the
+    // original's table says.
+    const rp = RESEARCH.addPoint[booth.type]?.[Math.min(booth.level, 3)] ?? 0;
     if (rp > 0) this.researchPoints += rp;
 
     v.target = null;
@@ -1084,6 +1100,7 @@ export class World {
       capacity: this.guestCapacity,
       popularity: this.popularity,
       research: this.researchPoints,
+      researchLevel: this.researchLevel,
       booths: this.booths.length,
       open: this.isOpen,
     };

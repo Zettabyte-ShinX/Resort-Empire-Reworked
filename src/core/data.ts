@@ -140,6 +140,13 @@ const d = raw as unknown as {
   };
   _statics: {
     EXPAND: { price: number[] };
+    ResearchPoint: {
+      level_: number[];
+      bonusLevel: number[];
+      bonusRP: number[];
+      addPoint: Record<string, number[]>;
+    };
+    Unlocked: Record<string, readonly string[]>;
   };
   MAP: {
     sceneries: Record<string, number>;
@@ -201,6 +208,42 @@ export function guestDef(variant: number): GuestDef {
   const g = DATA.visitor[`Visitor${variant}`] as GuestDef | undefined;
   if (!g) throw new Error(`unknown guest ${variant}`);
   return g;
+}
+
+/** The original's research tree. */
+export interface ResearchDef {
+  /** The research points needed for each level. */
+  level_: number[];
+  bonusLevel: number[];
+  bonusRP: number[];
+  addPoint: Record<string, number[]>;
+  /** What each research level unlocks. */
+  Unlocked: Record<string, readonly string[]>;
+}
+
+export const RESEARCH: ResearchDef = {
+  ...(raw._statics.ResearchPoint as unknown as Omit<ResearchDef, "Unlocked">),
+  Unlocked: raw._statics.Unlocked,
+};
+
+/** The research level a number of research points reaches. */
+export function researchLevel(points: number): number {
+  const levels = RESEARCH.level_;
+  let level = 0;
+  for (const threshold of levels) {
+    if (points >= threshold) level++;
+  }
+  return level;
+}
+
+/** The research level a facility is unlocked at, or null if it is free. */
+export function unlockLevel(facility: string): number | null {
+  for (const [key, list] of Object.entries(RESEARCH.Unlocked)) {
+    if (!list.includes(facility)) continue;
+    const m = /^level_(\d+)$/.exec(key);
+    if (m) return Number(m[1]);
+  }
+  return null;
 }
 
 /** Price of a booth at a given upgrade level (0..2). */

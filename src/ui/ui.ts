@@ -23,6 +23,7 @@ import {
   guestDef,
   sceneryDef,
   tileDef,
+  unlockLevel,
 } from "../core/data.ts";
 import type { BoothDef, SceneryDef, TileDef } from "../core/data.ts";
 import type { World } from "../core/world.ts";
@@ -356,15 +357,21 @@ export class UI {
       if (q && !e.label.toLowerCase().includes(q)) continue;
       const b = el("button", "palette-item");
       b.classList.toggle("is-active", this.sameChoice(this.choice, e.choice));
+      b.classList.toggle("is-locked", !!e.locked);
       b.innerHTML = `
         <span class="pi-name">${e.label}</span>
         <span class="pi-meta">${e.meta}</span>
         <span class="pi-price">${e.price}</span>`;
-      b.addEventListener("click", () => {
-        this.choice = this.sameChoice(this.choice, e.choice) ? null : e.choice;
-        this.cb.onChoice(this.choice);
-        this.renderPaletteList();
-      });
+      if (e.locked) {
+        b.disabled = true;
+        b.title = "More research is needed before this can be built.";
+      } else {
+        b.addEventListener("click", () => {
+          this.choice = this.sameChoice(this.choice, e.choice) ? null : e.choice;
+          this.cb.onChoice(this.choice);
+          this.renderPaletteList();
+        });
+      }
       list.appendChild(b);
     }
 
@@ -390,12 +397,14 @@ export class UI {
     meta: string;
     price: string;
     choice: BuildChoice;
+    locked?: boolean;
   }[] {
     const out: {
       label: string;
       meta: string;
       price: string;
       choice: BuildChoice;
+      locked?: boolean;
     }[] = [];
 
     if (this.tool === "facility" || this.tool === "room") {
@@ -412,11 +421,18 @@ export class UI {
         if (!def) continue;
         const isRoom = def.mainJenis === "Room";
         if (isRoom !== wantRoom) continue;
+        // The original unlocks facilities as the resort researches them.
+        const need = unlockLevel(id);
+        const level = this.world?.researchLevel ?? 0;
+        const locked = need !== null && level < need;
         out.push({
           label: def.nic || def.nama,
-          meta: `${def.COLS}x${def.ROWS}`,
-          price: money(boothPrice(id, 0)),
+          meta: locked
+            ? `research ${need}`
+            : `${def.COLS}x${def.ROWS}`,
+          price: locked ? "locked" : money(boothPrice(id, 0)),
           choice: { kind: "booth", id },
+          locked,
         });
       }
     } else if (this.tool === "scenery") {
@@ -950,7 +966,8 @@ export class UI {
       <div class="pill">${icons.clock}<b>Day ${s.day}</b><span>${formatHour(s.hour)}</span></div>
       <div class="pill">${icons.users}<b>${s.guests}</b><span>/ ${s.capacity}</span></div>
       <div class="pill">${icons.star}<b>${s.popularity.toFixed(1)}</b><span>pop</span></div>
-      <div class="pill">${icons.flask}<b>${Math.round(s.research)}</b><span>RP</span></div>`;
+      <div class="pill">${icons.flask}<b>${Math.round(s.research)}</b><span>RP</span></div>
+      <div class="pill">${icons.star}<b>${s.researchLevel}</b><span>level</span></div>`;
 
     for (const b of this.speedEl.querySelectorAll<HTMLElement>(".speed-btn")) {
       b.classList.toggle("is-active", Number(b.dataset.speed) === world.speed);
