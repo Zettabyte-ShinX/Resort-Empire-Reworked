@@ -36,11 +36,35 @@ export interface SpriteEntry {
   variant?: number;
 }
 
+/** A person who stands in a room, and where they stand. */
+export interface RoomPerson {
+  chid: number;
+  class: string;
+  file: string;
+  w: number;
+  h: number;
+  ox: number;
+  oy: number;
+  /** How far the person stands from the room's own origin, in PNG pixels. */
+  dx: number;
+  dy: number;
+}
+
+/** A room, and the people who can be in it. */
+export interface RoomEntry {
+  chid: number;
+  class?: string;
+  frames: SpriteFrame[];
+  people: Record<string, RoomPerson>;
+}
+
 export interface ArtManifest {
   booths: Record<string, SpriteEntry>;
   visitors: Record<string, SpriteEntry>;
   framesets: Record<string, SpriteEntry>;
   other: Record<string, SpriteEntry>;
+  /** The room of every facility, without the people in it. */
+  rooms?: Record<string, RoomEntry>;
   /** Standalone bitmaps, e.g. the plot's sand floor. */
   images?: Record<string, string>;
 }
@@ -79,6 +103,11 @@ export class Art {
       for (const entry of Object.values(group)) {
         for (const f of entry.frames) files.push(f.file);
       }
+    }
+    // The rooms, and the people who can be in them.
+    for (const room of Object.values(manifest.rooms ?? {})) {
+      for (const f of room.frames) files.push(f.file);
+      for (const person of Object.values(room.people)) files.push(person.file);
     }
     for (const file of Object.values(manifest.images ?? {})) files.push(file);
 
@@ -218,21 +247,71 @@ export class Art {
    * upgrade - so the labels recovered from the SWF are what let the original
    * artwork be used as-is.
    */
-  frameByLabel(entry: SpriteEntry | undefined, label: string): SpriteFrame | undefined {
+  frameByLabel(
+    entry: (SpriteEntry | RoomEntry) | undefined,
+    label: string,
+  ): SpriteFrame | undefined {
     if (!entry) return undefined;
     return entry.frames.find((f) => f.label === label);
   }
 
-  /** The frame for a facility at a given upgrade level. */
-  boothFrame(type: string, level: number): SpriteFrame | undefined {
-    const entry = this.booth(type);
-    if (!entry) return undefined;
+  /**
+   * The frame of a facility's room.
+   *
+   * The original's room clip holds the room itself - the counter of a
+   * restaurant, the beds of a cottage - together with the people in it, and
+   * it names its frames after the upgrade the room is at: `level_1` for a
+   * new facility, `level_3` for a fully upgraded one. The frame the room
+   * shows is the one the original stops on (`Booth.as`, `acceptLevelObject`),
+   * so that is the one to draw.
+   *
+   * The room is drawn without the people: the original hides them while the
+   * room is empty, and they are put back in `roomPerson`.
+   */
+  roomFrame(type: string, level: number, building = false): SpriteFrame | undefined {
+    const entry = this.room(type);
+    if (!entry || entry.frames.length === 0) return undefined;
+    if (building) {
+      // While the facility is being built the original shows the room as an
+      // empty plot.
+      return this.frameByLabel(entry, "_build") ?? entry.frames[0];
+    }
     return (
       this.frameByLabel(entry, `level_${level + 1}`) ??
       // Facilities that have no level frames still need something to show.
+      this.frameByLabel(entry, "level_1") ??
       entry.frames.find((f) => f.label !== "_build") ??
       entry.frames[0]
     );
+  }
+
+  /** The room of a facility, without the people in it. */
+  room(type: string): RoomEntry | undefined {
+    return this.manifest?.rooms?.[type];
+  }
+
+  /**
+   * A person who stands in a room, and where they stand in it.
+   *
+   * The original's room clip holds the employee and the guests as children
+   * of the room, each with its own place in it.
+   */
+  roomPerson(
+    type: string,
+    who: "employee" | "visitor1" | "visitor2",
+  ): { frame: SpriteFrame; person: RoomPerson } | undefined {
+    const person = this.room(type)?.people?.[who];
+    if (!person) return undefined;
+    return {
+      frame: {
+        file: person.file,
+        w: person.w,
+        h: person.h,
+        ox: person.ox,
+        oy: person.oy,
+      },
+      person,
+    };
   }
 }
 

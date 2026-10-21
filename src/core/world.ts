@@ -1381,7 +1381,7 @@ export class World {
   }
 
   /** Whether a facility is open at the current hour. */
-  private isBoothOpen(booth: BoothInstance): boolean {
+  isBoothOpen(booth: BoothInstance): boolean {
     const def = boothDef(booth.type);
     if (!def.opened && !def.closed) return true;
     const h = this.hour;

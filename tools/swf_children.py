@@ -25,6 +25,8 @@ from swf_parse import (  # noqa: E402
     PLACE_OBJECT2,
     PLACE_OBJECT3,
     parse_tags,
+    read_clip_actions,
+    read_cxform,
     read_matrix,
 )
 
@@ -67,25 +69,27 @@ def children(data: bytes, off: int, length: int) -> list[dict]:
                 name, _ = read_string(data, b.pos)
                 out.append({"name": name, "char": cid, "matrix": matrix})
             elif code == PLACE_OBJECT2:
+                # PlaceObject2: flags, depth, then the optional fields, and
+                # the character id last.
                 flags = body[0]
-                b = Bits(body, 1)
-                b.ub(2)  # reserved
-                depth = b.ub(6)
-                # PlaceObject2 flags, lowest bit first: clip actions, clip
-                # depth, name, ratio, colour transform, matrix, character.
-                cid = b.ub(16) if flags & 0x80 else 0
-                matrix = read_matrix(b) if flags & 0x40 else None
-                if flags & 0x20:
-                    b.sb(16)  # colour transform alpha
-                    b.sb(16)  # red multiplier
-                    b.sb(16)  # green
-                    b.sb(16)  # blue
-                if flags & 0x10:
-                    b.ub(8)  # ratio
+                p = 3
+                if flags & 0x80:  # HasClipActions
+                    p = read_clip_actions(body, p)
+                if flags & 0x40:  # HasClipDepth
+                    p += 2
                 name = ""
-                if flags & 0x08:
-                    b.align()
-                    name, _ = read_string(data, b.pos)
+                if flags & 0x20:  # HasName
+                    name, p = read_string(data, p)
+                if flags & 0x10:  # HasRatio
+                    p += 2
+                if flags & 0x08:  # HasColorTransform
+                    read_cxform(Bits(body, p))
+                    p = Bits(body, p).pos
+                matrix = read_matrix(Bits(body, p)) if flags & 0x04 else None
+                if flags & 0x04:
+                    p = Bits(body, p).pos
+                cid = struct.unpack_from("<H", body, p)[0] if flags & 0x02 else 0
+                depth = struct.unpack_from("<H", body, 1)[0]
                 out.append({"name": name, "char": cid, "matrix": matrix, "depth": depth})
             elif code == PLACE_OBJECT3:
                 flags = body[0]

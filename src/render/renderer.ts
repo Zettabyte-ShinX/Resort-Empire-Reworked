@@ -52,25 +52,6 @@ const FACILITY_STAFF: Record<string, string> = {
  */
 const PLOT_TILE_FRAME = 57;
 
-/**
- * The clip the original shows for a guest using a facility.
- *
- * The original has a clip per facility and per guest, showing the guest
- * sitting in a cottage, swimming in the pool and so on.
- */
-const FACILITY_GUEST: Record<string, string> = {
-  Arcade: "vcustomer1_arcade_277",
-  Cottage: "vcustomer1_cottage_139",
-  Golf: "vcustomer1_golf_146",
-  Gym: "vcustomer1_gym_365",
-  Jacuzi: "vcustomer1_jacuzi_324",
-  Lodge: "vcustomer1_lodge_45",
-  Medical: "vcustomer1_medical_342",
-  Minimarket: "vcustomer1_Minimarket_330",
-  Pool: "vcustomer1_poo_204",
-  Sauna: "vcustomer1_sauna_347",
-  Spa: "vcustomer1_spa_357",
-};
 import type { World } from "../core/world.ts";
 import { drawBooth, drawGuest, drawPlant, drawTile } from "./art.ts";
 import { art } from "./sprites.ts";
@@ -466,24 +447,6 @@ export class Renderer {
   }
 
 
-  /**
-   * The artwork the original uses for a guest inside a facility.
-   *
-   * Each facility has a clip showing what a guest does there: sitting in a
-   * cottage, swimming in the pool.
-   */
-  private facilityGuestFrame(type: string, phase: number): SpriteFrame | undefined {
-    const name = FACILITY_GUEST[type];
-    if (!name) return undefined;
-    const entry = art.named(name);
-    if (!entry) return undefined;
-    for (const label of ["v1_place", "v1_duduk", "v1_anim", "v1_swim"]) {
-      const frame = this.animatedFrame(entry, phase, label);
-      if (frame && frame.label === label) return frame;
-    }
-    return entry.frames[0];
-  }
-
   /** The plant graphic for a species, from the original's frame set. */
   private sceneryFrame(species: string): SpriteFrame | undefined {
     const entry = art.frameSet("plants");
@@ -551,8 +514,10 @@ export class Renderer {
 
     for (const b of world.booths) {
       const def = boothDef(b.type);
-      // Each facility has its own artwork per upgrade level.
-      const frame = art.boothFrame(b.type, b.level);
+      // Each facility has its own artwork per upgrade level: the original's
+      // room clip names its frames after the upgrade, and stops on the one
+      // that matches (`Booth.as`, `acceptLevelObject`).
+      const frame = art.roomFrame(b.type, b.level, b.building);
       // The original draws a facility in three layers: the plot it stands on
       // (`blok`), the floor of the room inside it (`fr`), and then the room's
       // walls and the building. The plot is a plain plate, while the room's
@@ -575,9 +540,14 @@ export class Renderer {
       );
       anchors.set(b.id, anchor);
       const depth = b.col + b.row + (b.cols + b.rows) / 2;
-      // The employee works inside the facility.
+      // The employee works inside the facility. The original keeps the
+      // employee in the room's clip and hides them while the room is shut.
+      const employee = art.roomPerson(b.type, "employee");
       const staffEntry = FACILITY_STAFF[b.type] ? art.named(FACILITY_STAFF[b.type]) : undefined;
       const staffFrame = this.animatedFrame(staffEntry, phase, "anim");
+      // The guests in the room. The original puts them in the room's clip
+      // too, one place each, and hides the guest on the map.
+      const guests = world.visitors.filter((v) => v.state === "using" && v.target?.id === b.id);
       // A room with two guests in it shows the second bed as well.
       const roomFrame = this.roomFrame(b);
       // A facility under construction shows the original's building site.
@@ -620,13 +590,41 @@ export class Renderer {
           if (roomFrame) {
             drawSprite(ctx, roomFrame, anchor.x, anchor.y, artScale);
           }
-          if (staffFrame && !b.building) {
-            drawSprite(ctx, staffFrame, anchor.x, anchor.y, artScale);
-          }
+          // The room itself, and the people in it.
           const ok =
             !b.building && frame ? drawSprite(ctx, frame, anchor.x, anchor.y, artScale) : false;
           if (!ok && !b.building) {
             drawBooth(ctx, b.col, b.row, b.cols, b.rows, b.type, b.level);
+          }
+          if (!b.building) {
+            // The employee stands in the room while it is open.
+            if (employee && world.isBoothOpen(b)) {
+              const { person: where } = employee;
+              // The staff clip is the same artwork the room holds, so it
+              // stands in the same place, and it can be animated.
+              const picture = staffFrame ?? employee.frame;
+              drawSprite(
+                ctx,
+                picture,
+                anchor.x + (where.dx + where.ox) * artScale,
+                anchor.y + (where.dy + where.oy) * artScale,
+                artScale,
+              );
+            }
+            // The guests in the room, one place each.
+            for (let i = 0; i < guests.length && i < 2; i++) {
+              const who = i === 0 ? "visitor1" : "visitor2";
+              const person = art.roomPerson(b.type, who);
+              if (!person) continue;
+              const { frame: picture, person: where } = person;
+              drawSprite(
+                ctx,
+                picture,
+                anchor.x + (where.dx + where.ox) * artScale,
+                anchor.y + (where.dy + where.oy) * artScale,
+                artScale,
+              );
+            }
           }
         },
       });
@@ -644,19 +642,13 @@ export class Renderer {
         art.frameByLabel(entry, "stand_front") ??
         entry?.frames[0];
       const flip = v.dirX < 0 || (v.dirX === 0 && v.dirY > 0);
-      // A guest using a facility is drawn with the original's clip for that
-      // facility, so they sit in the cottage or swim in the pool. The clip is
-      // drawn from the facility's own anchor, which is where the room is.
-      const using =
-        v.state === "using" && v.target ? this.facilityGuestFrame(v.target.type, phase) : undefined;
-      const usingAt = using && v.target ? anchors.get(v.target.id) ?? p : p;
+      // A guest in a room is drawn by the room itself: the original hides
+      // the guest on the map and shows them in the room's clip.
+      const inRoom = v.state === "using" && !!v.target;
       items.push({
         depth: v.col + v.row,
         draw: () => {
-          if (using) {
-            drawSprite(ctx, using, usingAt.x, usingAt.y, artScale);
-            return;
-          }
+          if (inRoom) return;
           const ok = frame ? drawSprite(ctx, frame, p.x, p.y, artScale, flip) : false;
           if (!ok) drawGuest(ctx, p.x, p.y, v.seed, v.mood);
         },

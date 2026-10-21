@@ -287,9 +287,10 @@ class Parser:
                     if b:
                         bounds = union(bounds, transform_bounds(b, m))
                 elif code == PLACE_OBJECT2:
-                    cid = struct.unpack_from("<H", body, 0)[0]
-                    flags = body[2]
-                    p = 4
+                    # PlaceObject2: flags, depth, then the optional fields,
+                    # and the character id last.
+                    flags = body[0]
+                    p = 3
                     if flags & 0x80:  # HasClipActions
                         p = read_clip_actions(body, p)
                     if flags & 0x40:  # HasClipDepth
@@ -305,7 +306,7 @@ class Parser:
                     if flags & 0x04:  # HasMatrix
                         m = read_matrix(Bits(body, p))
                         p = Bits(body, p).pos
-                    target = cid
+                    target = 0
                     if flags & 0x02:  # HasCharacter
                         target = struct.unpack_from("<H", body, p)[0]
                         p += 2
