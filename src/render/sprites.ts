@@ -212,18 +212,6 @@ export class Art {
     return entry.frames[idx];
   }
 
-  /**
-   * The red outline the original draws around the plot of a facility.
-   *
-   * The original has a `lokasi` clip for it, with a frame for every size a
-   * facility can be, and it shows the frame of the facility the mouse is
-   * over. The marking is hidden while the mouse is elsewhere.
-   */
-  plotMarkerFrame(rows: number, cols: number): SpriteFrame | undefined {
-    const entry = this.manifest?.other?.["lokasi_43"];
-    if (!entry) return undefined;
-    return this.frameByLabel(entry, `x${rows}_${cols}`) ?? entry.frames[0];
-  }
 
   /**
    * The room a facility is built in.

@@ -125,8 +125,6 @@ function bindCanvas(canvas: HTMLCanvasElement): void {
       }
     } else {
       hover = renderer.pickTile(p.x, p.y);
-      // The original draws a red outline around the plot the mouse is over.
-      renderer.hover = hover;
     }
   });
 

@@ -308,14 +308,6 @@ export class Renderer {
   }
 
   /**
-   * The tile the mouse is over.
-   *
-   * The original draws a red outline around the plot of the facility the
-   * mouse is over, so the renderer needs to know where the mouse is.
-   */
-  hover: GridPos | null = null;
-
-  /**
    * Where a facility's artwork is anchored on the map.
    *
    * The original's floors are drawn from a fixed offset in the sprite, so
@@ -585,14 +577,6 @@ export class Renderer {
       const siteClip = b.building ? this.buildSiteClip({ rows: def.ROWS, cols: def.COLS }) : undefined;
       // The land a facility has grown into.
       const plotFrame = b.cols > def.COLS ? art.frameFor("boothTile", PLOT_TILE_FRAME) : undefined;
-      // The red outline the original draws around the plot the mouse is over.
-      const over =
-        this.hover &&
-        this.hover.col >= b.col &&
-        this.hover.col < b.col + def.COLS &&
-        this.hover.row >= b.row &&
-        this.hover.row < b.row + def.ROWS;
-      const marker = over ? art.plotMarkerFrame(def.ROWS, def.COLS) : undefined;
       items.push({
         depth,
         draw: () => {
@@ -631,17 +615,6 @@ export class Renderer {
             !b.building && frame ? drawSprite(ctx, frame, anchor.x, anchor.y, artScale) : false;
           if (!ok && !b.building) {
             drawBooth(ctx, b.col, b.row, b.cols, b.rows, b.type, b.level);
-          }
-          // The original draws a red outline around the plot of the facility
-          // the mouse is over.
-          if (marker && plotPlate?.bbox && marker.bbox) {
-            // The outline is drawn on the plot, so it goes where the plot's
-            // own artwork is.
-            const dx =
-              (plotPlate.bbox[0] - plotPlate.ox - (marker.bbox[0] - marker.ox)) * artScale;
-            const dy =
-              (plotPlate.bbox[1] - plotPlate.oy - (marker.bbox[1] - marker.oy)) * artScale;
-            drawSprite(ctx, marker, anchor.x + dx, anchor.y + dy, artScale);
           }
           if (!b.building) {
             // The employee stands in the room while it is open.
