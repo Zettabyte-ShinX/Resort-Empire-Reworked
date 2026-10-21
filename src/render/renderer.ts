@@ -431,14 +431,9 @@ export class Renderer {
    */
   private roomPersonAt(
     anchor: { x: number; y: number },
-    room: SpriteFrame,
     person: RoomPerson,
-    scale: number,
   ): { x: number; y: number } {
-    return {
-      x: anchor.x + (person.dx + person.ox - room.ox) * scale,
-      y: anchor.y + (person.dy + person.oy - room.oy) * scale,
-    };
+    return { x: anchor.x + person.dx, y: anchor.y + person.dy };
   }
 
   /**
@@ -623,7 +618,7 @@ export class Renderer {
               // The staff clip is the same artwork the room holds, so it
               // stands in the same place, and it can be animated.
               const picture = staffFrame ?? employee.frame;
-              const at = this.roomPersonAt(anchor, frame, where, artScale);
+              const at = this.roomPersonAt(anchor, where);
               drawSprite(ctx, picture, at.x, at.y, artScale);
             }
             // The guests in the room, one place each.
@@ -631,11 +626,8 @@ export class Renderer {
               const who = i === 0 ? "visitor1" : "visitor2";
               const person = art.roomPerson(b.type, who);
               if (!person) continue;
-              const { frame: picture, person: where } = person;
-              const at = frame
-                ? this.roomPersonAt(anchor, frame, where, artScale)
-                : { x: anchor.x, y: anchor.y };
-              drawSprite(ctx, picture, at.x, at.y, artScale);
+              const at = this.roomPersonAt(anchor, person.person);
+              drawSprite(ctx, person.frame, at.x, at.y, artScale);
             }
           }
         },
