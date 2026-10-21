@@ -25,7 +25,6 @@ import {
   boothDef,
   boothPopularity,
   boothPrice,
-  canGrow,
   guestDef,
   roomBeds,
   sceneryDef,
@@ -437,13 +436,7 @@ export class UI {
         const locked = need !== null && level < need;
         out.push({
           label: def.nic || def.nama,
-          meta: locked
-            ? `research ${need}`
-            : // A facility that can grow says so, so the player knows what
-              // the upgrade will bring.
-              canGrow(id)
-              ? `${def.COLS}x${def.ROWS} → ${def.COLS + 1}x${def.ROWS}`
-              : `${def.COLS}x${def.ROWS}`,
+          meta: locked ? `research ${need}` : `${def.COLS}x${def.ROWS}`,
           price: locked ? "locked" : money(boothPrice(id, 0)),
           choice: { kind: "booth", id },
           locked,

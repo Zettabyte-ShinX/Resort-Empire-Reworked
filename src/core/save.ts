@@ -48,8 +48,6 @@ interface SaveData {
     col: number;
     row: number;
     level: number;
-    /** The width of the plot, which grows when a facility is upgraded. */
-    cols?: number;
     served: number;
     satisfaction: number;
     building?: boolean;
@@ -113,6 +111,7 @@ export function deserialize(json: string): World | null {
       walkable: tileWalkable(t.id),
       scenery: t.scenery ?? null,
       booth: null,
+      marker: false,
     })),
   );
 
@@ -134,12 +133,6 @@ export function deserialize(json: string): World | null {
     restored.push({ booth, saved: b });
   }
   world.money = data.money;
-  // A facility that grew into a bigger plot keeps the plot it had. The land
-  // is only taken once every facility is back, so one facility cannot take
-  // over the plot of another.
-  for (const { booth, saved } of restored) {
-    if (saved.cols) world.expandBooth(booth, saved.cols);
-  }
   world.refresh();
   return world;
 }

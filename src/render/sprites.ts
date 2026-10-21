@@ -56,6 +56,13 @@ export interface RoomEntry {
   class?: string;
   frames: SpriteFrame[];
   people: Record<string, RoomPerson>;
+  /**
+   * Where the room sits inside the facility, in game units.
+   *
+   * The original draws the room as a clip inside the facility's own clip,
+   * and that clip says where the room goes. This is that placement.
+   */
+  offset?: [number, number];
 }
 
 export interface ArtManifest {
@@ -276,6 +283,16 @@ export class Art {
   /** The room of a facility, without the people in it. */
   room(type: string): RoomEntry | undefined {
     return this.manifest?.rooms?.[type];
+  }
+
+  /**
+   * Where a facility's room sits inside it, in game units.
+   *
+   * The original's facilities draw their room as a clip inside their own
+   * clip, and that clip's placement is what says where the room goes.
+   */
+  roomOffset(type: string): [number, number] {
+    return this.manifest?.rooms?.[type]?.offset ?? [0, 0];
   }
 
   /**

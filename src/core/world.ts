@@ -17,11 +17,11 @@ import {
   MISSIONS,
   MISSION_LIST,
   MAP_TIERS,
+  MAP_TILE_DEFAULT,
   RESEARCH,
   boothDef,
   boothPopularity,
   boothPrice,
-  canGrow,
   guestDef,
   researchLevel,
   sceneryDef,
@@ -45,6 +45,13 @@ export interface Tile {
   scenery: string | null;
   /** Booth id occupying this tile, if any. */
   booth: string | null;
+  /**
+   * Whether the original puts one of its small brown markers here.
+   *
+   * The markers come from `zmap.MAP.kepiting` and are drawn on a layer of
+   * their own, above the ground.
+   */
+  marker: boolean;
 }
 
 export interface BoothInstance {
@@ -136,14 +143,27 @@ export const PATH_TILES = new Set(["TILE_1", "TILE_2", "TILE_3", "TILE_4"]);
 const BUILD_SECONDS = 6;
 
 /**
+ * The largest map the original offers.
+ *
+ * The map data in `zmap.MAP` is written for the largest map, so the strips
+ * that lie beyond a smaller map are folded back onto its edge.
+ */
+const MAP_COLS_MAX = 50;
+const MAP_ROWS_MAX = 50;
+
+/**
  * Where the original anchors the buildable plot.
  *
  * The plot is not centred on the grid: `MapContainer` uses a fixed corner
- * (row 10, column 11) and measures the plot outwards from there, so it
+ * (`ctr_x` 10, `ctr_y` 11) and measures the plot outwards from there, so it
  * grows towards the bottom right of the map as the resort expands.
+ *
+ * The original's map is written with the column along the map's up-left axis
+ * first, so `tile_10_22` is column 10, row 22. The corner is therefore
+ * column 10, row 11.
  */
-const PLOT_CORNER_ROW = 10;
-const PLOT_CORNER_COL = 11;
+const PLOT_CORNER_COL = 10;
+const PLOT_CORNER_ROW = 11;
 
 /** Aggregate numbers the management panels show. */
 export interface WorldStats {
@@ -173,7 +193,7 @@ const NB = new Int8Array([
 /** Build a tile from one of the original's tile ids. */
 function makeTile(id: string): Tile {
   const def = tileDef(id);
-  return { id, walkable: def.walkable, scenery: null, booth: null };
+  return { id, walkable: def.walkable, scenery: null, booth: null, marker: false };
 }
 
 /** The smiley a guest's mood falls into, as the original's bands. */
@@ -264,27 +284,32 @@ export class World {
     //   * a sidewalk band inside the road
     //   * a sand coloured buildable plot in the middle
     //   * a hedge of green blocks around the plot, with a gap for the gate
-    const boundX = PLOT_CORNER_ROW + t.lahan.x;
-    const boundY = PLOT_CORNER_COL + t.lahan.y;
-    const bound2X = boundX + 3;
-    const bound2Y = boundY + 3;
-    const bound3X = bound2X + 2;
-    const bound3Y = bound2Y + 2;
+    const boundCol = PLOT_CORNER_COL + t.lahan.x;
+    const boundRow = PLOT_CORNER_ROW + t.lahan.y;
+    const bound2Col = boundCol + 3;
+    const bound2Row = boundRow + 3;
+    const bound3Col = bound2Col + 2;
+    const bound3Row = bound2Row + 2;
 
     for (let r = 0; r < this.rows; r++) {
       const row: Tile[] = [];
       for (let c = 0; c < this.cols; c++) {
         let id: string;
-        if (r === 4 || r === 5) {
+        if (c === 4 || c === 5) {
           id = "TILE_83"; // asphalt road
-        } else if (c === 5 || c === 6) {
+        } else if (r === 5 || r === 6) {
           id = "TILE_83"; // asphalt road
-        } else if (c > bound2Y && c <= bound3Y) {
+        } else if (r > bound2Row && r <= bound3Row) {
           id = "TILE_83"; // asphalt road
-        } else if (r > bound2X && r <= bound3X) {
+        } else if (c > bound2Col && c <= bound3Col) {
           id = "TILE_83"; // asphalt road
-        } else if (c > 6 && c <= bound2Y && r > 5 && r <= bound2X) {
-          if (r > PLOT_CORNER_ROW && r < boundX && c > PLOT_CORNER_COL && c < boundY) {
+        } else if (r > 6 && r <= bound2Row && c > 5 && c <= bound2Col) {
+          if (
+            c > PLOT_CORNER_COL &&
+            c < boundCol &&
+            r > PLOT_CORNER_ROW &&
+            r < boundRow
+          ) {
             id = "TILE_80"; // sand plot
           } else {
             id = "TILE_82"; // sidewalk band
@@ -298,60 +323,90 @@ export class World {
     }
 
     // The entrance corridor, from `zmap.MAP.tileDefault`.
-    for (const [name, def] of Object.entries(DATA.mapTileDefault)) {
-      if (!name.startsWith("tile_")) continue;
+    for (const [name, def] of Object.entries(MAP_TILE_DEFAULT)) {
       const m = /^tile_(-?\d+)_(-?\d+)$/.exec(name);
       if (!m) continue;
-      const r = Number(m[1]);
-      const c = Number(m[2]);
+      const c = Number(m[1]);
+      const r = Number(m[2]);
       if (r < 0 || c < 0 || r >= this.rows || c >= this.cols) continue;
       const tile = this.tiles[r]![c]!;
       tile.id = `TILE_${def.jenis}`;
       tile.walkable = tileDef(tile.id).walkable;
     }
 
+    // What the guests can walk on.
+    //
+    // The original's roads and pavements are not walkable ground: only the
+    // strip in front of the gate and the entrance path are, and the player
+    // lays the rest of the paths. The path tiles the player has laid stay
+    // walkable, so they are left alone.
+    for (let r = 0; r < this.rows; r++) {
+      for (let c = 0; c < this.cols; c++) {
+        const tile = this.tiles[r]![c]!;
+        if (PATH_TILES.has(tile.id)) continue;
+        if (c === 6 && r >= 19 && r <= 22) {
+          tile.walkable = true;
+        } else if (c >= 7 && c <= 9) {
+          tile.walkable = true;
+        } else {
+          tile.walkable = false;
+        }
+      }
+    }
+
     // Hedges and scenery from `zmap.MAP`.
+    //
+    // The map data is written for the largest map, so the strips that lie
+    // beyond a smaller map are folded back onto its edge, the way the
+    // original does it (`MapContainer.as`).
+    const shiftCol = MAP_COLS_MAX - this.cols;
+    const shiftRow = MAP_ROWS_MAX - this.rows;
     for (const [name, species] of Object.entries(DATA.mapSceneries)) {
       const m = /^tile_(-?\d+)_(-?\d+)$/.exec(name);
       if (!m) continue;
-      const r = Number(m[1]);
-      const c = Number(m[2]);
-      if (r < 0 || c < 0 || r >= this.rows || c >= this.cols) continue;
-      this.tiles[r]![c]!.scenery = `PLANT_${species}`;
+      const c = Number(m[1]);
+      const r = Number(m[2]);
+      let pc = c;
+      let pr = r;
+      if (c > 5) {
+        if (r >= MAP_COLS_MAX - 4) pr = r - shiftRow;
+        else if (r > 6 && c >= MAP_ROWS_MAX - 5) pc = c - shiftCol;
+      }
+      if (pr < 0 || pc < 0 || pr >= this.rows || pc >= this.cols) continue;
+      this.tiles[pr]![pc]!.scenery = `PLANT_${species}`;
     }
+    // The small brown markers the original scatters over the map.
     for (const name of Object.keys(DATA.mapKepiting)) {
       const m = /^tile_(-?\d+)_(-?\d+)$/.exec(name);
       if (!m) continue;
-      const r = Number(m[1]);
-      const c = Number(m[2]);
+      let c = Number(m[1]);
+      let r = Number(m[2]);
+      if (c > 5) {
+        if (r >= MAP_COLS_MAX - 4) r -= shiftRow;
+        else if (r > 6 && c >= MAP_ROWS_MAX - 5) c -= shiftCol;
+      }
       if (r < 0 || c < 0 || r >= this.rows || c >= this.cols) continue;
-      this.tiles[r]![c]!.scenery = "HEDGE";
+      this.tiles[r]![c]!.marker = true;
     }
 
     // The original rings the buildable plot with a row of green hedge blocks,
     // leaving a gap for the gate (`MapContainer.CreatingSceneryDefault`).
     const hedge: [number, number][] = [];
-    for (let r = 10; r <= boundX; r++) hedge.push([r, 11]);
-    for (let c = 12; c <= boundY; c++) {
-      if (c < 20 || c > 23) hedge.push([10, c]);
+    for (let c = PLOT_CORNER_COL; c <= boundCol; c++) hedge.push([PLOT_CORNER_ROW, c]);
+    for (let r = PLOT_CORNER_ROW + 1; r <= boundRow; r++) {
+      if (r < 20 || r > 23) hedge.push([r, PLOT_CORNER_COL]);
     }
-    for (let r = 11; r < boundX; r++) hedge.push([r, boundY]);
-    for (let c = 12; c <= boundY; c++) hedge.push([boundX, c]);
+    for (let c = PLOT_CORNER_COL + 1; c < boundCol; c++) hedge.push([boundRow, c]);
+    for (let r = PLOT_CORNER_ROW + 1; r <= boundRow; r++) hedge.push([r, boundCol]);
     for (const [r, c] of hedge) {
       if (r < 0 || c < 0 || r >= this.rows || c >= this.cols) continue;
-      this.tiles[r]![c]!.scenery = "HEDGE";
+      this.tiles[r]![c]!.scenery = "PLANT_99";
     }
 
     // The gate: the original leaves a gap in the hedge for the entrance and
     // makes those tiles walkable (`zmap.MAP.tileDefault`). The plot itself
     // is not walkable: the guest walks on the paths the player lays.
-    this.entrance = { col: PLOT_CORNER_COL + 10, row: PLOT_CORNER_ROW };
-    for (let c = PLOT_CORNER_COL + 9; c <= PLOT_CORNER_COL + 12; c++) {
-      if (c < 0 || c >= this.cols) continue;
-      const gate = this.tiles[PLOT_CORNER_ROW]![c]!;
-      gate.id = "TILE_1";
-      gate.walkable = true;
-    }
+    this.entrance = { col: PLOT_CORNER_COL, row: PLOT_CORNER_ROW + 10 };
 
     this.recomputePopularity();
     this.recomputeReachable();
@@ -394,7 +449,7 @@ export class World {
         if (old.booth) {
           tile.booth = old.booth;
           tile.walkable = true;
-        } else if (old.scenery && old.scenery !== "HEDGE") {
+        } else if (old.scenery && old.scenery !== "PLANT_99") {
           // The hedge belongs to the map, not to the player, so it is not
           // carried over: the new map draws its own.
           tile.scenery = old.scenery;
@@ -428,14 +483,17 @@ export class World {
    * spreading back into the resort.
    */
   private seedStarterResort(): void {
-    const plot = this.plotBounds();
     const starters: [string, number, number][] = [
-      // The lobby is 4 rows deep, so it sits in the southern half of the
-      // plot; the pool takes the northern corner and the rest fills in.
-      ["Lobby", plot.c0 + 2, plot.r1 - 6],
-      ["Cottage", plot.c0 + 2, plot.r0 + 2],
-      ["Pool", plot.c1 - 6, plot.r0 + 2],
-      ["Icecream", plot.c1 - 2, plot.r0 + 2],
+      // The lobby stands where the original puts it: on tile 14, 22, at the
+      // end of the entrance path, four tiles wide and two deep
+      // (`MapContainer.as`, `CreatingLobbyDefault`).
+      ["Lobby", 11, 22],
+      // A room, so the guests have somewhere to sleep, and a couple of
+      // places to spend their money. They stand along the path that leads
+      // in from the gate, so the guests can reach them.
+      ["Cottage", 11, 18],
+      ["Pool", 13, 16],
+      ["Icecream", 17, 18],
     ];
     const placed: BoothInstance[] = [];
     for (const [type, col, row] of starters) {
@@ -484,10 +542,10 @@ export class World {
    */
   private layStarterPaths(booths: BoothInstance[]): void {
     const gate = this.entrance;
-    // The trunk: a path from the gate into the middle of the plot.
+    // The gate is on the path the original lays down, so the paths of the
+    // starting resort all lead back to it.
     const trunkCol = gate.col;
-    const trunkRow = gate.row + 2;
-    for (let r = gate.row + 1; r <= trunkRow; r++) this.layPath(trunkCol, r);
+    const trunkRow = gate.row;
 
     for (const booth of booths) {
       // Try each way into the facility until one of them can be joined to
@@ -567,9 +625,9 @@ export class World {
     const t = MAP_TIERS[this.tier];
     return {
       c0: PLOT_CORNER_COL + 1,
-      c1: PLOT_CORNER_COL + t.lahan.y - 1,
+      c1: PLOT_CORNER_COL + t.lahan.x - 1,
       r0: PLOT_CORNER_ROW + 1,
-      r1: PLOT_CORNER_ROW + t.lahan.x - 1,
+      r1: PLOT_CORNER_ROW + t.lahan.y - 1,
     };
   }
 
@@ -666,8 +724,6 @@ export class World {
     booth.exp = 0;
     booth.canUpgrade = false;
     this.stats.upgraded++;
-    // Some facilities grow into a bigger plot when they are upgraded.
-    if (canGrow(booth.type)) this.expandBooth(booth, booth.cols + 1);
     this.recomputePopularity();
     this.log.push(
       `Upgraded ${booth.type} to level ${booth.level + 1} (${booth.cols}x${booth.rows})`,
@@ -675,46 +731,6 @@ export class World {
     return true;
   }
 
-  /**
-   * Give a facility a bigger plot, if the land is free.
-   *
-   * The original lets some facilities grow into a bigger plot: their floor
-   * plate carries a red outline on the tile they can take over, and the plot
-   * grows by a column on that side. The plot grows away from the door the
-   * guests use, so they carry on coming in the same way.
-   *
-   * `cols` is the width the plot should have. The land has to be free:
-   * another facility, a plant or a path in the way means the facility keeps
-   * the plot it has.
-   */
-  expandBooth(booth: BoothInstance, cols: number): boolean {
-    if (cols <= booth.cols) return false;
-    // The columns the facility takes over are on the far side of the plot.
-    for (let c = booth.col + booth.cols; c < booth.col + cols; c++) {
-      for (let r = booth.row; r < booth.row + booth.rows; r++) {
-        const tile = this.tileAt(c, r);
-        if (!tile) return false;
-        if (tile.booth) return false;
-        if (tile.scenery) return false;
-        // A path is how the guests get to the facility, so it is not taken.
-        if (PATH_TILES.has(tile.id)) return false;
-      }
-    }
-    for (let c = booth.col + booth.cols; c < booth.col + cols; c++) {
-      for (let r = booth.row; r < booth.row + booth.rows; r++) {
-        const tile = this.tileAt(c, r)!;
-        tile.booth = booth.type;
-        // The original makes the tiles a facility stands on walkable, so the
-        // guests can walk into the room.
-        tile.walkable = true;
-      }
-    }
-    booth.cols = cols;
-    // The routes to the facility are different now.
-    this.invalidatePaths();
-    this.recomputeReachable();
-    return true;
-  }
 
   /** Can a booth of this type be placed with its corner at (col,row)? */
   /**
@@ -781,8 +797,6 @@ export class World {
       case "x_booths":
       case "x_booths2":
         return this.booths.length;
-      case "x_janitorRoom":
-        return janitors;
       case "one_facilityUpgrade":
       case "x_facilityUpgrade":
       case "x_facilityUpgrade2":
@@ -1094,8 +1108,12 @@ export class World {
         // A facility cannot be built over a path: the paths are how the
         // guests get to it.
         if (t.id.startsWith("TILE_") && PATH_TILES.has(t.id)) return false;
-        // Nor over the gate.
-        if (r === this.entrance.row && c >= this.entrance.col - 3 && c <= this.entrance.col + 2) {
+        // Nor over the gate: the mouth of the gate has to stay clear.
+        if (
+          c === this.entrance.col &&
+          r >= this.entrance.row - 1 &&
+          r <= this.entrance.row + 2
+        ) {
           return false;
         }
       }
@@ -1307,7 +1325,8 @@ export class World {
       ? 25 + Math.floor(Math.random() * 5) % 5
       : 1 + Math.floor(Math.random() * 24) % 24;
     const def = guestDef(variant);
-    const entryCol = this.entrance.col + (Math.random() < 0.5 ? -2 : 2);
+    // The guests arrive at the gate, on the path that leads into the resort.
+    const entryCol = this.entrance.col + (Math.random() < 0.5 ? -1 : 1);
 
     this.stats.guestsArrived++;
     if (special) this.stats.specialVisited++;

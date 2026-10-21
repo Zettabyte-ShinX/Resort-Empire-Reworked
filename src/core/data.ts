@@ -189,6 +189,31 @@ export const MAP_TIERS: MapTier[] = [
   { cols: 50, rows: 50, lahan: { x: 29, y: 29 } },
 ];
 
+/**
+ * The entrance path the original lays out for the starting map.
+ *
+ * `zmap.as` fills `MAP.tileDefault` with a two tile wide path from the gate
+ * into the plot, in a loop over rows 10 to 15 and columns 20 and 21, and
+ * adds the two tiles of the gate's mouth behind it. The loop is not
+ * something the data extractor can read, so it is written out here.
+ */
+export const MAP_TILE_DEFAULT: Record<string, { jenis: number; ipath: boolean }> =
+  (() => {
+    const table: Record<string, { jenis: number; ipath: boolean }> = {};
+    for (const [name, def] of Object.entries(DATA.mapTileDefault)) {
+      if (!name.startsWith("tile_")) continue;
+      table[name] = def;
+    }
+    for (let row = 10; row < 16; row++) {
+      for (let col = 20; col <= 21; col++) {
+        table[`tile_${row}_${col}`] = { jenis: 1, ipath: true };
+      }
+    }
+    table["tile_10_22"] = { jenis: 1, ipath: false };
+    table["tile_10_23"] = { jenis: 1, ipath: false };
+    return table;
+  })();
+
 /** Facility ids, in the order the original offered them. */
 export const BOOTH_IDS = Object.keys(DATA.booths).filter(
   (k) => k !== "boostMood",
@@ -206,43 +231,18 @@ export function sceneryDef(id: string): SceneryDef {
   return s;
 }
 
+/**
+ * A facility's own measurements.
+ *
+ * The original counts a facility's plot in rows along the map's up-left axis
+ * and in columns along its up-right axis, while the map is written the other
+ * way round, so the two are swapped here: `COLS` is the width of the plot
+ * and `ROWS` its depth.
+ */
 export function boothDef(id: string): BoothDef {
   const b = DATA.booths[id];
   if (!b) throw new Error(`unknown booth ${id}`);
-  return b;
-}
-
-/**
- * The facilities that can grow into a bigger plot when they are upgraded.
- *
- * The original draws a facility's floor as a plate in the `BoothTile` clip:
- * three plates per facility, one for each upgrade level. The plate of a
- * facility that still has room to grow carries a red outline on the tile
- * the facility can take over, and that marking is what says the facility
- * can expand. The lobby and the small stalls have no such marking, so they
- * never grow.
- */
-export const GROWABLE = new Set<string>([
-  "Arcade",
-  "Bar",
-  "BaratResto",
-  "Cottage",
-  "Golf",
-  "Gym",
-  "IndiaResto",
-  "Jacuzi",
-  "JapanResto",
-  "Lodge",
-  "Medical",
-  "Minimarket",
-  "Pool",
-  "Sauna",
-  "Spa",
-]);
-
-/** Whether a facility of this type can grow into a bigger plot. */
-export function canGrow(type: string): boolean {
-  return GROWABLE.has(type);
+  return { ...b, COLS: b.ROWS, ROWS: b.COLS };
 }
 
 /**

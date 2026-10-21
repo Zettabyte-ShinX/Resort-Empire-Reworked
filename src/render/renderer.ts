@@ -50,7 +50,6 @@ const FACILITY_STAFF: Record<string, string> = {
  * tiles, one per grid tile. A facility that has grown into a bigger plot
  * takes the extra land with it, so the extra tiles are drawn the same way.
  */
-const PLOT_TILE_FRAME = 57;
 
 import type { World } from "../core/world.ts";
 import { drawBooth, drawGuest, drawPlant, drawTile } from "./art.ts";
@@ -235,29 +234,34 @@ export class Renderer {
     // on the grid point, exactly as the original places it.
     const artScale = 0.5; // the exported PNGs are at twice the original size
 
-    // The buildable plot is floored with the original's sand texture. The
-    // texture is a single tile, so it is lined up with the tile artwork's own
-    // diamond rather than with the grid point.
+    // The whole island stands on sand: the original fills the map with the
+    // sand texture (`MapContainer.as`, `beginBitmapFill(new SandTile())`) and
+    // draws the roads, the plot and the plants on top of it. The texture is
+    // one tile diamond, so it is lined up with the tile artwork's diamond.
     const sand = art.imageAsset("sandFloor");
     const sandTile = art.frameFor("tiles", tileDef("TILE_80").fr);
     if (sand && sand.complete && sand.naturalWidth > 0 && sandTile) {
       const offX = (sandTile.w / 2 - sandTile.ox) * artScale;
       const offY = (sandTile.h / 2 - sandTile.oy) * artScale;
-      for (let r = 0; r < world.rows; r++) {
-        for (let col = 0; col < world.cols; col++) {
-          if (world.tiles[r]![col]!.id !== "TILE_80") continue;
-          const p = gridToScreen(col, r);
-          c.drawImage(
-            sand,
-            p.x + offX - sand.naturalWidth / 2,
-            p.y + offY - sand.naturalHeight / 2,
-            sand.naturalWidth,
-            sand.naturalHeight,
-          );
-          // The original marks out the tiles of the plot, so the ground
-          // reads as separate tiles rather than one flat sheet.
-          drawSprite(c, sandTile, p.x, p.y, artScale);
-        }
+      // The pattern starts at the top left corner of the first tile's
+      // diamond, which is where the original's sand fill starts.
+      const origin = gridToScreen(0, 0);
+      const sandX = origin.x + offX - sand.naturalWidth / 2;
+      const sandY = origin.y + offY - sand.naturalHeight / 2;
+      const pattern = c.createPattern(sand, "repeat");
+      if (pattern) {
+        c.save();
+        c.translate(sandX, sandY);
+        c.fillStyle = pattern;
+        // The sand runs past the edge of the map, so the whole of the
+        // picture is covered.
+        c.fillRect(
+          bounds.minX - pad - sandX,
+          bounds.minY - pad - sandY,
+          bounds.maxX - bounds.minX + pad * 2,
+          bounds.maxY - bounds.minY + pad * 2,
+        );
+        c.restore();
       }
     }
 
@@ -266,14 +270,25 @@ export class Renderer {
         const tile = world.tiles[r]![col]!;
         const p = gridToScreen(col, r);
         const def = tileDef(tile.id);
-        // The plot's sand is drawn underneath; the original marks the
-        // buildable tiles with an outline, but a built-out resort looks
-        // better without them.
-        if (tile.id === "TILE_80") continue;
+        // The original marks out the tiles of the plot with a thin outline,
+        // so the buildable ground reads as separate tiles.
         const frame = art.frameFor("tiles", def.fr);
         const drawn = frame ? drawSprite(c, frame, p.x, p.y, artScale) : false;
-        if (!drawn) {
-          drawTile(c, p.x, p.y, def.mainJenis === 1 ? "grass" : "path", 0);
+        if (!drawn && def.mainJenis === 1) {
+          drawTile(c, p.x, p.y, "grass", 0);
+        }
+      }
+    }
+
+    // The small brown markers the original scatters over the map, drawn on a
+    // layer of their own above the ground (`zmap.MAP.kepiting`).
+    const markerFrame = art.frameFor("tiles", 28);
+    if (markerFrame) {
+      for (let r = 0; r < world.rows; r++) {
+        for (let col = 0; col < world.cols; col++) {
+          if (!world.tiles[r]![col]!.marker) continue;
+          const p = gridToScreen(col, r);
+          drawSprite(c, markerFrame, p.x, p.y, artScale);
         }
       }
     }
@@ -293,6 +308,10 @@ export class Renderer {
       }
     }
     plants.sort((a, b) => a.col + a.row - (b.col + b.row));
+
+    // The original lays a patch of grass under a tree, but only while the
+    // mouse is over it (`Plant.as`, `settingFocus`), so the ground is left
+    // as it is.
     for (const p of plants) {
       const s = gridToScreen(p.col, p.row);
       const def = this.sceneryFrame(p.species);
@@ -317,49 +336,15 @@ export class Renderer {
    */
   private boothAnchor(
     b: { col: number; row: number; cols: number; rows: number },
-    floor: SpriteFrame | undefined,
-    scale: number,
+    _floor: SpriteFrame | undefined,
+    _scale: number,
   ): { x: number; y: number } {
-    // The corner of the tiles the facility stands on. The ground is drawn
-    // with its clip's origin at the grid point, and the clip's origin is at
-    // the bottom left of the tile, so the ground lies up and to the right of
-    // the grid point.
-    let minX = Infinity;
-    let minY = Infinity;
-    for (let r = 0; r < b.rows; r++) {
-      for (let c = 0; c < b.cols; c++) {
-        const p = gridToScreen(b.col + c, b.row + r);
-        minX = Math.min(minX, p.x - 2);
-        minY = Math.min(minY, p.y - 25.2);
-      }
-    }
-    if (!floor || !floor.bbox) return { x: minX, y: minY };
-    const [bx0, by0] = floor.bbox;
-    // The original draws the floor from the top left of its tiles, and the
-    // room and the building from the same point, so the room sits over the
-    // floor exactly as the artist drew it.
-    return {
-      x: minX + (floor.ox - bx0) * scale,
-      y: minY + (floor.oy - by0) * scale,
-    };
-  }
-
-  /**
-   * Draw one of the original's plot tiles on a grid tile.
-   *
-   * The land a facility stands on is a diamond in the middle of the art, and
-   * the original draws it from the same point as the ground, so the tile
-   * lands on the grid the way the ground does.
-   */
-  private drawPlotTile(
-    ctx: CanvasRenderingContext2D,
-    frame: SpriteFrame,
-    col: number,
-    row: number,
-    scale: number,
-  ): void {
-    const p = gridToScreen(col, row);
-    drawSprite(ctx, frame, p.x, p.y + 25, scale);
+    // The original anchors a facility on the corner tile of its plot and
+    // draws the floor of the room from that tile, half a pixel higher. The
+    // room and the wall are placed from the same point, so they sit on the
+    // floor exactly as the artist drew them.
+    const p = gridToScreen(b.col + b.cols - 1, b.row);
+    return { x: p.x, y: p.y - 0.5 };
   }
 
   /**
@@ -537,8 +522,17 @@ export class Renderer {
       // (`blok`), the floor of the room inside it (`fr`), and then the room's
       // walls and the building. The plot is a plain plate, while the room's
       // floor carries the original's carpet.
-      const plotPlate = art.boothTileFrame(def.blok, b.level);
-      const roomFloorFrame = art.boothTileFrame(def.fr, b.level);
+      // The plot the facility stands on is the same at every level: the
+      // original draws the `blok` frame of the facility, with no level added
+      // (`Booth.as`, `clearLantai`).
+      const plotPlate = art.boothTileFrame(def.blok, 0);
+      // A facility that is a stand keeps the same floor at every level: the
+      // original draws the `fr` frame of the stand as it is
+      // (`Booth.as`, `creatingLantai`).
+      const roomFloorFrame = art.boothTileFrame(
+        def.fr,
+        def.standbooth ? 0 : b.level,
+      );
       // The room the facility is built in, from the original's `Wall` clip.
       const wallFrame = def.standbooth
         ? undefined
@@ -570,19 +564,9 @@ export class Renderer {
       // The original has a site clip for every footprint size, with the
       // workers standing on it.
       const siteClip = b.building ? this.buildSiteClip({ rows: def.ROWS, cols: def.COLS }) : undefined;
-      // The land a facility has grown into.
-      const plotFrame = b.cols > def.COLS ? art.frameFor("boothTile", PLOT_TILE_FRAME) : undefined;
       items.push({
         depth,
         draw: () => {
-          if (plotFrame) {
-            // The extra tiles of the plot are drawn under the facility.
-            for (let c = b.col + def.COLS; c < b.col + b.cols; c++) {
-              for (let r = b.row; r < b.row + b.rows; r++) {
-                this.drawPlotTile(ctx, plotFrame, c, r, artScale);
-              }
-            }
-          }
           if (siteClip) {
             drawSprite(ctx, siteClip, anchor.x, anchor.y, artScale);
           } else {
@@ -599,11 +583,15 @@ export class Renderer {
               }
             }
           }
+          // The wall and the room are placed by the original's own clips: the
+          // wall's origin lands a pixel to the right of the facility's, and
+          // the room's where the facility's clip puts it.
+          const [roomDx, roomDy] = art.roomOffset(b.type);
           if (wallFrame && !b.building) {
-            drawSprite(ctx, wallFrame, anchor.x, anchor.y, artScale);
+            drawSprite(ctx, wallFrame, anchor.x + 1, anchor.y + 0.5, artScale);
           }
           if (roomFrame) {
-            drawSprite(ctx, roomFrame, anchor.x, anchor.y, artScale);
+            drawSprite(ctx, roomFrame, anchor.x + roomDx, anchor.y + roomDy + 0.5, artScale);
           }
           // The room itself, and the people in it.
           const ok =
