@@ -55,7 +55,7 @@ const PLOT_TILE_FRAME = 57;
 import type { World } from "../core/world.ts";
 import { drawBooth, drawGuest, drawPlant, drawTile } from "./art.ts";
 import { art } from "./sprites.ts";
-import type { SpriteEntry, SpriteFrame } from "./sprites.ts";
+import type { RoomPerson, SpriteEntry, SpriteFrame } from "./sprites.ts";
 
 export interface Camera {
   /** World-space centre of the view. */
@@ -422,6 +422,26 @@ export class Renderer {
   }
 
   /**
+   * Where a person stands in a room.
+   *
+   * The original's room clip holds the employee and the guests as children,
+   * each with its own place in the room. The place is measured from the
+   * room's own origin, so the person is drawn at the same spot in the room
+   * as the original puts them.
+   */
+  private roomPersonAt(
+    anchor: { x: number; y: number },
+    room: SpriteFrame,
+    person: RoomPerson,
+    scale: number,
+  ): { x: number; y: number } {
+    return {
+      x: anchor.x + (person.dx + person.ox - room.ox) * scale,
+      y: anchor.y + (person.dy + person.oy - room.oy) * scale,
+    };
+  }
+
+  /**
    * A frame from one of the original's animations.
    *
    * The clips name their animations - `stand`, `anim`, `v1_duduk` - and the
@@ -598,18 +618,13 @@ export class Renderer {
           }
           if (!b.building) {
             // The employee stands in the room while it is open.
-            if (employee && world.isBoothOpen(b)) {
+            if (employee && frame && world.isBoothOpen(b)) {
               const { person: where } = employee;
               // The staff clip is the same artwork the room holds, so it
               // stands in the same place, and it can be animated.
               const picture = staffFrame ?? employee.frame;
-              drawSprite(
-                ctx,
-                picture,
-                anchor.x + (where.dx + where.ox) * artScale,
-                anchor.y + (where.dy + where.oy) * artScale,
-                artScale,
-              );
+              const at = this.roomPersonAt(anchor, frame, where, artScale);
+              drawSprite(ctx, picture, at.x, at.y, artScale);
             }
             // The guests in the room, one place each.
             for (let i = 0; i < guests.length && i < 2; i++) {
@@ -617,13 +632,10 @@ export class Renderer {
               const person = art.roomPerson(b.type, who);
               if (!person) continue;
               const { frame: picture, person: where } = person;
-              drawSprite(
-                ctx,
-                picture,
-                anchor.x + (where.dx + where.ox) * artScale,
-                anchor.y + (where.dy + where.oy) * artScale,
-                artScale,
-              );
+              const at = frame
+                ? this.roomPersonAt(anchor, frame, where, artScale)
+                : { x: anchor.x, y: anchor.y };
+              drawSprite(ctx, picture, at.x, at.y, artScale);
             }
           }
         },
