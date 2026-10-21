@@ -553,7 +553,12 @@ export class Renderer {
       const def = boothDef(b.type);
       // Each facility has its own artwork per upgrade level.
       const frame = art.boothFrame(b.type, b.level);
-      const floorFrame = art.boothTileFrame(def.fr, b.level);
+      // The original draws a facility in three layers: the plot it stands on
+      // (`blok`), the floor of the room inside it (`fr`), and then the room's
+      // walls and the building. The plot is a plain plate, while the room's
+      // floor carries the original's carpet.
+      const plotPlate = art.boothTileFrame(def.blok, b.level);
+      const roomFloorFrame = art.boothTileFrame(def.fr, b.level);
       // The room the facility is built in, from the original's `Wall` clip.
       const wallFrame = def.standbooth
         ? undefined
@@ -565,7 +570,7 @@ export class Renderer {
       // facility grows into a bigger plot.
       const anchor = this.boothAnchor(
         { col: b.col, row: b.row, cols: def.COLS, rows: def.ROWS },
-        floorFrame,
+        plotPlate ?? roomFloorFrame,
         artScale,
       );
       anchors.set(b.id, anchor);
@@ -595,8 +600,10 @@ export class Renderer {
           }
           if (siteClip) {
             drawSprite(ctx, siteClip, anchor.x, anchor.y, artScale);
-          } else if (floorFrame) {
-            drawSprite(ctx, floorFrame, anchor.x, anchor.y, artScale);
+          } else {
+            // The plot the facility stands on, then the floor of the room.
+            if (plotPlate) drawSprite(ctx, plotPlate, anchor.x, anchor.y, artScale);
+            if (roomFloorFrame) drawSprite(ctx, roomFloorFrame, anchor.x, anchor.y, artScale);
           }
           if (siteFrame) {
             // The original puts one scaffold on every tile of the site.
