@@ -1,7 +1,7 @@
 ; Engine configuration file.
 ; Edit through the Godot editor when possible.
 ;
-; Project skeleton only: 640x480 play area, integer scaling, 60 fps render.
+; Map stage: 640x480 play area, integer scaling, 60 fps render.
 ; Simulation timing and gameplay are added in later steps.
 
 config_version=5
@@ -28,6 +28,7 @@ window/vsync/vsync_mode=1
 
 [rendering]
 
+environment/defaults/default_clear_color=Color(0.8, 0.8, 0.8, 1)
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/canvas_textures/default_texture_filter=0
