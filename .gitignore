@@ -1,0 +1,10 @@
+# Local reference material (not part of the published remake)
+/exports/
+/ResortEmpire.swf
+/Resort Empire Sunset Skyline.png
+/resortempire-notes-split.zip
+
+# Godot cache and local export settings
+.godot/
+export.cfg
+export_presets.cfg

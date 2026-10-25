@@ -1,0 +1,3501 @@
+{
+  "_source": "exports/scripts/pack/serbi.as",
+  "_generator": "godot/tools/generate_data.py",
+  "_derived": [
+    "booths.*.boostMood.canceled (canceledMood calls)",
+    "visitors.*.Other (otherFacility calls)"
+  ],
+  "order": [
+    "Visitor1",
+    "Visitor2",
+    "Visitor3",
+    "Visitor4",
+    "Visitor5",
+    "Visitor6",
+    "Visitor7",
+    "Visitor8",
+    "Visitor9",
+    "Visitor10",
+    "Visitor11",
+    "Visitor12",
+    "Visitor13",
+    "Visitor14",
+    "Visitor15",
+    "Visitor16",
+    "Visitor17",
+    "Visitor18",
+    "Visitor19",
+    "Visitor20",
+    "Visitor21",
+    "Visitor22",
+    "Visitor23",
+    "Visitor24",
+    "Visitor25",
+    "Visitor26",
+    "Visitor27",
+    "Visitor28",
+    "Visitor29"
+  ],
+  "visitors": {
+    "Visitor1": {
+      "jenis": 1,
+      "sex": 1,
+      "speed": 1.15,
+      "MAX_MOOD": 3,
+      "money": 5000,
+      "room_stay": 2,
+      "tip": 4,
+      "hygiene": 3,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 40,
+      "medical_prob": 35,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 10,
+        "Facility": [
+          [
+            "Arcade",
+            "IndiaResto",
+            "Jacuzi",
+            "Giftshop"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Sauna",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "Golf"
+      ]
+    },
+    "Visitor2": {
+      "jenis": 2,
+      "sex": 0,
+      "speed": 1,
+      "MAX_MOOD": 3,
+      "money": 5000,
+      "room_stay": 2,
+      "tip": 3,
+      "hygiene": 2,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 39,
+      "medical_prob": 40,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 10,
+        "Facility": [
+          [
+            "JapanResto",
+            "Arcade",
+            "Sauna",
+            "Taco"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor3": {
+      "jenis": 3,
+      "sex": 1,
+      "speed": 1.8,
+      "MAX_MOOD": 2,
+      "money": 6500,
+      "room_stay": 2,
+      "tip": 2,
+      "hygiene": 4,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 38,
+      "medical_prob": 29,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 9,
+        "Facility": [
+          [
+            "Pool",
+            "Arcade",
+            "Spa",
+            "JapanResto"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor4": {
+      "jenis": 4,
+      "sex": 0,
+      "speed": 1.2,
+      "MAX_MOOD": 4,
+      "money": 7000,
+      "room_stay": 2,
+      "tip": 3,
+      "hygiene": 1,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 33,
+      "medical_prob": 25,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 7,
+        "Facility": [
+          [
+            "Golf",
+            "BaratResto",
+            "Pool",
+            "Bar"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor5": {
+      "jenis": 5,
+      "sex": 1,
+      "speed": 2,
+      "MAX_MOOD": 3,
+      "money": 8000,
+      "room_stay": 2,
+      "tip": 2,
+      "hygiene": 5,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 36,
+      "medical_prob": 25,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 11,
+        "Facility": [
+          [
+            "Pool",
+            "Jacuzi",
+            "Sauna",
+            "Minimarket"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor6": {
+      "jenis": 6,
+      "sex": 0,
+      "speed": 1.5,
+      "MAX_MOOD": 1,
+      "money": 8800,
+      "room_stay": 2,
+      "tip": 3,
+      "hygiene": 3,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 32,
+      "medical_prob": 30,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 9,
+        "Facility": [
+          [
+            "IndiaResto",
+            "Bar",
+            "Arcade",
+            "Taco"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor7": {
+      "jenis": 7,
+      "sex": 1,
+      "speed": 0.95,
+      "MAX_MOOD": 2,
+      "money": 9250,
+      "room_stay": 2,
+      "tip": 4,
+      "hygiene": 5,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 37,
+      "medical_prob": 45,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 10,
+        "Facility": [
+          [
+            "Giftshop",
+            "Icecream",
+            "Gym",
+            "Sauna"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor8": {
+      "jenis": 8,
+      "sex": 0,
+      "speed": 1.5,
+      "MAX_MOOD": 4,
+      "money": 9500,
+      "room_stay": 2,
+      "tip": 5,
+      "hygiene": 1,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 32,
+      "medical_prob": 45,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 10,
+        "Facility": [
+          [
+            "Bar",
+            "BaratResto",
+            "Jacuzi",
+            "Hotdog"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor9": {
+      "jenis": 9,
+      "sex": 0,
+      "speed": 1.4,
+      "MAX_MOOD": 2,
+      "money": 9800,
+      "room_stay": 3,
+      "tip": 4,
+      "hygiene": 2,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 36,
+      "medical_prob": 45,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 10,
+        "Facility": [
+          [
+            "Arcade",
+            "Gym",
+            "Golf",
+            "Pool"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor10": {
+      "jenis": 10,
+      "sex": 1,
+      "speed": 1.35,
+      "MAX_MOOD": 2,
+      "money": 10000,
+      "room_stay": 3,
+      "tip": 5,
+      "hygiene": 2,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 35,
+      "medical_prob": 45,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 3,
+        "Facility": [
+          [
+            "IndiaResto",
+            "JapanResto",
+            "Sauna",
+            "Minimarket"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor11": {
+      "jenis": 11,
+      "sex": 0,
+      "speed": 0.75,
+      "MAX_MOOD": 2,
+      "money": 11000,
+      "room_stay": 2,
+      "tip": 2,
+      "hygiene": 2,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 34,
+      "medical_prob": 95,
+      "maxK": 8,
+      "old": true,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 11,
+        "Facility": [
+          [
+            "Jacuzi",
+            "Sauna",
+            "Giftshop",
+            "BaratResto"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor12": {
+      "jenis": 12,
+      "sex": 1,
+      "speed": 0.95,
+      "MAX_MOOD": 3,
+      "money": 11200,
+      "room_stay": 3,
+      "tip": 3,
+      "hygiene": 3,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 35,
+      "medical_prob": 85,
+      "maxK": 8,
+      "old": true,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 11,
+        "Facility": [
+          [
+            "Icecream",
+            "Pool",
+            "JapanResto",
+            "Sauna"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor13": {
+      "jenis": 13,
+      "sex": 0,
+      "speed": 0.6,
+      "MAX_MOOD": 4,
+      "money": 12500,
+      "room_stay": 3,
+      "tip": 2,
+      "hygiene": 2,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 34,
+      "medical_prob": 90,
+      "maxK": 8,
+      "old": true,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 10,
+        "Facility": [
+          [
+            "Golf",
+            "Spa",
+            "Medical",
+            "BaratResto"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor14": {
+      "jenis": 14,
+      "sex": 1,
+      "speed": 0.8,
+      "MAX_MOOD": 1,
+      "money": 13000,
+      "room_stay": 3,
+      "tip": 3,
+      "hygiene": 5,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 33,
+      "medical_prob": 85,
+      "maxK": 8,
+      "old": true,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 10,
+        "Facility": [
+          [
+            "IndiaResto",
+            "Gym",
+            "Giftshop",
+            "Minimarket"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor15": {
+      "jenis": 15,
+      "sex": 0,
+      "speed": 0.75,
+      "MAX_MOOD": 4,
+      "money": 9500,
+      "room_stay": 2,
+      "tip": 4,
+      "hygiene": 2,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 32,
+      "medical_prob": 90,
+      "maxK": 8,
+      "old": true,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 13,
+        "Facility": [
+          [
+            "Arcade",
+            "Jacuzi",
+            "Taco",
+            "Sauna"
+          ],
+          [
+            35,
+            60,
+            80,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor16": {
+      "jenis": 16,
+      "sex": 1,
+      "speed": 0.7,
+      "MAX_MOOD": 4,
+      "money": 9800,
+      "room_stay": 2,
+      "tip": 4,
+      "hygiene": 2,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 35,
+      "medical_prob": 95,
+      "maxK": 8,
+      "old": true,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 12,
+        "Facility": [
+          [
+            "Minimarket",
+            "Hotdog",
+            "Jacuzi",
+            "Spa",
+            "Pool"
+          ],
+          [
+            30,
+            55,
+            73,
+            88,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor17": {
+      "jenis": 17,
+      "sex": 3,
+      "jenis1": 2,
+      "jenis2": 1,
+      "speed": 0.95,
+      "MAX_MOOD": 3,
+      "money": 12500,
+      "room_stay": 1,
+      "tip": 6,
+      "hygiene": 3,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 37,
+      "medical_prob": 75,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 15,
+        "Facility": [
+          [
+            "Bar",
+            "Hotdog",
+            "Taco",
+            "Giftshop",
+            "Golf",
+            "Gym",
+            "IndiaResto"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor18": {
+      "jenis": 18,
+      "sex": 3,
+      "jenis1": 4,
+      "jenis2": 3,
+      "speed": 0.95,
+      "MAX_MOOD": 4,
+      "money": 13000,
+      "room_stay": 3,
+      "tip": 5,
+      "hygiene": 4,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 38,
+      "medical_prob": 45,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 15,
+        "Facility": [
+          [
+            "Bar",
+            "BaratResto",
+            "Spa",
+            "Gym",
+            "Jacuzi",
+            "Gym",
+            "Arcade"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor19": {
+      "jenis": 19,
+      "sex": 3,
+      "jenis1": 6,
+      "jenis2": 5,
+      "speed": 0.95,
+      "MAX_MOOD": 3,
+      "money": 13500,
+      "room_stay": 2,
+      "tip": 4,
+      "hygiene": 5,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 37,
+      "medical_prob": 60,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 15,
+        "Facility": [
+          [
+            "BaratResto",
+            "Hotdog",
+            "Taco",
+            "Icecream",
+            "JapanResto",
+            "Spa",
+            "IndiaResto"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor20": {
+      "jenis": 20,
+      "sex": 3,
+      "jenis1": 8,
+      "jenis2": 7,
+      "speed": 0.95,
+      "MAX_MOOD": 2,
+      "money": 13700,
+      "room_stay": 3,
+      "tip": 5,
+      "hygiene": 4,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 36,
+      "medical_prob": 55,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 15,
+        "Facility": [
+          [
+            "IndiaResto",
+            "Bar",
+            "Pool",
+            "Jacuzi",
+            "Minimarket",
+            "Hotdog",
+            "Giftshop"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor21": {
+      "jenis": 21,
+      "sex": 3,
+      "jenis1": 9,
+      "jenis2": 10,
+      "speed": 0.95,
+      "MAX_MOOD": 3,
+      "money": 13500,
+      "room_stay": 3,
+      "tip": 4,
+      "hygiene": 3,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 48,
+      "medical_prob": 50,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 15,
+        "Facility": [
+          [
+            "IndiaResto",
+            "Minimarket",
+            "Golf",
+            "Hotdog",
+            "JapanResto",
+            "Sauna",
+            "Taco"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor22": {
+      "jenis": 22,
+      "sex": 3,
+      "jenis1": 11,
+      "jenis2": 12,
+      "speed": 1,
+      "MAX_MOOD": 4,
+      "money": 14550,
+      "room_stay": 3,
+      "tip": 6,
+      "hygiene": 2,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 33,
+      "medical_prob": 90,
+      "maxK": 9,
+      "old": true,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 20,
+        "Facility": [
+          [
+            "Pool",
+            "BaratResto",
+            "Gym",
+            "Giftshop",
+            "Jacuzi",
+            "Golf",
+            "Sauna"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor23": {
+      "jenis": 23,
+      "sex": 3,
+      "jenis1": 13,
+      "jenis2": 14,
+      "speed": 0.95,
+      "MAX_MOOD": 3,
+      "money": 14500,
+      "room_stay": 3,
+      "tip": 7,
+      "hygiene": 1,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 32,
+      "medical_prob": 95,
+      "maxK": 9,
+      "old": true,
+      "likes": {
+        "Room": [
+          "Cottage",
+          "Lodge"
+        ],
+        "Room2": 30,
+        "Facility": [
+          [
+            "Golf",
+            "Medical",
+            "JapanResto",
+            "Taco",
+            "Jacuzi",
+            "Spa",
+            "Sauna"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor24": {
+      "jenis": 24,
+      "sex": 3,
+      "jenis1": 15,
+      "jenis2": 16,
+      "speed": 0.7,
+      "MAX_MOOD": 2,
+      "money": 15000,
+      "room_stay": 2,
+      "tip": 4,
+      "hygiene": 1,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 30,
+      "medical_prob": 98,
+      "maxK": 9,
+      "old": true,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 25,
+        "Facility": [
+          [
+            "Medical",
+            "Golf",
+            "IndiaResto",
+            "Minimarket",
+            "Gym",
+            "Hotdog",
+            "Giftshop"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor25": {
+      "jenis": 25,
+      "sex": 1,
+      "nick": "Ann Hat Away",
+      "car": 1,
+      "speed": 0.8,
+      "MAX_MOOD": 2,
+      "money": 17000,
+      "room_stay": 3,
+      "tip": 12,
+      "hygiene": 5,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 43,
+      "medical_prob": 75,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 8,
+        "Facility": [
+          [
+            "Golf",
+            "Bar",
+            "Pool",
+            "Gym",
+            "Arcade",
+            "Medical",
+            "Taco"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor26": {
+      "jenis": 26,
+      "sex": 1,
+      "nick": "Mr. Rock",
+      "car": 1,
+      "speed": 1.4,
+      "MAX_MOOD": 3,
+      "money": 18500,
+      "room_stay": 3,
+      "tip": 13,
+      "hygiene": 5,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 43,
+      "medical_prob": 90,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 6,
+        "Facility": [
+          [
+            "Minimarket",
+            "Pool",
+            "Golf",
+            "Spa",
+            "Giftshop",
+            "Medical",
+            "Icecream"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor27": {
+      "jenis": 27,
+      "sex": 1,
+      "nick": "Naomi Volts",
+      "car": 0,
+      "speed": 0.95,
+      "MAX_MOOD": 2,
+      "money": 20000,
+      "room_stay": 3,
+      "tip": 14,
+      "hygiene": 5,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 43,
+      "medical_prob": 75,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge"
+        ],
+        "Room2": 0,
+        "Facility": [
+          [
+            "Icecream",
+            "Taco",
+            "JapanResto",
+            "IndiaResto",
+            "BaratResto",
+            "Bar",
+            "Hotdog"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor28": {
+      "jenis": 28,
+      "sex": 1,
+      "nick": "Robert Fatinson",
+      "car": 0,
+      "speed": 0.5,
+      "MAX_MOOD": 4,
+      "money": 24000,
+      "room_stay": 3,
+      "tip": 20,
+      "hygiene": 5,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 43,
+      "medical_prob": 90,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge"
+        ],
+        "Room2": 0,
+        "Facility": [
+          [
+            "Medical",
+            "Pool",
+            "Spa",
+            "Sauna",
+            "Jacuzi",
+            "IndiaResto",
+            "Icecream"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    },
+    "Visitor29": {
+      "jenis": 29,
+      "sex": 1,
+      "nick": "Jason State",
+      "car": 1,
+      "speed": 1.35,
+      "MAX_MOOD": 3,
+      "money": 25000,
+      "room_stay": 3,
+      "tip": 15,
+      "hygiene": 5,
+      "smiley": {
+        "very_happy": {
+          "nama": "VERY HAPPY",
+          "range_a": 80,
+          "range_b": 100,
+          "nilai": 2
+        },
+        "happy": {
+          "nama": "HAPPY",
+          "range_a": 65,
+          "range_b": 80,
+          "nilai": 1
+        },
+        "neutral": {
+          "nama": "NEUTRAL",
+          "range_a": 55,
+          "range_b": 65,
+          "nilai": 0
+        },
+        "upset": {
+          "nama": "UPSET",
+          "range_a": 35,
+          "range_b": 55,
+          "nilai": -1.5
+        },
+        "very_upset": {
+          "nama": "VERY UPSET",
+          "range_a": 0,
+          "range_b": 35,
+          "nilai": -2.5
+        },
+        "sleepy": {
+          "nama": "SLEEPY",
+          "range_a": 0,
+          "range_b": 0,
+          "nilai": 0
+        }
+      },
+      "hygCounter": 43,
+      "medical_prob": 80,
+      "maxK": 12,
+      "old": false,
+      "likes": {
+        "Room": [
+          "Lodge",
+          "Cottage"
+        ],
+        "Room2": 0,
+        "Facility": [
+          [
+            "Minimarket",
+            "Golf",
+            "Arcade",
+            "Giftshop",
+            "JapanResto",
+            "Gym",
+            "Spa"
+          ],
+          [
+            20,
+            35,
+            50,
+            70,
+            80,
+            90,
+            100
+          ]
+        ],
+        "Other": []
+      },
+      "Other": [
+        "Icecream",
+        "Hotdog",
+        "Taco",
+        "Giftshop",
+        "Arcade",
+        "Sauna",
+        "Jacuzi",
+        "Gym",
+        "Pool",
+        "Medical",
+        "Minimarket",
+        "Bar",
+        "Spa",
+        "JapanResto",
+        "BaratResto",
+        "IndiaResto",
+        "Golf"
+      ]
+    }
+  },
+  "rules": {
+    "Cottage": [
+      2,
+      3,
+      6,
+      7,
+      9,
+      10,
+      11,
+      14,
+      17,
+      19,
+      21,
+      23
+    ],
+    "Lodge": [
+      1,
+      4,
+      5,
+      8,
+      12,
+      13,
+      15,
+      16,
+      18,
+      20,
+      22,
+      24
+    ],
+    "Old": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      22,
+      23,
+      24
+    ],
+    "TanpaOld": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "Cottage_TanpaOld": [
+      2,
+      3,
+      6,
+      7,
+      9,
+      10,
+      17,
+      19,
+      21
+    ],
+    "Lodge_TanpaOld": [
+      1,
+      4,
+      5,
+      8,
+      18,
+      20
+    ],
+    "halfBaldOldMan": {
+      "Visitor9": true,
+      "Visitor11": true,
+      "Visitor15": true,
+      "Visitor21": true,
+      "Visitor22": true,
+      "Visitor24": true
+    },
+    "shortHairedOldLady": {
+      "Visitor12": true,
+      "Visitor14": true,
+      "Visitor16": true,
+      "Visitor22": true,
+      "Visitor23": true,
+      "Visitor24": true
+    },
+    "HYGIENE_RANGE": {
+      "chance": [
+        3,
+        2.5,
+        2,
+        1.5,
+        1
+      ],
+      "sampah": [
+        [
+          1,
+          2,
+          2,
+          3,
+          3
+        ],
+        [
+          1,
+          2,
+          2,
+          2,
+          3
+        ],
+        [
+          1,
+          1,
+          2,
+          2,
+          3
+        ],
+        [
+          1,
+          1,
+          1,
+          2,
+          2
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          2
+        ]
+      ]
+    },
+    "PROB_RANGE": [
+      50,
+      40,
+      30,
+      25,
+      15,
+      5
+    ],
+    "FIRSTNAME_MALE": [
+      "Brian",
+      "Maxwell",
+      "Paul",
+      "Erick",
+      "Ernest",
+      "Nelson",
+      "Matt",
+      "Morgan",
+      "Zach",
+      "Nicholas",
+      "Robert",
+      "Harold",
+      "Bob Harper",
+      "Theodore",
+      "Chartzen",
+      "Godwyn",
+      "Blake",
+      "Rooney",
+      "Jerome",
+      "Brad"
+    ],
+    "SECONDNAME_MALE": [
+      "McBrown",
+      "Tzebaltski",
+      "Bradley",
+      "Ford",
+      "Powell",
+      "Gray",
+      "Ward",
+      "Collins",
+      "Stewart",
+      "Reed",
+      "Bailey",
+      "Cooper",
+      "Rivera",
+      "Stones",
+      "Hudson",
+      "Duncan",
+      "Foster",
+      "Woods",
+      "Simmons",
+      "Michaels",
+      "Phillips",
+      "Martinez",
+      "Thompson",
+      "Harris",
+      "Moore",
+      "Miller",
+      "Jackson",
+      "Jones",
+      "Williams",
+      "Snyder",
+      "Oliver"
+    ],
+    "FIRSTNAME_FEMALE": [
+      "Michelle",
+      "Barbara",
+      "Sabrina",
+      "Debby",
+      "Bernadett",
+      "Alexa",
+      "Alice",
+      "Elvina",
+      "Nadine",
+      "Heather",
+      "Hannah",
+      "Jillian",
+      "Yvonne",
+      "Tabitha",
+      "Jean",
+      "Julia",
+      "Scarlett"
+    ],
+    "SECONDNAME_FEMALE": [
+      "McBrown",
+      "Tzebaltski",
+      "Bradley",
+      "Ford",
+      "Powell",
+      "Gray",
+      "Ward",
+      "Collins",
+      "Stewart",
+      "Reed",
+      "Bailey",
+      "Cooper",
+      "Rivera",
+      "Stones",
+      "Hudson",
+      "Duncan",
+      "Foster",
+      "Woods",
+      "Simmons",
+      "Michaels",
+      "Phillips",
+      "Martinez",
+      "Thompson",
+      "Harris",
+      "Moore",
+      "Miller",
+      "Jackson",
+      "Jones",
+      "Williams",
+      "Snyder",
+      "Oliver"
+    ],
+    "COUPLE_NAME": [
+      "McBrown",
+      "Tzebaltski",
+      "Bradley",
+      "Ford",
+      "Powell",
+      "Gray",
+      "Ward",
+      "Collins",
+      "Stewart",
+      "Reed",
+      "Bailey",
+      "Cooper",
+      "Rivera",
+      "Stones",
+      "Hudson",
+      "Duncan",
+      "Foster",
+      "Woods",
+      "Simmons",
+      "Michaels",
+      "Phillips",
+      "Martinez",
+      "Thompson",
+      "Harris",
+      "Moore",
+      "Miller",
+      "Jackson",
+      "Jones",
+      "Williams",
+      "Snyder",
+      "Oliver"
+    ]
+  },
+  "timers": {
+    "jamTidur": [
+      [
+        20,
+        21
+      ],
+      [
+        20,
+        22
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        20,
+        21
+      ],
+      [
+        20,
+        21
+      ],
+      [
+        20,
+        22
+      ],
+      [
+        19,
+        21
+      ],
+      [
+        19,
+        21
+      ],
+      [
+        20,
+        21
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        21,
+        23
+      ],
+      [
+        19,
+        23
+      ],
+      [
+        19,
+        21
+      ],
+      [
+        20,
+        21
+      ],
+      [
+        20,
+        21
+      ],
+      [
+        19,
+        22
+      ],
+      [
+        19,
+        22
+      ],
+      [
+        19,
+        22
+      ],
+      [
+        19,
+        22
+      ],
+      [
+        19,
+        22
+      ]
+    ],
+    "istirahatTimer": [
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        25,
+        50
+      ],
+      [
+        15,
+        45
+      ],
+      [
+        15,
+        45
+      ],
+      [
+        15,
+        45
+      ],
+      [
+        15,
+        45
+      ],
+      [
+        15,
+        45
+      ]
+    ],
+    "jamBangun": [
+      [
+        6,
+        8
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        5,
+        9
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        8,
+        10
+      ],
+      [
+        8,
+        10
+      ],
+      [
+        8,
+        10
+      ],
+      [
+        8,
+        10
+      ],
+      [
+        8,
+        10
+      ]
+    ]
+  },
+  "caps": {
+    "Pengunjung": [
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70
+    ],
+    "Pengguna": [
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70
+    ]
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "_source": "exports/scripts/pack/serbi.as",
+  "_generator": "godot/tools/generate_data.py",
+  "_derived": [
+    "booths.*.boostMood.canceled (canceledMood calls)",
+    "visitors.*.Other (otherFacility calls)"
+  ],
+  "order": [
+    "acv_credit",
+    "acv_goodResort",
+    "acv_loveBeingHere",
+    "acv_goodResearch",
+    "acv_growingResort",
+    "acv_rookieResort",
+    "acv_famousResort",
+    "acv_marvelousResort",
+    "acv_grandResort",
+    "acv_awesomeContractor",
+    "acv_expertContractor",
+    "acv_superDev",
+    "acv_masterDev",
+    "acv_greenBucks",
+    "acv_bagOfGold"
+  ],
+  "achievements": {
+    "acv_credit": {
+      "nama": "ENTER THE CREDIT",
+      "desc": "Nice to meet you! :)",
+      "bonus": 1500,
+      "RP": 2
+    },
+    "acv_goodResort": {
+      "nama": "GOOD RESORT",
+      "desc": "Popularity 17% + 50% visitors happy",
+      "bonus": 4000,
+      "RP": 4
+    },
+    "acv_loveBeingHere": {
+      "nama": "I LOVE BEING HERE",
+      "desc": "Popularity 50% + 75% visitor happy",
+      "bonus": 11000,
+      "RP": 7
+    },
+    "acv_goodResearch": {
+      "nama": "GOOD RESEARCH",
+      "desc": "10 booths upgraded",
+      "bonus": 7500,
+      "RP": 5
+    },
+    "acv_growingResort": {
+      "nama": "GROWING RESORT",
+      "desc": "Unlock 10 booths",
+      "bonus": 5000,
+      "RP": 4
+    },
+    "acv_rookieResort": {
+      "nama": "ROOKIE RESORT",
+      "desc": "Have 10 visitors inside resort",
+      "bonus": 1000,
+      "RP": 3
+    },
+    "acv_famousResort": {
+      "nama": "FAMOUS RESORT",
+      "desc": "All special visitors visited your resort",
+      "bonus": 12000,
+      "RP": 8
+    },
+    "acv_marvelousResort": {
+      "nama": "MARVELOUS RESORT",
+      "desc": "Unlocked all booth types",
+      "bonus": 15000,
+      "RP": 7
+    },
+    "acv_grandResort": {
+      "nama": "GRAND RESORT",
+      "desc": "Have total 25 booths",
+      "bonus": 8000,
+      "RP": 6
+    },
+    "acv_awesomeContractor": {
+      "nama": "AWESOME CONTRACTOR",
+      "desc": "Expand Resort to level 2",
+      "bonus": 10000,
+      "RP": 8
+    },
+    "acv_expertContractor": {
+      "nama": "EXPERT CONTRACTOR",
+      "desc": "Expand Resort to level 3",
+      "bonus": 15000,
+      "RP": 9
+    },
+    "acv_superDev": {
+      "nama": "SUPER DEVELOPER",
+      "desc": "Popularity 70% + Build all booth types",
+      "bonus": 17000,
+      "RP": 9
+    },
+    "acv_masterDev": {
+      "nama": "MASTER DEVELOPER",
+      "desc": "Popularity 100% reached + Expert Contractor",
+      "bonus": 50000,
+      "RP": 10
+    },
+    "acv_greenBucks": {
+      "nama": "GREEN BUCKS",
+      "desc": "Have total money $250.000",
+      "bonus": 60000,
+      "RP": 10
+    },
+    "acv_bagOfGold": {
+      "nama": "BAG OF GOLD",
+      "desc": "Have total money $500.000",
+      "bonus": 70000,
+      "RP": 10
+    }
+  }
+}

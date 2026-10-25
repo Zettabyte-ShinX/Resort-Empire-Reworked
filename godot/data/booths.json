@@ -1,0 +1,2598 @@
+{
+  "_source": "exports/scripts/pack/serbi.as",
+  "_generator": "godot/tools/generate_data.py",
+  "_derived": [
+    "booths.*.boostMood.canceled (canceledMood calls)",
+    "visitors.*.Other (otherFacility calls)"
+  ],
+  "order": [
+    "Lobby",
+    "Cottage",
+    "Lodge",
+    "Sauna",
+    "Gym",
+    "Bar",
+    "Jacuzi",
+    "Arcade",
+    "IndiaResto",
+    "Spa",
+    "JapanResto",
+    "BaratResto",
+    "Medical",
+    "Minimarket",
+    "Pool",
+    "Golf",
+    "Icecream",
+    "Hotdog",
+    "Taco",
+    "Giftshop",
+    "JanitorRoom"
+  ],
+  "booths": {
+    "Lobby": {
+      "nama": "LOBBY RESORT",
+      "nic": "LOBBY",
+      "ROWS": 4,
+      "COLS": 2,
+      "fr": 1,
+      "wall": 1,
+      "wall_alpha": 4,
+      "blok": 50,
+      "standbooth": false,
+      "mainJenis": "Lobby",
+      "jenis": "Lobby",
+      "price": [
+        0,
+        10000,
+        20000
+      ],
+      "booked_price": 0,
+      "opened": 0,
+      "closed": 0,
+      "xpt": 0,
+      "drainpop": 1,
+      "sumStaff": 2,
+      "salary": [
+        36,
+        60,
+        72
+      ],
+      "RP_upgrade": [
+        0,
+        6,
+        10
+      ],
+      "pop": [
+        0,
+        3,
+        5,
+        0
+      ],
+      "Exp_add": [
+        [
+          2,
+          1,
+          1,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          6,
+          5,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        350,
+        1000
+      ],
+      "UT": [
+        0,
+        0,
+        0
+      ],
+      "boostMood": {
+        "served": [
+          0.1,
+          0.2,
+          0.3
+        ],
+        "canceled": [
+          [
+            0.05,
+            0.05
+          ],
+          [
+            0.1,
+            0.1
+          ],
+          [
+            0.15,
+            0.15
+          ]
+        ]
+      },
+      "desc": [
+        "For check in dan check out room resort.",
+        "\nGet faster exp. point and service by upgrade this booth for $"
+      ]
+    },
+    "Cottage": {
+      "nama": "COTTAGE",
+      "nic": "COTTAGE",
+      "ROWS": 2,
+      "COLS": 2,
+      "fr": 4,
+      "wall": 13,
+      "wall_alpha": 16,
+      "blok": 51,
+      "standbooth": false,
+      "mainJenis": "Room",
+      "jenis": "Cottage",
+      "price": [
+        1000,
+        1200,
+        1440
+      ],
+      "booked_price": [
+        100,
+        120,
+        192
+      ],
+      "opened": 0,
+      "closed": 0,
+      "xpt": 10,
+      "drainpop": 5,
+      "sumStaff": 0,
+      "salary": [
+        0,
+        0,
+        0
+      ],
+      "RP_upgrade": [
+        0,
+        3,
+        8
+      ],
+      "pop": [
+        1,
+        1.55,
+        2,
+        0.5
+      ],
+      "Exp_add": [
+        [
+          2,
+          2,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          2,
+          1
+        ],
+        [
+          5,
+          4,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        12,
+        28
+      ],
+      "UT": [
+        0,
+        0,
+        0
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.04,
+            0.1
+          ],
+          [
+            0.055,
+            0.15
+          ],
+          [
+            0.1,
+            0.2
+          ]
+        ],
+        "canceled": [
+          [
+            0.01,
+            0.025
+          ],
+          [
+            0.01375,
+            0.0375
+          ],
+          [
+            0.025,
+            0.05
+          ]
+        ]
+      },
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Lodge": {
+      "nama": "LODGE",
+      "nic": "LODGE",
+      "ROWS": 2,
+      "COLS": 3,
+      "fr": 7,
+      "wall": 7,
+      "wall_alpha": 10,
+      "blok": 56,
+      "standbooth": false,
+      "mainJenis": "Room",
+      "jenis": "Lodge",
+      "price": [
+        2500,
+        3000,
+        4000
+      ],
+      "booked_price": [
+        250,
+        300,
+        480
+      ],
+      "opened": 0,
+      "closed": 0,
+      "xpt": 15,
+      "drainpop": 5,
+      "sumStaff": 0,
+      "salary": [
+        0,
+        0,
+        0
+      ],
+      "RP_upgrade": [
+        0,
+        4,
+        9
+      ],
+      "pop": [
+        1,
+        1.75,
+        2.25,
+        0.75
+      ],
+      "Exp_add": [
+        [
+          3,
+          2,
+          1,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          6,
+          5,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        13,
+        30
+      ],
+      "UT": [
+        0,
+        0,
+        0
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.05,
+            0.12
+          ],
+          [
+            0.075,
+            0.15
+          ],
+          [
+            0.125,
+            0.25
+          ]
+        ],
+        "canceled": [
+          [
+            0.0125,
+            0.03
+          ],
+          [
+            0.01875,
+            0.0375
+          ],
+          [
+            0.03125,
+            0.0625
+          ]
+        ]
+      },
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Sauna": {
+      "nama": "SAUNA",
+      "nic": "SAUNA",
+      "ROWS": 2,
+      "COLS": 2,
+      "fr": 41,
+      "wall": 89,
+      "wall_alpha": 92,
+      "blok": 51,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "Sauna",
+      "price": [
+        1200,
+        1440,
+        1920
+      ],
+      "booked_price": [
+        24,
+        29,
+        77
+      ],
+      "opened": 6,
+      "closed": 20,
+      "xpt": 5,
+      "drainpop": 2,
+      "sumStaff": 0,
+      "salary": [
+        0,
+        0,
+        0
+      ],
+      "RP_upgrade": [
+        0,
+        3,
+        7
+      ],
+      "pop": [
+        0.25,
+        0.5,
+        0.75,
+        0.15
+      ],
+      "Exp_add": [
+        [
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          2,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        32,
+        95
+      ],
+      "UT": [
+        0,
+        2,
+        5
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.025,
+            0.04
+          ],
+          [
+            0.03,
+            0.05
+          ],
+          [
+            0.05,
+            0.075
+          ]
+        ],
+        "canceled": [
+          [
+            0.00625,
+            0.01
+          ],
+          [
+            0.0075,
+            0.0125
+          ],
+          [
+            0.0125,
+            0.01875
+          ]
+        ]
+      },
+      "extraUpgrade": null,
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Gym": {
+      "nama": "FITNESS CENTER",
+      "nic": "FITNESS C.",
+      "ROWS": 2,
+      "COLS": 2,
+      "fr": 47,
+      "wall": 101,
+      "wall_alpha": 104,
+      "blok": 51,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "Gym",
+      "price": [
+        1500,
+        1800,
+        2400
+      ],
+      "booked_price": [
+        30,
+        36,
+        96
+      ],
+      "opened": 6,
+      "closed": 21,
+      "xpt": 5,
+      "drainpop": 2,
+      "sumStaff": 0,
+      "salary": [
+        0,
+        0,
+        0
+      ],
+      "RP_upgrade": [
+        0,
+        3,
+        7
+      ],
+      "pop": [
+        0.25,
+        0.5,
+        0.75,
+        0.15
+      ],
+      "Exp_add": [
+        [
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          2,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        42,
+        102
+      ],
+      "UT": [
+        0,
+        2,
+        5
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.03,
+            0.07
+          ],
+          [
+            0.035,
+            0.075
+          ],
+          [
+            0.055,
+            0.09
+          ]
+        ],
+        "canceled": [
+          [
+            0.0075,
+            0.0175
+          ],
+          [
+            0.00875,
+            0.01875
+          ],
+          [
+            0.01375,
+            0.0225
+          ]
+        ]
+      },
+      "extraUpgrade": "treadmill",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Bar": {
+      "nama": "BAR AND LOUNGE",
+      "nic": "BAR",
+      "ROWS": 2,
+      "COLS": 2,
+      "fr": 29,
+      "wall": 65,
+      "wall_alpha": 68,
+      "blok": 51,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "Bar",
+      "price": [
+        2500,
+        3000,
+        4000
+      ],
+      "booked_price": [
+        50,
+        60,
+        160
+      ],
+      "opened": 17,
+      "closed": 5,
+      "xpt": 8,
+      "drainpop": 2,
+      "sumStaff": 1,
+      "salary": [
+        30,
+        36,
+        42
+      ],
+      "RP_upgrade": [
+        0,
+        3,
+        7
+      ],
+      "pop": [
+        0.25,
+        0.5,
+        0.75,
+        0.15
+      ],
+      "Exp_add": [
+        [
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          2,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        35,
+        98
+      ],
+      "UT": [
+        0,
+        2,
+        5
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.035,
+            0.09
+          ],
+          [
+            0.04,
+            0.1
+          ],
+          [
+            0.07,
+            0.1
+          ]
+        ],
+        "canceled": [
+          [
+            0.00875,
+            0.0225
+          ],
+          [
+            0.01,
+            0.025
+          ],
+          [
+            0.0175,
+            0.025
+          ]
+        ]
+      },
+      "extraUpgrade": "leaf",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Jacuzi": {
+      "nama": "JACCUZI",
+      "nic": "JACCUZI",
+      "ROWS": 2,
+      "COLS": 2,
+      "fr": 32,
+      "wall": 71,
+      "wall_alpha": 74,
+      "blok": 51,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "Jacuzi",
+      "price": [
+        3000,
+        3600,
+        4800
+      ],
+      "booked_price": [
+        60,
+        72,
+        192
+      ],
+      "opened": 6,
+      "closed": 0,
+      "xpt": 5,
+      "drainpop": 2,
+      "sumStaff": 0,
+      "salary": [
+        0,
+        0,
+        0
+      ],
+      "RP_upgrade": [
+        0,
+        3,
+        7
+      ],
+      "pop": [
+        0.25,
+        0.5,
+        0.75,
+        0.15
+      ],
+      "Exp_add": [
+        [
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          2,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        40,
+        111
+      ],
+      "UT": [
+        0,
+        2,
+        5
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.03,
+            0.05
+          ],
+          [
+            0.035,
+            0.06
+          ],
+          [
+            0.055,
+            0.075
+          ]
+        ],
+        "canceled": [
+          [
+            0.0075,
+            0.0125
+          ],
+          [
+            0.00875,
+            0.015
+          ],
+          [
+            0.01375,
+            0.01875
+          ]
+        ]
+      },
+      "extraUpgrade": "heater",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Arcade": {
+      "nama": "ARCADE GAMEZONE",
+      "nic": "GAMEZONE",
+      "ROWS": 2,
+      "COLS": 2,
+      "fr": 13,
+      "wall": 25,
+      "wall_alpha": 28,
+      "blok": 51,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "Arcade",
+      "price": [
+        4000,
+        4800,
+        6400
+      ],
+      "booked_price": [
+        80,
+        96,
+        256
+      ],
+      "opened": 10,
+      "closed": 21,
+      "xpt": 5,
+      "drainpop": 2,
+      "sumStaff": 0,
+      "salary": [
+        0,
+        0,
+        0
+      ],
+      "RP_upgrade": [
+        0,
+        3,
+        7
+      ],
+      "pop": [
+        0.25,
+        0.5,
+        0.75,
+        0.15
+      ],
+      "Exp_add": [
+        [
+          2,
+          1,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          1,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        50,
+        121
+      ],
+      "UT": [
+        0,
+        2,
+        5
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.02,
+            0.04
+          ],
+          [
+            0.03,
+            0.05
+          ],
+          [
+            0.05,
+            0.06
+          ]
+        ],
+        "canceled": [
+          [
+            0.005,
+            0.01
+          ],
+          [
+            0.0075,
+            0.0125
+          ],
+          [
+            0.0125,
+            0.015
+          ]
+        ]
+      },
+      "extraUpgrade": "wine",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "IndiaResto": {
+      "nama": "INDIA RESTAURANT",
+      "nic": "INDIA RESTO",
+      "ROWS": 2,
+      "COLS": 2,
+      "fr": 16,
+      "wall": 31,
+      "wall_alpha": 34,
+      "blok": 51,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "IndiaResto",
+      "price": [
+        5000,
+        6000,
+        8000
+      ],
+      "booked_price": [
+        100,
+        120,
+        320
+      ],
+      "opened": 8,
+      "closed": 20,
+      "xpt": 8,
+      "drainpop": 2,
+      "sumStaff": 1,
+      "salary": [
+        30,
+        36,
+        42
+      ],
+      "RP_upgrade": [
+        0,
+        3,
+        7
+      ],
+      "pop": [
+        0.25,
+        0.5,
+        0.75,
+        0.15
+      ],
+      "Exp_add": [
+        [
+          2,
+          1,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          1,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        52,
+        140
+      ],
+      "UT": [
+        0,
+        2,
+        5
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.035,
+            0.07
+          ],
+          [
+            0.04,
+            0.09
+          ],
+          [
+            0.065,
+            0.09
+          ]
+        ],
+        "canceled": [
+          [
+            0.00875,
+            0.0175
+          ],
+          [
+            0.01,
+            0.0225
+          ],
+          [
+            0.01625,
+            0.0225
+          ]
+        ]
+      },
+      "extraUpgrade": "palm",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Spa": {
+      "nama": "SPA AND MASSAGE",
+      "nic": "SPA",
+      "ROWS": 2,
+      "COLS": 2,
+      "fr": 44,
+      "wall": 95,
+      "wall_alpha": 98,
+      "blok": 51,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "Spa",
+      "price": [
+        6000,
+        7200,
+        9600
+      ],
+      "booked_price": [
+        120,
+        144,
+        384
+      ],
+      "opened": 6,
+      "closed": 21,
+      "xpt": 8,
+      "drainpop": 2,
+      "sumStaff": 1,
+      "salary": [
+        38,
+        45,
+        53
+      ],
+      "RP_upgrade": [
+        0,
+        4,
+        7
+      ],
+      "pop": [
+        0.35,
+        0.5,
+        0.75,
+        0.15
+      ],
+      "Exp_add": [
+        [
+          2,
+          1,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          1,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        51,
+        145
+      ],
+      "UT": [
+        0,
+        2,
+        5
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.035,
+            0.05
+          ],
+          [
+            0.04,
+            0.07
+          ],
+          [
+            0.065,
+            0.07
+          ]
+        ],
+        "canceled": [
+          [
+            0.00875,
+            0.0125
+          ],
+          [
+            0.01,
+            0.0175
+          ],
+          [
+            0.01625,
+            0.0175
+          ]
+        ]
+      },
+      "extraUpgrade": "towel",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "JapanResto": {
+      "nama": "JAPAN RESTAURANT",
+      "nic": "JAPAN RESTO",
+      "ROWS": 2,
+      "COLS": 2,
+      "fr": 23,
+      "wall": 53,
+      "wall_alpha": 56,
+      "blok": 51,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "JapanResto",
+      "price": [
+        5500,
+        6600,
+        8800
+      ],
+      "booked_price": [
+        110,
+        132,
+        352
+      ],
+      "opened": 15,
+      "closed": 22,
+      "xpt": 8,
+      "drainpop": 2,
+      "sumStaff": 1,
+      "salary": [
+        18,
+        22,
+        25
+      ],
+      "RP_upgrade": [
+        0,
+        3,
+        7
+      ],
+      "pop": [
+        0.25,
+        0.5,
+        0.75,
+        0.15
+      ],
+      "Exp_add": [
+        [
+          2,
+          1,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          1,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        50,
+        142
+      ],
+      "UT": [
+        0,
+        2,
+        5
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.035,
+            0.1
+          ],
+          [
+            0.04,
+            0.12
+          ],
+          [
+            0.07,
+            0.12
+          ]
+        ],
+        "canceled": [
+          [
+            0.00875,
+            0.025
+          ],
+          [
+            0.01,
+            0.03
+          ],
+          [
+            0.0175,
+            0.03
+          ]
+        ]
+      },
+      "extraUpgrade": "bamboo",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "BaratResto": {
+      "nama": "WEST RESTAURANT",
+      "nic": "WEST RESTO",
+      "ROWS": 2,
+      "COLS": 2,
+      "fr": 26,
+      "wall": 59,
+      "wall_alpha": 62,
+      "blok": 51,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "BaratResto",
+      "price": [
+        6000,
+        7200,
+        9600
+      ],
+      "booked_price": [
+        120,
+        144,
+        384
+      ],
+      "opened": 14,
+      "closed": 21,
+      "xpt": 8,
+      "drainpop": 2,
+      "sumStaff": 1,
+      "salary": [
+        18,
+        22,
+        25
+      ],
+      "RP_upgrade": [
+        0,
+        4,
+        7
+      ],
+      "pop": [
+        0.25,
+        0.5,
+        0.75,
+        0.15
+      ],
+      "Exp_add": [
+        [
+          2,
+          1,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          1,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        52,
+        147
+      ],
+      "UT": [
+        0,
+        2,
+        5
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.04,
+            0.08
+          ],
+          [
+            0.045,
+            0.12
+          ],
+          [
+            0.075,
+            0.12
+          ]
+        ],
+        "canceled": [
+          [
+            0.01,
+            0.02
+          ],
+          [
+            0.01125,
+            0.03
+          ],
+          [
+            0.01875,
+            0.03
+          ]
+        ]
+      },
+      "extraUpgrade": "uniform",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Medical": {
+      "nama": "MEDICAL CENTER",
+      "nic": "MEDICAL C.",
+      "ROWS": 3,
+      "COLS": 3,
+      "fr": 38,
+      "wall": 83,
+      "wall_alpha": 86,
+      "blok": 52,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "Medical",
+      "price": [
+        7500,
+        9000,
+        9600
+      ],
+      "booked_price": [
+        150,
+        180,
+        480
+      ],
+      "opened": 7,
+      "closed": 23,
+      "xpt": 8,
+      "drainpop": 1,
+      "sumStaff": 1,
+      "salary": [
+        35,
+        42,
+        50
+      ],
+      "RP_upgrade": [
+        0,
+        5,
+        8
+      ],
+      "pop": [
+        0.65,
+        0.75,
+        1,
+        0.35
+      ],
+      "Exp_add": [
+        [
+          3,
+          2,
+          1,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          5,
+          4,
+          3,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        30,
+        90
+      ],
+      "UT": [
+        0,
+        3,
+        6
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.03,
+            0.07
+          ],
+          [
+            0.035,
+            0.075
+          ],
+          [
+            0.055,
+            0.09
+          ]
+        ],
+        "canceled": [
+          [
+            0.0075,
+            0.0175
+          ],
+          [
+            0.00875,
+            0.01875
+          ],
+          [
+            0.01375,
+            0.0225
+          ]
+        ]
+      },
+      "extraUpgrade": "aid",
+      "desc": [
+        "Upgrade this booth for $",
+        "\nGet faster Exp.point\n"
+      ]
+    },
+    "Minimarket": {
+      "nama": "MINIMARKET",
+      "nic": "MINI MARKET",
+      "ROWS": 3,
+      "COLS": 3,
+      "fr": 35,
+      "wall": 77,
+      "wall_alpha": 80,
+      "blok": 52,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "Minimarket",
+      "price": [
+        8000,
+        9600,
+        12800
+      ],
+      "booked_price": [
+        150,
+        192,
+        450
+      ],
+      "opened": 0,
+      "closed": 0,
+      "xpt": 8,
+      "drainpop": 2,
+      "sumStaff": 1,
+      "salary": [
+        31,
+        39,
+        43
+      ],
+      "RP_upgrade": [
+        0,
+        5,
+        8
+      ],
+      "pop": [
+        0.6,
+        0.75,
+        1,
+        0.3
+      ],
+      "Exp_add": [
+        [
+          3,
+          2,
+          2,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          5,
+          4,
+          3,
+          1
+        ]
+      ],
+      "Exp": [
+        0,
+        60,
+        185
+      ],
+      "UT": [
+        0,
+        0,
+        0
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.035,
+            0.1
+          ],
+          [
+            0.04,
+            0.12
+          ],
+          [
+            0.065,
+            0.15
+          ]
+        ],
+        "canceled": [
+          [
+            0.00875,
+            0.025
+          ],
+          [
+            0.01,
+            0.03
+          ],
+          [
+            0.01625,
+            0.0375
+          ]
+        ]
+      },
+      "extraUpgrade": "irrigation",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Pool": {
+      "nama": "SWIMMING POOL",
+      "nic": "POOL",
+      "ROWS": 3,
+      "COLS": 4,
+      "fr": 20,
+      "wall": 47,
+      "wall_alpha": 50,
+      "blok": 54,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "Pool",
+      "price": [
+        9000,
+        10800,
+        14400
+      ],
+      "booked_price": [
+        180,
+        216,
+        576
+      ],
+      "opened": 6,
+      "closed": 0,
+      "xpt": 20,
+      "drainpop": 2,
+      "sumStaff": 0,
+      "salary": [
+        0,
+        0,
+        0
+      ],
+      "RP_upgrade": [
+        0,
+        6,
+        9
+      ],
+      "pop": [
+        0.6,
+        0.75,
+        1,
+        0.3
+      ],
+      "Exp_add": [
+        [
+          3,
+          2,
+          2,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          2
+        ],
+        [
+          5,
+          4,
+          3,
+          2
+        ]
+      ],
+      "Exp": [
+        0,
+        73,
+        191
+      ],
+      "UT": [
+        0,
+        4,
+        7
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.03,
+            0.07
+          ],
+          [
+            0.035,
+            0.075
+          ],
+          [
+            0.055,
+            0.09
+          ]
+        ],
+        "canceled": [
+          [
+            0.0075,
+            0.0175
+          ],
+          [
+            0.00875,
+            0.01875
+          ],
+          [
+            0.01375,
+            0.0225
+          ]
+        ]
+      },
+      "extraUpgrade": "wifi",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Golf": {
+      "nama": "GOLF YARD",
+      "nic": "GOLF",
+      "ROWS": 4,
+      "COLS": 4,
+      "fr": 10,
+      "wall": 19,
+      "wall_alpha": 22,
+      "blok": 53,
+      "standbooth": false,
+      "mainJenis": "Facility",
+      "jenis": "Golf",
+      "price": [
+        12000,
+        14400,
+        19200
+      ],
+      "booked_price": [
+        240,
+        288,
+        768
+      ],
+      "opened": 6,
+      "closed": 17,
+      "xpt": 8,
+      "drainpop": 2,
+      "sumStaff": 0,
+      "salary": [
+        0,
+        0,
+        0
+      ],
+      "RP_upgrade": [
+        0,
+        8,
+        10
+      ],
+      "pop": [
+        0.75,
+        0.85,
+        1,
+        0.4
+      ],
+      "Exp_add": [
+        [
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          5,
+          4,
+          3,
+          2
+        ],
+        [
+          6,
+          5,
+          4,
+          2
+        ]
+      ],
+      "Exp": [
+        0,
+        80,
+        200
+      ],
+      "UT": [
+        0,
+        4,
+        7
+      ],
+      "boostMood": {
+        "served": [
+          [
+            0.04,
+            0.1
+          ],
+          [
+            0.055,
+            0.12
+          ],
+          [
+            0.1,
+            0.15
+          ]
+        ],
+        "canceled": [
+          [
+            0.01,
+            0.025
+          ],
+          [
+            0.01375,
+            0.03
+          ],
+          [
+            0.025,
+            0.0375
+          ]
+        ]
+      },
+      "extraUpgrade": "gardening",
+      "desc": [
+        "",
+        "\nUpgrade this booth for $"
+      ]
+    },
+    "Icecream": {
+      "nama": "ICE CREAM",
+      "nic": "ICE CREAM",
+      "ROWS": 1,
+      "COLS": 1,
+      "fr": 19,
+      "wall": 37,
+      "wall_alpha": 38,
+      "blok": 55,
+      "standbooth": true,
+      "mainJenis": "Facility",
+      "jenis": "Icecream",
+      "price": [
+        750,
+        0,
+        0
+      ],
+      "Xmax": 120,
+      "booked_price": [
+        3,
+        9,
+        0
+      ],
+      "opened": 9,
+      "closed": 20,
+      "xpt": 8,
+      "drainpop": 3,
+      "sumStaff": 1,
+      "salary": [
+        9
+      ],
+      "pop": [
+        0.5,
+        0,
+        0,
+        0.2
+      ],
+      "Exp_add": [
+        [
+          1
+        ]
+      ],
+      "Exp": [
+        0
+      ],
+      "UT": [
+        0
+      ],
+      "boostMood": {
+        "served": [
+          0.15,
+          0.3
+        ],
+        "canceled": [
+          0.05,
+          0.075
+        ]
+      },
+      "extraUpgrade": null
+    },
+    "Hotdog": {
+      "nama": "HOTDOG",
+      "nic": "HOTDOG",
+      "ROWS": 1,
+      "COLS": 1,
+      "fr": 19,
+      "wall": 41,
+      "wall_alpha": 42,
+      "blok": 55,
+      "standbooth": true,
+      "mainJenis": "Facility",
+      "jenis": "Hotdog",
+      "price": [
+        800,
+        0,
+        0
+      ],
+      "Xmax": 110,
+      "booked_price": [
+        3,
+        10,
+        0
+      ],
+      "opened": 8,
+      "closed": 19,
+      "xpt": 8,
+      "drainpop": 3,
+      "sumStaff": 1,
+      "salary": [
+        10
+      ],
+      "pop": [
+        0.55,
+        0,
+        0,
+        0.25
+      ],
+      "Exp_add": [
+        [
+          1
+        ]
+      ],
+      "Exp": [
+        0
+      ],
+      "UT": [
+        0
+      ],
+      "boostMood": {
+        "served": [
+          0.15,
+          0.4
+        ],
+        "canceled": [
+          0.075,
+          0.09
+        ]
+      },
+      "extraUpgrade": "wallpaper"
+    },
+    "Taco": {
+      "nama": "TACO",
+      "nic": "TACO",
+      "ROWS": 1,
+      "COLS": 1,
+      "fr": 19,
+      "wall": 39,
+      "wall_alpha": 40,
+      "blok": 55,
+      "standbooth": true,
+      "mainJenis": "Facility",
+      "jenis": "Taco",
+      "price": [
+        800,
+        0,
+        0
+      ],
+      "Xmax": 105,
+      "booked_price": [
+        3,
+        11,
+        0
+      ],
+      "opened": 12,
+      "closed": 23,
+      "xpt": 8,
+      "drainpop": 3,
+      "sumStaff": 1,
+      "salary": [
+        14
+      ],
+      "pop": [
+        0.6,
+        0,
+        0,
+        0.3
+      ],
+      "Exp_add": [
+        [
+          1
+        ]
+      ],
+      "Exp": [
+        0
+      ],
+      "UT": [
+        0
+      ],
+      "boostMood": {
+        "served": [
+          0.15,
+          0.4
+        ],
+        "canceled": [
+          0.075,
+          0.09
+        ]
+      },
+      "extraUpgrade": "sauce"
+    },
+    "Giftshop": {
+      "nama": "GIFTSHOP",
+      "nic": "GIFTSHOP",
+      "ROWS": 1,
+      "COLS": 1,
+      "fr": 19,
+      "wall": 43,
+      "wall_alpha": 44,
+      "blok": 55,
+      "standbooth": true,
+      "mainJenis": "Facility",
+      "jenis": "Giftshop",
+      "price": [
+        900,
+        0,
+        0
+      ],
+      "Xmax": 100,
+      "booked_price": [
+        4,
+        13,
+        0
+      ],
+      "opened": 13,
+      "closed": 22,
+      "xpt": 8,
+      "drainpop": 3,
+      "sumStaff": 1,
+      "salary": [
+        15
+      ],
+      "pop": [
+        0.7,
+        0,
+        0,
+        0.4
+      ],
+      "Exp_add": [
+        [
+          1
+        ]
+      ],
+      "Exp": [
+        0
+      ],
+      "UT": [
+        0
+      ],
+      "boostMood": {
+        "served": [
+          0.1,
+          0.25
+        ],
+        "canceled": [
+          0.05,
+          0.075
+        ]
+      },
+      "extraUpgrade": "meat"
+    },
+    "JanitorRoom": {
+      "nama": "JANITOR'S ROOM",
+      "nic": "JANITOR'S ROOM",
+      "ROWS": 1,
+      "COLS": 1,
+      "fr": 19,
+      "wall": 45,
+      "wall_alpha": 46,
+      "blok": 55,
+      "standbooth": true,
+      "mainJenis": "JanitorRoom",
+      "jenis": "JanitorRoom",
+      "price": [
+        300,
+        500,
+        800
+      ],
+      "hire_price": [
+        150,
+        210,
+        250
+      ],
+      "gaji_pokok": [
+        15,
+        20,
+        25
+      ],
+      "opened": 0,
+      "closed": 0,
+      "xpt": 8,
+      "drainpop": 3,
+      "RP_upgrade": [
+        0,
+        1,
+        2
+      ],
+      "pop": [
+        0.75,
+        1.25,
+        1.75,
+        0.5
+      ],
+      "Exp_add": [
+        1,
+        2,
+        3
+      ],
+      "Exp": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "useTimers": {
+    "Sauna": [
+      20,
+      21,
+      21,
+      20,
+      22,
+      22,
+      20,
+      21,
+      22,
+      20,
+      30,
+      30,
+      29,
+      28,
+      27,
+      27,
+      25,
+      26,
+      24,
+      25,
+      26,
+      28,
+      28,
+      28,
+      30,
+      30,
+      30,
+      31,
+      42
+    ],
+    "Gym": [
+      30,
+      31,
+      31,
+      30,
+      32,
+      32,
+      30,
+      31,
+      32,
+      30,
+      40,
+      40,
+      39,
+      38,
+      37,
+      38,
+      35,
+      36,
+      34,
+      32,
+      36,
+      38,
+      38,
+      37,
+      40,
+      40,
+      40,
+      41,
+      42
+    ],
+    "Jacuzi": [
+      25,
+      26,
+      26,
+      25,
+      27,
+      27,
+      25,
+      26,
+      27,
+      25,
+      35,
+      35,
+      34,
+      34,
+      34,
+      35,
+      30,
+      31,
+      29,
+      28,
+      35,
+      35,
+      34,
+      35,
+      40,
+      40,
+      40,
+      41,
+      42
+    ],
+    "Arcade": [
+      25,
+      26,
+      26,
+      25,
+      27,
+      27,
+      25,
+      26,
+      27,
+      26,
+      35,
+      35,
+      34,
+      33,
+      33,
+      35,
+      30,
+      31,
+      29,
+      28,
+      35,
+      35,
+      34,
+      35,
+      32,
+      32,
+      35,
+      35,
+      35
+    ],
+    "Spa": [
+      35,
+      36,
+      36,
+      35,
+      37,
+      37,
+      35,
+      36,
+      37,
+      36,
+      45,
+      45,
+      42,
+      44,
+      43,
+      43,
+      40,
+      41,
+      39,
+      42,
+      42,
+      45,
+      44,
+      45,
+      45,
+      45,
+      44,
+      45,
+      45
+    ],
+    "Pool": [
+      50,
+      51,
+      51,
+      50,
+      52,
+      52,
+      50,
+      51,
+      50,
+      48,
+      60,
+      60,
+      55,
+      56,
+      55,
+      57,
+      55,
+      56,
+      54,
+      55,
+      54,
+      61,
+      58,
+      60,
+      60,
+      60,
+      60,
+      60,
+      60
+    ],
+    "Medical": [
+      30,
+      31,
+      31,
+      30,
+      32,
+      32,
+      30,
+      31,
+      30,
+      31,
+      40,
+      40,
+      40,
+      37,
+      38,
+      39,
+      35,
+      36,
+      34,
+      37,
+      38,
+      42,
+      40,
+      41,
+      40,
+      40,
+      41,
+      40,
+      40
+    ],
+    "Golf": [
+      80,
+      81,
+      81,
+      79,
+      82,
+      82,
+      80,
+      81,
+      81,
+      79,
+      90,
+      90,
+      90,
+      85,
+      88,
+      87,
+      85,
+      85,
+      84,
+      82,
+      80,
+      90,
+      80,
+      85,
+      80,
+      80,
+      85,
+      80,
+      80
+    ],
+    "Minimarket": [
+      55,
+      56,
+      56,
+      55,
+      57,
+      57,
+      55,
+      56,
+      57,
+      57,
+      65,
+      65,
+      63,
+      63,
+      62,
+      60,
+      60,
+      58,
+      59,
+      57,
+      58,
+      65,
+      65,
+      66,
+      75,
+      75,
+      76,
+      75,
+      75
+    ],
+    "IndiaResto": [
+      35,
+      36,
+      36,
+      35,
+      37,
+      37,
+      35,
+      36,
+      37,
+      35,
+      45,
+      44,
+      43,
+      42,
+      44,
+      40,
+      40,
+      39,
+      38,
+      37,
+      38,
+      44,
+      40,
+      44,
+      40,
+      40,
+      40,
+      40,
+      40
+    ],
+    "JapanResto": [
+      30,
+      31,
+      31,
+      30,
+      32,
+      32,
+      30,
+      31,
+      32,
+      30,
+      40,
+      38,
+      38,
+      37,
+      39,
+      40,
+      35,
+      36,
+      34,
+      34,
+      38,
+      41,
+      40,
+      41,
+      40,
+      40,
+      40,
+      40,
+      40
+    ],
+    "BaratResto": [
+      40,
+      41,
+      41,
+      40,
+      42,
+      42,
+      40,
+      41,
+      42,
+      40,
+      50,
+      49,
+      48,
+      47,
+      46,
+      43,
+      45,
+      44,
+      43,
+      42,
+      38,
+      47,
+      46,
+      45,
+      35,
+      35,
+      35,
+      40,
+      40
+    ],
+    "Bar": [
+      40,
+      41,
+      41,
+      40,
+      42,
+      42,
+      40,
+      41,
+      42,
+      40,
+      50,
+      49,
+      48,
+      48,
+      46,
+      43,
+      45,
+      44,
+      42,
+      43,
+      38,
+      48,
+      45,
+      45,
+      35,
+      35,
+      35,
+      40,
+      40
+    ],
+    "Icecream": [
+      5,
+      5,
+      5,
+      4,
+      6,
+      5,
+      5,
+      4,
+      4,
+      4,
+      6,
+      5,
+      7,
+      6,
+      6,
+      6,
+      4,
+      7,
+      7,
+      6,
+      5,
+      5,
+      5,
+      6,
+      10,
+      10,
+      11,
+      11,
+      11
+    ],
+    "Taco": [
+      5,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      4,
+      6,
+      6,
+      6,
+      5,
+      6,
+      6,
+      6,
+      6,
+      7,
+      5,
+      6,
+      6,
+      5,
+      6,
+      5,
+      7,
+      11,
+      10,
+      10,
+      11,
+      11
+    ],
+    "Giftshop": [
+      5,
+      5,
+      5,
+      4,
+      6,
+      6,
+      5,
+      5,
+      4,
+      5,
+      6,
+      5,
+      7,
+      6,
+      6,
+      6,
+      4,
+      6,
+      7,
+      6,
+      4,
+      5,
+      5,
+      7,
+      11,
+      11,
+      11,
+      11,
+      11
+    ],
+    "Hotdog": [
+      5,
+      5,
+      5,
+      4,
+      6,
+      6,
+      5,
+      6,
+      4,
+      4,
+      6,
+      5,
+      6,
+      5,
+      5,
+      6,
+      5,
+      7,
+      5,
+      7,
+      6,
+      5,
+      6,
+      6,
+      10,
+      10,
+      11,
+      11,
+      11
+    ]
+  },
+  "unlocked": {
+    "level_0": [
+      "Sauna",
+      "Icecream",
+      "Cottage",
+      "JanitorRoom"
+    ],
+    "level_5": [
+      "Lodge",
+      "Expand1"
+    ],
+    "level_8": [
+      "Expand2"
+    ]
+  }
+}

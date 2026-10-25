@@ -1,0 +1,188 @@
+{
+  "_source": "exports/scripts/pack/serbi.as",
+  "_generator": "godot/tools/generate_data.py",
+  "_derived": [
+    "booths.*.boostMood.canceled (canceledMood calls)",
+    "visitors.*.Other (otherFacility calls)"
+  ],
+  "order": [
+    "PLANT_1",
+    "PLANT_2",
+    "PLANT_3",
+    "PLANT_4",
+    "PLANT_5",
+    "PLANT_6",
+    "PLANT_7",
+    "PLANT_8"
+  ],
+  "items": {
+    "PLANT_0": {
+      "nama": "EMPTY",
+      "lbl": "p_empty",
+      "jenis": 0,
+      "fr": 0,
+      "price": 0,
+      "pop": 0
+    },
+    "PLANT_99": {
+      "nama": "CORNER PLANT",
+      "lbl": "p_corner",
+      "jenis": 99,
+      "fr": 10,
+      "price": 0,
+      "pop": 0
+    },
+    "PLANT_1": {
+      "nama": "CANNA",
+      "lbl": "_plant_canna",
+      "jenis": 1,
+      "fr": 1,
+      "price": 35,
+      "pop": 0.06,
+      "unlocked_level": 0,
+      "unlocked_persen": 0
+    },
+    "PLANT_2": {
+      "nama": "PINELLIA",
+      "lbl": "_plant_pinelia",
+      "jenis": 2,
+      "fr": 2,
+      "price": 40,
+      "pop": 0.07,
+      "unlocked_level": 0,
+      "unlocked_persen": 0
+    },
+    "PLANT_3": {
+      "nama": "WINDMILL PALM",
+      "lbl": "_plant_windmill",
+      "jenis": 3,
+      "fr": 3,
+      "price": 40,
+      "pop": 0.08,
+      "unlocked_level": 0,
+      "unlocked_persen": 0
+    },
+    "PLANT_4": {
+      "nama": "BAMBOO TREE",
+      "lbl": "_plant_bamboo",
+      "jenis": 4,
+      "fr": 4,
+      "price": 50,
+      "pop": 0.09,
+      "unlocked_level": 0,
+      "unlocked_persen": 50
+    },
+    "PLANT_5": {
+      "nama": "CEDAR TREE 1",
+      "lbl": "_plant_cedar1",
+      "jenis": 5,
+      "fr": 5,
+      "price": 75,
+      "pop": 0.105,
+      "unlocked_level": 1,
+      "unlocked_persen": 5
+    },
+    "PLANT_6": {
+      "nama": "CEDAR TREE 2",
+      "lbl": "_plant_cedar2",
+      "jenis": 6,
+      "fr": 6,
+      "price": 90,
+      "pop": 0.115,
+      "unlocked_level": 1,
+      "unlocked_persen": 75
+    },
+    "PLANT_7": {
+      "nama": "PALM TREE",
+      "lbl": "_plant_palm",
+      "jenis": 7,
+      "fr": 7,
+      "price": 90,
+      "pop": 0.14,
+      "unlocked_level": 2,
+      "unlocked_persen": 15
+    },
+    "PLANT_8": {
+      "nama": "MAPLE TREE",
+      "lbl": "_plant_maple",
+      "jenis": 8,
+      "fr": 8,
+      "price": 100,
+      "pop": 0.155,
+      "unlocked_level": 3,
+      "unlocked_persen": 0
+    },
+    "PLANT_9": {
+      "nama": "ACC",
+      "lbl": "_trees",
+      "jenis": 9,
+      "fr": 0,
+      "price": 0,
+      "pop": 0
+    },
+    "PLANT_10": {
+      "nama": "ACC",
+      "lbl": "acc_1",
+      "jenis": 10,
+      "fr": 12,
+      "price": 0,
+      "pop": 0
+    },
+    "PLANT_11": {
+      "nama": "ACC",
+      "lbl": "acc_2",
+      "jenis": 11,
+      "fr": 13,
+      "price": 0,
+      "pop": 0
+    },
+    "PLANT_12": {
+      "nama": "ACC",
+      "lbl": "acc_3",
+      "jenis": 12,
+      "fr": 14,
+      "price": 0,
+      "pop": 0
+    },
+    "PLANT_13": {
+      "nama": "ACC",
+      "lbl": "acc_4",
+      "jenis": 13,
+      "fr": 15,
+      "price": 0,
+      "pop": 0
+    },
+    "PLANT_14": {
+      "nama": "ACC",
+      "lbl": "acc_5",
+      "jenis": 13,
+      "fr": 16,
+      "price": 0,
+      "pop": 0
+    },
+    "PLANT_15": {
+      "nama": "ACC",
+      "lbl": "acc_6",
+      "jenis": 13,
+      "fr": 17,
+      "price": 0,
+      "pop": 0
+    },
+    "PLANT_16": {
+      "nama": "ACC",
+      "lbl": "acc_7",
+      "jenis": 14,
+      "fr": 18,
+      "price": 0,
+      "pop": 0
+    },
+    "PLANT_17": {
+      "nama": "ACC",
+      "lbl": "acc_8",
+      "jenis": 15,
+      "fr": 19,
+      "price": 0,
+      "pop": 0
+    }
+  }
+}

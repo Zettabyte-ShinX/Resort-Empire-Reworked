@@ -1,0 +1,576 @@
+{
+  "_source": "exports/scripts/pack/serbi.as",
+  "_generator": "godot/tools/generate_data.py",
+  "_derived": [
+    "booths.*.boostMood.canceled (canceledMood calls)",
+    "visitors.*.Other (otherFacility calls)"
+  ],
+  "order": [
+    "build_room",
+    "connect_tiles",
+    "put_scenery",
+    "build_facility",
+    "scenery_grass",
+    "one_stayed",
+    "one_janitor",
+    "x_money",
+    "x_tree",
+    "x_facilityRoom",
+    "x_janitor",
+    "xx_tree",
+    "x_stayed",
+    "x_profit",
+    "x_room",
+    "one_facilityUpgrade",
+    "x_customer",
+    "first_meal",
+    "x_facility",
+    "janitorRoom_upgrade",
+    "x_promote",
+    "x_facilityUpgrade",
+    "x_maple",
+    "x_cottageUpgrade",
+    "stars_5",
+    "one_lodge",
+    "first_spcVisitor",
+    "x_unlocked",
+    "expand1",
+    "x_profit2",
+    "xx_facility",
+    "x_lodge",
+    "x_visitors",
+    "xx_tree2",
+    "x_facilityUpgrade2",
+    "x_customer2",
+    "lobby_upgrade",
+    "x_giftshop",
+    "spend_1",
+    "xx_stayed",
+    "x_minibooth",
+    "x_booths",
+    "x_medical",
+    "x_jacuziFullUpgrade",
+    "xx_room",
+    "x_janitorRoom",
+    "x_medicine",
+    "x_barFullUpgrade",
+    "anne_hataway",
+    "x_baratResto",
+    "x_cottageFullUpgrade",
+    "x_facilityStar",
+    "x_roomStar",
+    "x_customer3",
+    "x_facilityUpgrade3",
+    "x_minimarket",
+    "mr_rock",
+    "x_couples",
+    "x_lodgeUpgrade",
+    "x_visitors2",
+    "expand2",
+    "xx_tree3",
+    "x_buyers",
+    "x_medicine2",
+    "x_lodgeFullUpgrade",
+    "x_money2",
+    "naomi_volts",
+    "xx_lodge",
+    "xxx_facility",
+    "x_customer4",
+    "x_booths2",
+    "x_lobbyUsed",
+    "x_trash",
+    "robert",
+    "x_roomUpgrade",
+    "xx_tree4",
+    "x_medicalUpgrade",
+    "jason",
+    "all_extraUpgrade",
+    "x_PoolGolf",
+    "x_buyers2",
+    "all_booth",
+    "x_spcVisitor",
+    "x_trash2",
+    "x_promote2",
+    "x_acv",
+    "xx_tree5",
+    "x_medicalUpgrade2",
+    "x_visitors3",
+    "lobby_upgrade2",
+    "x_poolFullUpgrade",
+    "x_spcVisitor2",
+    "complete_acv",
+    "complete_mission"
+  ],
+  "missions": {
+    "build_room": {
+      "desc": "Build a room on your resort ",
+      "bonus": 500,
+      "batas": 0
+    },
+    "connect_tiles": {
+      "desc": "Connected room with main road ",
+      "bonus": 500,
+      "batas": 0
+    },
+    "put_scenery": {
+      "desc": "Put a plant on your resort ",
+      "bonus": 500,
+      "batas": 0
+    },
+    "build_facility": {
+      "desc": "Build a facility on your resort ",
+      "bonus": 750,
+      "batas": 0
+    },
+    "scenery_grass": {
+      "desc": "Put a plant on grass tile ",
+      "bonus": 750,
+      "batas": 0
+    },
+    "one_stayed": {
+      "desc": "Have at least 1 visitor stayed on your resort ",
+      "bonus": 750,
+      "batas": 1
+    },
+    "one_janitor": {
+      "desc": "Hire at least 1 cleaning service ",
+      "bonus": 500,
+      "batas": 1
+    },
+    "x_money": {
+      "desc": "Total money $2500 ",
+      "bonus": 1000,
+      "batas": 2500
+    },
+    "x_tree": {
+      "desc": "Have 12 plants on your resort ",
+      "bonus": 1000,
+      "batas": 12
+    },
+    "x_facilityRoom": {
+      "desc": "Have total 8 facilities and rooms on your resort ",
+      "bonus": 2500,
+      "batas": 8
+    },
+    "x_janitor": {
+      "desc": "Have 4 cleaning service staffs on your resort ",
+      "bonus": 1500,
+      "batas": 4
+    },
+    "xx_tree": {
+      "desc": "Have 20 plants on your resort ",
+      "bonus": 1000,
+      "batas": 20
+    },
+    "x_stayed": {
+      "desc": "Have 8 booked rooms on your resort ",
+      "bonus": 1000,
+      "batas": 8
+    },
+    "x_profit": {
+      "desc": "Earn $1000 profit at end day ",
+      "bonus": 1000,
+      "batas": 0
+    },
+    "x_room": {
+      "desc": "Have 12 rooms on your resort ",
+      "bonus": 5000,
+      "batas": 12
+    },
+    "one_facilityUpgrade": {
+      "desc": "Upgrade at least one facility ",
+      "bonus": 4000,
+      "batas": 0
+    },
+    "x_customer": {
+      "desc": "Have customers using facility 25 times in a day ",
+      "bonus": 2000,
+      "batas": 25
+    },
+    "first_meal": {
+      "desc": "Served your first meal ",
+      "bonus": 2000,
+      "batas": 0
+    },
+    "x_facility": {
+      "desc": "Build 5 booth 'types' of facility ",
+      "bonus": 5000,
+      "batas": 5
+    },
+    "janitorRoom_upgrade": {
+      "desc": "Have one Janitor's Room with full upgrade ",
+      "bonus": 2500,
+      "batas": 0
+    },
+    "x_promote": {
+      "desc": "Have 3 janitors with full promote ",
+      "bonus": 3000,
+      "batas": 3
+    },
+    "x_facilityUpgrade": {
+      "desc": "Have 3 facilities with two stars or more ",
+      "bonus": 5000,
+      "batas": 3
+    },
+    "x_maple": {
+      "desc": "Have 10 maple trees ",
+      "bonus": 1200,
+      "batas": 10
+    },
+    "x_cottageUpgrade": {
+      "desc": "Have 3 Cottages with two stars or more ",
+      "bonus": 4000,
+      "batas": 3
+    },
+    "stars_5": {
+      "desc": "Reach 5 Resort's Stars ",
+      "bonus": 5000,
+      "batas": 5
+    },
+    "one_lodge": {
+      "desc": "Have one lodge room ",
+      "bonus": 1500,
+      "batas": 0
+    },
+    "first_spcVisitor": {
+      "desc": "Have your first special visitor inside your resort ",
+      "bonus": 3500,
+      "batas": 0
+    },
+    "x_unlocked": {
+      "desc": "Have at least 10 booths unlocked ",
+      "bonus": 1500,
+      "batas": 10
+    },
+    "expand1": {
+      "desc": "Expand your resort land ",
+      "bonus": 5000,
+      "batas": 0
+    },
+    "x_profit2": {
+      "desc": "Earn $2500 profit  at end day ",
+      "bonus": 1500,
+      "batas": 0
+    },
+    "xx_facility": {
+      "desc": "Have total 15 facilities ",
+      "bonus": 12500,
+      "batas": 15
+    },
+    "x_lodge": {
+      "desc": "Have at least 4 lodge ",
+      "bonus": 3000,
+      "batas": 4
+    },
+    "x_visitors": {
+      "desc": "Have 25 visitors inside your resort ",
+      "bonus": 3000,
+      "batas": 25
+    },
+    "xx_tree2": {
+      "desc": "Have 40 plants on your resort ",
+      "bonus": 2500,
+      "batas": 40
+    },
+    "x_facilityUpgrade2": {
+      "desc": "Have 3 facilities with full upgrade ",
+      "bonus": 5000,
+      "batas": 3
+    },
+    "x_customer2": {
+      "desc": "Have customers using facility 80 times in a day ",
+      "bonus": 2000,
+      "batas": 80
+    },
+    "lobby_upgrade": {
+      "desc": "Upgrade your lobby room",
+      "bonus": 5000,
+      "batas": 0
+    },
+    "x_giftshop": {
+      "desc": "Have at least 2 Giftshops ",
+      "bonus": 1000,
+      "batas": 2
+    },
+    "spend_1": {
+      "desc": "Spend $15000 money in a day ",
+      "bonus": 5000,
+      "batas": 15000
+    },
+    "xx_stayed": {
+      "desc": "Have 15 booked rooms on your resort ",
+      "bonus": 7000,
+      "batas": 15
+    },
+    "x_minibooth": {
+      "desc": "Have all kind of minibooths ",
+      "bonus": 2500,
+      "batas": 4
+    },
+    "x_booths": {
+      "desc": "Have total 35 facilities and rooms on your resort ",
+      "bonus": 15000,
+      "batas": 35
+    },
+    "x_medical": {
+      "desc": "Have at least 1 Medical Center ",
+      "bonus": 3000,
+      "batas": 0
+    },
+    "x_jacuziFullUpgrade": {
+      "desc": "Have at least 1 full upgrade Jacuzzi ",
+      "bonus": 4500,
+      "batas": 0
+    },
+    "xx_room": {
+      "desc": "Have 20 rooms on your resort ",
+      "bonus": 6500,
+      "batas": 20
+    },
+    "x_janitorRoom": {
+      "desc": "Have 4 Janitor's Room with full upgrade ",
+      "bonus": 3500,
+      "batas": 4
+    },
+    "x_medicine": {
+      "desc": "'Medical Center(s)' has been used 11 times ",
+      "bonus": 2500,
+      "batas": 11
+    },
+    "x_barFullUpgrade": {
+      "desc": "Have at least 1 full upgrade Bar and Lounge ",
+      "bonus": 3500,
+      "batas": 0
+    },
+    "anne_hataway": {
+      "desc": "'Ann Hat Away' inside your resort ",
+      "bonus": 7000,
+      "batas": 0
+    },
+    "x_baratResto": {
+      "desc": "Have at least 1 West Restaurant ",
+      "bonus": 2500,
+      "batas": 0
+    },
+    "x_cottageFullUpgrade": {
+      "desc": "Have at least 3 full upgrade Cottage ",
+      "bonus": 4500,
+      "batas": 3
+    },
+    "x_facilityStar": {
+      "desc": "Have 10 facilities with two stars or more ",
+      "bonus": 8000,
+      "batas": 10
+    },
+    "x_roomStar": {
+      "desc": "Have 12 rooms with two stars or more ",
+      "bonus": 4000,
+      "batas": 12
+    },
+    "x_customer3": {
+      "desc": "Have customers using facility 110 times in a day ",
+      "bonus": 7000,
+      "batas": 110
+    },
+    "x_facilityUpgrade3": {
+      "desc": "Have 7 facilities with full upgrade ",
+      "bonus": 7500,
+      "batas": 7
+    },
+    "x_minimarket": {
+      "desc": "Have at least 2 Minimarket ",
+      "bonus": 5000,
+      "batas": 2
+    },
+    "mr_rock": {
+      "desc": "'Mr.Rock' inside your resort ",
+      "bonus": 7000,
+      "batas": 0
+    },
+    "x_couples": {
+      "desc": "There are 10 couples inside your resort ",
+      "bonus": 3000,
+      "batas": 10
+    },
+    "x_lodgeUpgrade": {
+      "desc": "Have 3 Lodges with two stars or more ",
+      "bonus": 4500,
+      "batas": 3
+    },
+    "x_visitors2": {
+      "desc": "Have 50 visitors inside your resort ",
+      "bonus": 3250,
+      "batas": 50
+    },
+    "expand2": {
+      "desc": "Expand your resort land twice ",
+      "bonus": 10000,
+      "batas": 0
+    },
+    "xx_tree3": {
+      "desc": "Have 70 plants on your resort ",
+      "bonus": 4000,
+      "batas": 70
+    },
+    "x_buyers": {
+      "desc": "'Minimarket(s)' has been used 100 times ",
+      "bonus": 3500,
+      "batas": 100
+    },
+    "x_medicine2": {
+      "desc": "'Medical Center(s)' has been used 55 times ",
+      "bonus": 5000,
+      "batas": 55
+    },
+    "x_lodgeFullUpgrade": {
+      "desc": "Have at least 1 full upgrade Lodge ",
+      "bonus": 5000,
+      "batas": 0
+    },
+    "x_money2": {
+      "desc": "Total money $100000 ",
+      "bonus": 10000,
+      "batas": 100000
+    },
+    "naomi_volts": {
+      "desc": "'Naomi Volts' inside your resort ",
+      "bonus": 7000,
+      "batas": 0
+    },
+    "xx_lodge": {
+      "desc": "Have at least 15 lodge ",
+      "bonus": 5000,
+      "batas": 15
+    },
+    "xxx_facility": {
+      "desc": "Have 15 booth 'types' of facility ",
+      "bonus": 10000,
+      "batas": 15
+    },
+    "x_customer4": {
+      "desc": "Have customers using facility 200 times in a day ",
+      "bonus": 2000,
+      "batas": 200
+    },
+    "x_booths2": {
+      "desc": "Have total 60 booths ",
+      "bonus": 15000,
+      "batas": 60
+    },
+    "x_lobbyUsed": {
+      "desc": "Your Lobby has been used 750 times ",
+      "bonus": 5000,
+      "batas": 750
+    },
+    "x_trash": {
+      "desc": "Janitor  staffs clean 5 trash in one day ",
+      "bonus": 3000,
+      "batas": 5
+    },
+    "robert": {
+      "desc": "'Robert Fatinson' inside your resort ",
+      "bonus": 7000,
+      "batas": 0
+    },
+    "x_roomUpgrade": {
+      "desc": "Have 10 rooms with full upgrade ",
+      "bonus": 15000,
+      "batas": 10
+    },
+    "xx_tree4": {
+      "desc": "Have 90 plants on your resort ",
+      "bonus": 4000,
+      "batas": 90
+    },
+    "x_medicalUpgrade": {
+      "desc": "Have at least 1 Medical Center with two stars or more ",
+      "bonus": 4000,
+      "batas": 0
+    },
+    "jason": {
+      "desc": "'Jason State' inside your resort ",
+      "bonus": 7000,
+      "batas": 0
+    },
+    "all_extraUpgrade": {
+      "desc": "Buy all extra upgrades ",
+      "bonus": 50000,
+      "batas": 15
+    },
+    "x_PoolGolf": {
+      "desc": "Have Swiming Pool and Golf ",
+      "bonus": 10000,
+      "batas": 2
+    },
+    "x_buyers2": {
+      "desc": "'Minimarket(s)' has been used 250 times ",
+      "bonus": 6000,
+      "batas": 250
+    },
+    "all_booth": {
+      "desc": "Build all kind of booth on your resort ",
+      "bonus": 25000,
+      "batas": 20
+    },
+    "x_spcVisitor": {
+      "desc": "Have 2 special visitors inside your resort ",
+      "bonus": 10000,
+      "batas": 2
+    },
+    "x_trash2": {
+      "desc": "Janitor  staffs clean 10 trash in one day ",
+      "bonus": 3000,
+      "batas": 10
+    },
+    "x_promote2": {
+      "desc": "Have 20 janitors with full promote ",
+      "bonus": 6000,
+      "batas": 20
+    },
+    "x_acv": {
+      "desc": "At least 12 achievements completed ",
+      "bonus": 10000,
+      "batas": 12
+    },
+    "xx_tree5": {
+      "desc": "Have 120 plants on your resort ",
+      "bonus": 4000,
+      "batas": 120
+    },
+    "x_medicalUpgrade2": {
+      "desc": "Have at least 1 Medical Center with full upgrade ",
+      "bonus": 9000,
+      "batas": 0
+    },
+    "x_visitors3": {
+      "desc": "Have 75 visitors inside your resort ",
+      "bonus": 3000,
+      "batas": 75
+    },
+    "lobby_upgrade2": {
+      "desc": "Fully upgrade your lobby room ",
+      "bonus": 10000,
+      "batas": 0
+    },
+    "x_poolFullUpgrade": {
+      "desc": "Have at least 1 full upgrade Swimming Pool ",
+      "bonus": 9000,
+      "batas": 0
+    },
+    "x_spcVisitor2": {
+      "desc": "Have 3 special visitors inside your resort ",
+      "bonus": 10000,
+      "batas": 3
+    },
+    "complete_acv": {
+      "desc": "Achievements completed ",
+      "bonus": 50000,
+      "batas": 15
+    },
+    "complete_mission": {
+      "desc": "All missions completed ",
+      "bonus": 100000,
+      "batas": 94
+    }
+  }
+}

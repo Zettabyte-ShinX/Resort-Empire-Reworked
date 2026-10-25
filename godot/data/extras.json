@@ -1,0 +1,173 @@
+{
+  "_source": "exports/scripts/pack/serbi.as",
+  "_generator": "godot/tools/generate_data.py",
+  "_derived": [
+    "booths.*.boostMood.canceled (canceledMood calls)",
+    "visitors.*.Other (otherFacility calls)"
+  ],
+  "order": [
+    "treadmill",
+    "leaf",
+    "wallpaper",
+    "heater",
+    "sauce",
+    "wine",
+    "palm",
+    "towel",
+    "meat",
+    "bamboo",
+    "aid",
+    "uniform",
+    "irrigation",
+    "wifi",
+    "gardening"
+  ],
+  "extras": {
+    "treadmill": {
+      "name": "Secondhand Treadmill",
+      "effect": "Boost staff's stamina",
+      "unlocked": "Gym",
+      "price": 1500,
+      "need_star": 1
+    },
+    "leaf": {
+      "name": "Garnish Leaf",
+      "effect": "Reduce cedar tree price",
+      "unlocked": "Bar",
+      "price": 2800,
+      "need_star": 2,
+      "val": 10
+    },
+    "wallpaper": {
+      "name": "Wallpaper",
+      "effect": "Reduce palm tree price",
+      "unlocked": "Hotdog",
+      "price": 3250,
+      "need_star": 3,
+      "val": 20
+    },
+    "heater": {
+      "name": "Water Heater",
+      "effect": "Boost Visitor Mood in Cottage",
+      "unlocked": "Jacuzi",
+      "price": 4250,
+      "need_star": 3
+    },
+    "sauce": {
+      "name": "Barbeque Sauce",
+      "effect": "Reduce bamboo tree prices",
+      "unlocked": "Taco",
+      "price": 3100,
+      "need_star": 4,
+      "val": 10
+    },
+    "wine": {
+      "name": "80 years old wine",
+      "effect": "Add extra earnings",
+      "unlocked": "Arcade",
+      "price": 4800,
+      "need_star": 4
+    },
+    "palm": {
+      "name": "Palm Oil",
+      "effect": "Add extra earnings Lodge",
+      "unlocked": "IndiaResto",
+      "price": 4500,
+      "need_star": 5
+    },
+    "towel": {
+      "name": "Luxury Towel",
+      "effect": "Boost visitor Mood in Lodge",
+      "unlocked": "Spa",
+      "price": 4500,
+      "need_star": 5
+    },
+    "meat": {
+      "name": "Minced Meat",
+      "effect": "Add extra earnings from Hot Dog",
+      "unlocked": "Giftshop",
+      "price": 3500,
+      "need_star": 6
+    },
+    "bamboo": {
+      "name": "Bamboo",
+      "effect": "Add extra earnings from Cottage",
+      "unlocked": "JapanResto",
+      "price": 4750,
+      "need_star": 6
+    },
+    "aid": {
+      "name": "First Aid Kit",
+      "effect": "Boost half bald old man Mood, short haired old lady Mood",
+      "unlocked": "Medical",
+      "price": 4950,
+      "need_star": 6
+    },
+    "uniform": {
+      "name": "Cotton Uniform",
+      "effect": "Boost staff' experience",
+      "unlocked": "BaratResto",
+      "price": 5000,
+      "need_star": 7
+    },
+    "irrigation": {
+      "name": "Premium Irrigation",
+      "effect": "Extra earnings from West Restaurant",
+      "unlocked": "Minimarket",
+      "price": 5500,
+      "need_star": 8
+    },
+    "wifi": {
+      "name": "Wi Fi Access",
+      "effect": "Boost Visitor Mood",
+      "unlocked": "Pool",
+      "price": 5750,
+      "need_star": 9
+    },
+    "gardening": {
+      "name": "Ornamental gardening",
+      "effect": "Add extra popularity rate to decoration",
+      "unlocked": "Golf",
+      "price": 6500,
+      "need_star": 10,
+      "val": 5
+    }
+  },
+  "levels": {
+    "1": [
+      "treadmill"
+    ],
+    "2": [
+      "leaf"
+    ],
+    "3": [
+      "wallpaper",
+      "heater"
+    ],
+    "4": [
+      "sauce",
+      "wine"
+    ],
+    "5": [
+      "palm",
+      "towel"
+    ],
+    "6": [
+      "meat",
+      "bamboo",
+      "aid"
+    ],
+    "7": [
+      "uniform"
+    ],
+    "8": [
+      "irrigation"
+    ],
+    "9": [
+      "wifi"
+    ],
+    "10": [
+      "gardening"
+    ]
+  }
+}
